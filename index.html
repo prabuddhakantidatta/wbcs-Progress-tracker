@@ -1691,31 +1691,31 @@
         ];
         
         
-       /*const januarySchedule = [
+        const januarySchedule = [
             { date: "1 Jan", day: "Thu", morning: "Polity: Constitution Basics, Preamble", evening: "Previous year Polity MCQs (50)", test: "New Year Holiday", topics: "Features, History", hours: 3.75 },
             { date: "2 Jan", day: "Fri", morning: "History: 1857 Revolt - Causes & Course", evening: "1857 MCQs + Timeline practice", test: "-", topics: "Leaders, Results", hours: 3.75 },
             { date: "3 Jan", day: "Sat", morning: "Geography: Earth, Solar System, Latitudes (3.5 hrs)", evening: "Geography MCQs + Maps (2 hrs)", test: "Extended Saturday", topics: "Longitudes, Time", hours: 8.5 },
             { date: "4 Jan", day: "Sun", morning: "Economy: GDP, GNP, NDP, National Income (2.5 hrs)", evening: "Economy MCQs + Revision", test: "TEST 1: 50 MCQs", topics: "Basic concepts", hours: 8 },
         
-            
+            /* 5 Jan was missed earlier – now done as planned */
             { date: "5 Jan", day: "Mon", morning: "Polity: Fundamental Rights (Art 12-35)", evening: "FR MCQs + Case laws", test: "-", topics: "6 Rights detail", hours: 3.75 },
         
             { date: "6 Jan", day: "Tue", morning: "History: Social Reform Movements", evening: "Reformers MCQs + Dates", test: "-", topics: "Brahmo, Arya Samaj", hours: 3.75 },
             { date: "7 Jan", day: "Wed", morning: "Geography: Indian Physiography - Himalayas", evening: "Mountain ranges MCQs + Maps", test: "-", topics: "Peaks, Passes", hours: 3.75 },
         
-            
+            /* 8 Jan was missed earlier – now done as planned */
             { date: "8 Jan", day: "Thu", morning: "Economy: Money, Banking, RBI Functions", evening: "Banking MCQs + Current rates", test: "-", topics: "CRR, SLR, Repo", hours: 3.75 },
         
             { date: "9 Jan", day: "Fri", morning: "Science: Physics - Motion, Work, Energy", evening: "Physics MCQs + Numericals", test: "-", topics: "Laws of motion", hours: 3.75 },
         
-            
+            /* 10–12 Jan were missed earlier – now done as planned */
             { date: "10 Jan", day: "Sat", morning: "Science: Heat, Light, Sound waves (3.5 hrs)", evening: "Science comprehensive MCQs", test: "TEST 2: 50 MCQs", topics: "Thermodynamics", hours: 8.5 },
             { date: "11 Jan", day: "Sun", morning: "Current Affairs: December 2025 Complete (2.5 hrs)", evening: "CA MCQs + State specific", test: "Weekly Revision", topics: "National + WB", hours: 8 },
             { date: "12 Jan", day: "Mon", morning: "Polity: DPSP (Art 36-51) & FD (51A)", evening: "DPSP vs FR comparison MCQs", test: "-", topics: "Directives detail", hours: 3.75 },
         
             { date: "13 Jan", day: "Tue", morning: "History: INC Formation, Moderate Phase", evening: "Early Congress MCQs", test: "-", topics: "1885-1905 leaders", hours: 3.75 },
         
-            
+            /* 14–23 Jan were missed earlier – now done as per original sequence */
         
             { date: "14 Jan", day: "Wed", morning: "Geography: Indian Drainage - Himalayan Rivers", evening: "Rivers MCQs + Map marking", test: "Makar Sankranti", topics: "Ganga system", hours: 3.75 },
             { date: "15 Jan", day: "Thu", morning: "Economy: Fiscal Policy, Budget, Taxation", evening: "Budget MCQs + Terms", test: "-", topics: "Deficit types", hours: 3.75 },
@@ -1728,7 +1728,7 @@
             { date: "22 Jan", day: "Thu", morning: "Economy: Agriculture Sector, Green Revolution", evening: "Agriculture MCQs + Schemes", test: "-", topics: "Crops, MSP", hours: 3.75 },
             { date: "23 Jan", day: "Fri", morning: "Science: Acids, Bases, Salts, pH scale", evening: "Chemistry MCQs + Reactions", test: "Netaji Birthday", topics: "Indicators", hours: 3.75 },
         
-            
+            /* From 24 Jan onwards, same as original plan */
         
             { date: "24 Jan", day: "Sat", morning: "Geography Complete: India Physical + Economic (3.5 hrs)", evening: "Map work + Location MCQs", test: "TEST 5: 50 MCQs", topics: "Integration", hours: 8.5 },
             { date: "25 Jan", day: "Sun", morning: "Economy Marathon: All topics revision (2.5 hrs)", evening: "Economy comprehensive MCQs", test: "TEST 6: 50 MCQs", topics: "Complete economy", hours: 8 },
@@ -1788,138 +1788,8 @@
             { num: 14, date: "22 Feb", type: "Comprehensive", mcqs: 100, focus: "Current Affairs + All", target: 72 },
             { num: 15, date: "28 Feb", type: "Full Mock", mcqs: 200, focus: "Complete syllabus", target: 150 },
             { num: 16, date: "1 Mar", type: "FINAL EXAM", mcqs: 200, focus: "WBCS Preliminary", target: 140 }
-        ];*/
-        const januarySchedule = [
-              // ----------------------------
-              // CATCH-UP BLOCK (Missed topics from comments)
-              // 25 Jan 2026 → 14 Feb 2026
-              // ----------------------------
-            
-              { date: "25 Jan", day: "Sun", morning: "Polity: Fundamental Rights (Art 12-35)", evening: "FR MCQs + Case laws", test: "-", topics: "6 Rights detail", hours: 8 },
-            
-              { date: "26 Jan", day: "Mon", morning: "Economy: Money, Banking, RBI Functions", evening: "Banking MCQs + Current rates", test: "-", topics: "CRR, SLR, Repo", hours: 3.75 },
-            
-              { date: "27 Jan", day: "Tue", morning: "Science: Heat, Light, Sound waves (3.5 hrs)", evening: "Science comprehensive MCQs", test: "TEST 2: 50 MCQs", topics: "Thermodynamics", hours: 8.5 },
-            
-              { date: "28 Jan", day: "Wed", morning: "Current Affairs: December 2025 Complete (2.5 hrs)", evening: "CA MCQs + State specific", test: "Weekly Revision", topics: "National + WB", hours: 3.75 },
-            
-              { date: "29 Jan", day: "Thu", morning: "Polity: DPSP (Art 36-51) & FD (51A)", evening: "DPSP vs FR comparison MCQs", test: "-", topics: "Directives detail", hours: 3.75 },
-            
-              { date: "30 Jan", day: "Fri", morning: "Geography: Indian Drainage - Himalayan Rivers", evening: "Rivers MCQs + Map marking", test: "-", topics: "Ganga system", hours: 3.75 },
-            
-              { date: "31 Jan", day: "Sat", morning: "Economy: Fiscal Policy, Budget, Taxation", evening: "Budget MCQs + Terms", test: "-", topics: "Deficit types", hours: 8 },
-            
-              ];
-                
-        const februarySchedule = [
-        { date: "1 Feb", day: "Sun", morning: "Science: Chemistry - Atomic Structure", evening: "Chemistry MCQs + Elements", test: "-", topics: "Periodic Table", hours: 8 },
-            
-              { date: "2 Feb", day: "Mon", morning: "History Marathon: National Movement Timeline (3.5 hrs)", evening: "Chronology intensive practice", test: "TEST 3: 50 MCQs", topics: "1857-1919 focus", hours: 3.75 },
-            
-              { date: "3 Feb", day: "Tue", morning: "Polity Deep Dive: Executive - President, PM (2.5 hrs)", evening: "Executive comprehensive MCQs", test: "TEST 4: 50 MCQs", topics: "Powers, Functions", hours: 3.75 },
-            
-              { date: "4 Feb", day: "Wed", morning: "Polity: Parliament - Lok Sabha, Rajya Sabha", evening: "Legislature MCQs + Procedures", test: "-", topics: "Sessions, Bills", hours: 3.75 },
-            
-              { date: "5 Feb", day: "Thu", morning: "History: Partition of Bengal 1905", evening: "Swadeshi MCQs + Leaders", test: "-", topics: "Extremist phase", hours: 3.75 },
-            
-              { date: "6 Feb", day: "Fri", morning: "Geography: Climate of India, Monsoon", evening: "Weather pattern MCQs", test: "-", topics: "Seasons, Rainfall", hours: 3.75 },
-            
-              { date: "7 Feb", day: "Sat", morning: "Economy: Agriculture Sector, Green Revolution", evening: "Agriculture MCQs + Schemes", test: "-", topics: "Crops, MSP", hours: 8 },
-            
-              { date: "8 Feb", day: "Sun", morning: "Science: Acids, Bases, Salts, pH scale", evening: "Chemistry MCQs + Reactions", test: "-", topics: "Indicators", hours: 8 },
-            
-              { date: "9 Feb", day: "Mon", morning: "Buffer + Backlog Clear (only missed leftovers)", evening: "Error-log + Weak areas MCQs", test: "-", topics: "Stabilize schedule", hours: 3.75 },
-            
-              { date: "10 Feb", day: "Tue", morning: "Buffer + Backlog Clear (only missed leftovers)", evening: "Mixed MCQs (50) + Review", test: "-", topics: "Stabilize schedule", hours: 3.75 },
-            
-              { date: "11 Feb", day: "Wed", morning: "Buffer + Backlog Clear (only missed leftovers)", evening: "Short notes consolidation", test: "-", topics: "Stabilize schedule", hours: 3.75 },
-            
-              { date: "12 Feb", day: "Thu", morning: "Buffer + Backlog Clear (only missed leftovers)", evening: "PYQ-style MCQs + Analysis", test: "-", topics: "Stabilize schedule", hours: 3.75 },
-            
-              { date: "13 Feb", day: "Fri", morning: "Buffer + Backlog Clear (only missed leftovers)", evening: "Rapid revision: Polity+History key facts", test: "-", topics: "Stabilize schedule", hours: 3.75 },
-            
-              { date: "14 Feb", day: "Sat", morning: "Geography Complete: India Physical + Economic (3.5 hrs)", evening: "Map work + Location MCQs", test: "TEST 5: 50 MCQs", topics: "Integration", hours: 8.5 },
-            
-              // -------------------------------------------------------
-              // MAIN PLAN (Your original 25 Jan → 28 Feb shifted forward)
-              // Now runs 15 Feb → 21 Mar
-              // -------------------------------------------------------
-            
-              { date: "15 Feb", day: "Sun", morning: "Economy Marathon: All topics revision (2.5 hrs)", evening: "Economy comprehensive MCQs", test: "TEST 6: 50 MCQs", topics: "Complete economy", hours: 8 },
-            
-              { date: "16 Feb", day: "Mon", morning: "Constitution Special Study (Republic Day theme)", evening: "Polity 100 MCQs practice", test: "-", topics: "Amendments", hours: 3.75 },
-            
-              { date: "17 Feb", day: "Tue", morning: "History: Home Rule, Lucknow Pact", evening: "1916-1919 MCQs", test: "-", topics: "Gandhi's arrival", hours: 3.75 },
-            
-              { date: "18 Feb", day: "Wed", morning: "Geography: Soils of India, Vegetation", evening: "Soil types MCQs + Maps", test: "-", topics: "Forest types", hours: 3.75 },
-            
-              { date: "19 Feb", day: "Thu", morning: "Economy: Industry, Make in India, MSMEs", evening: "Industry MCQs + Policies", test: "-", topics: "Manufacturing", hours: 3.75 },
-            
-              { date: "20 Feb", day: "Fri", morning: "Science: Biology - Cell, Tissues, Organs", evening: "Biology MCQs + Diagrams", test: "-", topics: "Human systems", hours: 3.75 },
-            
-              { date: "21 Feb", day: "Sat", morning: "Polity Complete Revision: All topics (3.5 hrs)", evening: "Polity 100 MCQs marathon", test: "TEST 7: 75 MCQs", topics: "Constitution complete", hours: 8.5 },
-            
-              { date: "22 Feb", day: "Sun", morning: "Environment: Ecology, Biodiversity (2.5 hrs)", evening: "Environment comprehensive MCQs", test: "TEST 8: 75 MCQs", topics: "Ecosystems", hours: 8 },
-            
-              { date: "23 Feb", day: "Mon", morning: "Polity: Judiciary - Supreme Court, High Courts", evening: "Judicial MCQs + Cases", test: "-", topics: "Article 124-147", hours: 3.75 },
-            
-              { date: "24 Feb", day: "Tue", morning: "History: Non-Cooperation Movement 1920-22", evening: "Gandhi era MCQs", test: "-", topics: "Khilafat, Chauri", hours: 3.75 },
-            
-              { date: "25 Feb", day: "Wed", morning: "Geography: Minerals & Energy Resources", evening: "Resources MCQs + Maps", test: "-", topics: "Coal, Iron, Oil", hours: 3.75 },
-            
-              { date: "26 Feb", day: "Thu", morning: "Economy: Planning, NITI Aayog, 5 Year Plans", evening: "Planning MCQs + Schemes", test: "-", topics: "Plan objectives", hours: 3.75 },
-            
-              { date: "27 Feb", day: "Fri", morning: "Science: Human Body Systems", evening: "Biology MCQs + Health", test: "-", topics: "Organs, Diseases", hours: 3.75 },
-            
-              { date: "28 Feb", day: "Sat", morning: "History Complete: 1857-1947 Timeline (3.5 hrs)", evening: "Chronology intensive drill", test: "TEST 9: 75 MCQs", topics: "Full timeline", hours: 8.5 },
-            
-              ];
-        const marchSchedule = [    
-                { date: "1 Mar", day: "Sun", morning: "Integrated: Polity + Geography (2.5 hrs)", evening: "Combined topic MCQs", test: "TEST 10: 75 MCQs", topics: "Integration", hours: 8 },
-            
-              { date: "2 Mar", day: "Mon", morning: "Polity: Local Government, 73rd & 74th Amendment", evening: "Panchayat/Municipality MCQs", test: "-", topics: "3-tier system", hours: 3.75 },
-            
-              { date: "3 Mar", day: "Tue", morning: "History: Civil Disobedience 1930-34", evening: "Salt March MCQs + Events", test: "-", topics: "RTCs, Pacts", hours: 3.75 },
-            
-              { date: "4 Mar", day: "Wed", morning: "Geography WB: Physical Features, Rivers", evening: "WB specific MCQs + Maps", test: "-", topics: "State geography", hours: 3.75 },
-            
-              { date: "5 Mar", day: "Thu", morning: "Economy: Recent Govt Schemes", evening: "Schemes MCQs + Details", test: "-", topics: "Central + WB", hours: 3.75 },
-            
-              { date: "6 Mar", day: "Fri", morning: "Science: Environment Issues, Pollution", evening: "Environment MCQs + Treaties", test: "-", topics: "Climate change", hours: 3.75 },
-            
-              { date: "7 Mar", day: "Sat", morning: "Mixed Revision: All weak areas (3.5 hrs)", evening: "Problem topics intensive", test: "TEST 11: 75 MCQs", topics: "Mixed weak areas", hours: 8.5 },
-            
-              { date: "8 Mar", day: "Sun", morning: "Science Complete: Physics + Chemistry + Bio (2.5 hrs)", evening: "Science comprehensive MCQs", test: "TEST 12: 100 MCQs", topics: "All science", hours: 8 },
-            
-              { date: "9 Mar", day: "Mon", morning: "Polity: Emergency Provisions (352-360)", evening: "Emergency MCQs + History", test: "-", topics: "Types, Effects", hours: 3.75 },
-            
-              { date: "10 Mar", day: "Tue", morning: "History: Quit India 1942 & INA", evening: "1942-47 MCQs + Leaders", test: "-", topics: "Final phase", hours: 3.75 },
-            
-              { date: "11 Mar", day: "Wed", morning: "Geography WB: Economy, Industries", evening: "WB economy MCQs", test: "-", topics: "Agriculture, Mining", hours: 3.75 },
-            
-              { date: "12 Mar", day: "Thu", morning: "Reasoning: Series, Analogy, Classification", evening: "Reasoning 50 MCQs practice", test: "-", topics: "Logic patterns", hours: 3.75 },
-            
-              { date: "13 Mar", day: "Fri", morning: "Quant: Percentage, Ratio, Proportion", evening: "Math MCQs + Shortcuts", test: "-", topics: "Speed math", hours: 3.75 },
-            
-              { date: "14 Mar", day: "Sat", morning: "Complete GS Revision: All subjects (3.5 hrs)", evening: "Mock test practice", test: "TEST 13: 100 MCQs", topics: "Full syllabus", hours: 8.5 },
-            
-              { date: "15 Mar", day: "Sun", morning: "Current Affairs: Jan–Mid Mar 2026 (2.5 hrs)", evening: "CA comprehensive MCQs", test: "TEST 14: 100 MCQs", topics: "Recent events", hours: 8 },
-            
-              { date: "16 Mar", day: "Mon", morning: "English: Vocabulary, Grammar basics", evening: "English MCQs + RC practice", test: "Light revision", topics: "Comprehension", hours: 3 },
-            
-              { date: "17 Mar", day: "Tue", morning: "Formulas & Important Facts", evening: "Quick revision MCQs (30)", test: "Light revision", topics: "Key points only", hours: 2.5 },
-            
-              { date: "18 Mar", day: "Wed", morning: "Important Dates & Events Review", evening: "Chronology final check", test: "Light revision", topics: "Timeline refresh", hours: 2.5 },
-            
-              { date: "19 Mar", day: "Thu", morning: "Maps & Diagrams Final Review", evening: "Visual memory practice", test: "Light revision", topics: "Geography focus", hours: 2.5 },
-            
-              { date: "20 Mar", day: "Fri", morning: "Error Log Final Review (1 hr only)", evening: "Most frequent mistakes", test: "Very light study", topics: "Problem areas", hours: 2 },
-            
-              { date: "21 Mar", day: "Sat", morning: "No morning study", evening: "Rest & Mental prep", test: "FULL MOCK: 200 MCQs (TEST 15)", topics: "Complete simulation", hours: 3 },
-            
-              // EXTENDED FINAL EXAM
-              { date: "22 Mar", day: "Sun", morning: "FINAL EXAM: 200 MCQs", evening: "Post-exam analysis (optional, 60–90 min)", test: "TEST 16: FINAL EXAM", topics: "WBCS Preliminary simulation", hours: 4 }
-            ];
+        ];
+
         
         // ==================== STATE MANAGEMENT ====================
         
@@ -1988,8 +1858,7 @@
             renderSaturdaySchedule();
             renderSundaySchedule();
             renderJanuarySchedule();
-            renderFebruarySchedule()
-            renderMarchSchedule();
+            renderFebruarySchedule();
         }
         
         function renderWeekdaySchedule() {
@@ -2094,28 +1963,6 @@
                 `;
             }).join('');
         }
-            function renderMarchSchedule() {
-            const tbody = document.getElementById('marchSchedule');
-            tbody.innerHTML = marchSchedule.map((item, index) => {
-                const taskId = `feb-${index}`;
-                const isCompleted = appState.completedTasks[taskId] || false;
-                const rowClass = isCompleted ? 'completed-row' : (item.day === 'Sat' || item.day === 'Sun' ? 'weekend-test' : '');
-                
-                return `
-                    <tr class="${rowClass}">
-                        <td><strong>${item.date}</strong></td>
-                        <td>${item.day}</td>
-                        <td>${item.morning}</td>
-                        <td>${item.evening}</td>
-                        <td>${item.test}</td>
-                        <td>${item.topics}</td>
-                        <td>${item.hours}</td>
-                        <td><button class="btn btn-info" style="padding: 4px 8px; font-size: 11px;" onclick="openNoteForDay('${taskId}')">✏️</button></td>
-                        <td><input type="checkbox" class="task-checkbox" data-task="${taskId}" ${isCompleted ? 'checked' : ''}></td>
-                    </tr>
-                `;
-            }).join('');
-        }
         
         function renderTestSchedule() {
             const tbody = document.getElementById('testSchedule');
@@ -2155,7 +2002,7 @@
         function updateDashboard() {
             // Calculate overall progress
             const totalTasks = Object.keys(appState.completedTasks).length;
-            const totalPossible = januarySchedule.length + februarySchedule.length + marchSchedule.length + 60; // approximate
+            const totalPossible = januarySchedule.length + februarySchedule.length + 60; // approximate
             const progressPerc = Math.round((totalTasks / totalPossible) * 100);
             
             document.getElementById('overallProgress').textContent = progressPerc + '%';
@@ -2214,12 +2061,6 @@
             });
             
             februarySchedule.forEach((day, i) => {
-                if (appState.completedTasks[`feb-${i}`]) {
-                    total += day.hours;
-                }
-            });
-
-            marchSchedule.forEach((day, i) => {
                 if (appState.completedTasks[`feb-${i}`]) {
                     total += day.hours;
                 }
@@ -2382,25 +2223,6 @@
                     }
                 }
             });
-
-            // Process March schedule
-            marchSchedule.forEach((day, index) => {
-                const taskId = `feb-${index}`;
-                const isCompleted = appState.completedTasks[taskId] || false;
-                
-                // Check morning theory
-                const morning = day.morning.toLowerCase();
-                for (let subjectName in subjects) {
-                    if (morning.includes(subjectName.toLowerCase())) {
-                        subjects[subjectName].total++;
-                        if (isCompleted) {
-                            subjects[subjectName].completed++;
-                            subjects[subjectName].hours += day.hours;
-                        }
-                        break;
-                    }
-                }
-            });
             
             // Calculate percentages
             return Object.values(subjects).map(subject => {
@@ -2482,7 +2304,7 @@
             weeks.forEach(week => {
                 week.days.forEach(day => {
                     const taskId = `${day.type}-${day.index}`;
-                    const schedule = day.type === 'jan' ? januarySchedule[day.index] : februarySchedule[day.index] : marchSchedule[day.index];
+                    const schedule = day.type === 'jan' ? januarySchedule[day.index] : februarySchedule[day.index];
                     
                     if (appState.completedTasks[taskId]) {
                         week.daysCompleted++;
@@ -2728,7 +2550,7 @@
             doc.setFont(undefined, 'normal');
             
             const totalTasks = Object.keys(appState.completedTasks).length;
-            const totalPossible = januarySchedule.length + februarySchedule.length + marchSchedule.length;
+            const totalPossible = januarySchedule.length + februarySchedule.length;
             const progressPerc = Math.round((totalTasks / totalPossible) * 100);
             const streak = calculateStreak();
             const hours = calculateTotalHours();
@@ -2913,34 +2735,6 @@
             
             yPosition += 10;
             checkPageBreak(40);
-
-            // March Completed Days
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('March 2026 - Completed Days', margin, yPosition);
-            yPosition += 10;
-            
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'normal');
-            
-            let marchCompleted = 0;
-            marchSchedule.forEach((day, index) => {
-                const taskId = `march-${index}`;
-                if (appState.completedTasks[taskId]) {
-                    checkPageBreak(10);
-                    doc.text(`✓ ${day.date} (${day.day}): ${day.morning}`, margin, yPosition);
-                    yPosition += lineHeight;
-                    marchCompleted++;
-                }
-            });
-            
-            if (marchCompleted === 0) {
-                doc.text('No days completed yet in March', margin, yPosition);
-                yPosition += lineHeight;
-            }
-            
-            yPosition += 10;
-            checkPageBreak(40);
             
             // Notes Section
             if (appState.notes && appState.notes.trim() !== '') {
@@ -3059,7 +2853,7 @@
         function checkCurrentDay() {
             const today = new Date();
             const currentDate = today.getDate();
-            const currentMonth = today.getMonth(); // 0 = Jan, 1 = Feb, 2 = Mar
+            const currentMonth = today.getMonth(); // 0 = Jan, 1 = Feb
             
             // Highlight current day in schedules
             // This is a simplified version - you can expand it
