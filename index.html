@@ -641,6 +641,7 @@
             <button class="tab" onclick="switchTab('weekend')">🌅 Weekend Routine</button>
             <button class="tab" onclick="switchTab('january')">📆 January 2026</button>
             <button class="tab" onclick="switchTab('february')">📆 February 2026</button>
+            <button class="tab" onclick="switchTab('march')">📆 March 2026</button>
             <button class="tab" onclick="switchTab('tests')">✅ Test Tracker</button>
             <button class="tab" onclick="switchTab('analytics')">📈 Analytics</button>
         </div>
@@ -855,6 +856,31 @@
             </table>
         </div>
         
+        <div id="tab-march" class="tab-content">
+            <h2>📆 MARCH 2026 - FINAL PHASE & EXAM</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="9" style="text-align: center;">MARCH 2026 - FINAL REVISION & MOCKS</th>
+                    </tr>
+                    <tr>
+                        <th>Date</th>
+                        <th>Day</th>
+                        <th>Morning Theory</th>
+                        <th>Evening Practice</th>
+                        <th>Test/Activity</th>
+                        <th>Key Topics</th>
+                        <th>Hrs</th>
+                        <th>Notes</th>
+                        <th>✓</th>
+                    </tr>
+                </thead>
+                <tbody id="marchSchedule">
+                    <!-- Will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
         <div id="tab-tests" class="tab-content">
             <h2>✅ TEST PERFORMANCE TRACKING</h2>
             <table>
@@ -979,8 +1005,6 @@
     
     <script>
         // ==================== FIREBASE CONFIGURATION ====================
-        // TODO: Replace with your Firebase config after setup
-        // Get this from: Firebase Console > Project Settings > Your apps > SDK setup and configuration
         const firebaseConfig = {
           apiKey: "AIzaSyAThe1_F61AYEZtXl6ISwNkd6D0XMSgg3k",
           authDomain: "wbcs-progress-tracker-30fa6.firebaseapp.com",
@@ -1003,64 +1027,38 @@
             console.error('❌ Firebase initialization error:', error);
             alert('⚠️ Firebase not configured. Please add your Firebase config to use cloud features.\n\nThe app will work in offline mode with localStorage.');
         }
-    </script>
-    
-    <script>
+
         // ==================== FIREBASE AUTHENTICATION ====================
-        
         let isAuthenticated = false;
         
-        // Check if user is already logged in
         function checkAuthentication() {
             if (!auth) {
-                // Firebase not configured, use localStorage fallback
                 fallbackToLocalAuth();
                 return;
             }
-            
-            // Show loading screen
             showLoadingScreen();
-            
-            // Listen for auth state changes
             auth.onAuthStateChanged(function(user) {
                 if (user) {
-                    // User is signed in
                     currentUser = user;
                     isAuthenticated = true;
                     hideLoadingScreen();
                     loadUserData();
                     init();
                 } else {
-                    // No user signed in
                     hideLoadingScreen();
                     showAuthChoice();
                 }
             });
         }
         
-        // Fallback to localStorage if Firebase not configured
         function fallbackToLocalAuth() {
             const savedPassword = localStorage.getItem('wbcsAppPassword');
-            
-            if (!savedPassword) {
-                showFirstTimeSetup();
-            } else {
-                showLoginScreen();
-            }
+            if (!savedPassword) showFirstTimeSetup();
+            else showLoginScreen();
         }
-        
-        // ==================== FIREBASE UI SCREENS ====================
         
         function showLoadingScreen() {
-            const loadingHTML = `
-                <div id="loadingScreen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;">
-                    <div style="text-align: center; color: white;">
-                        <div class="loading" style="width: 50px; height: 50px; margin: 0 auto 20px;"></div>
-                        <h2>Loading WBCS Tracker...</h2>
-                        <p>Please wait</p>
-                    </div>
-                </div>
-            `;
+            const loadingHTML = `<div id="loadingScreen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;"><div style="text-align: center; color: white;"><div class="loading" style="width: 50px; height: 50px; margin: 0 auto 20px;"></div><h2>Loading WBCS Tracker...</h2><p>Please wait</p></div></div>`;
             document.body.insertAdjacentHTML('beforeend', loadingHTML);
         }
         
@@ -1070,145 +1068,24 @@
         }
         
         function showAuthChoice() {
-            const choiceHTML = `
-                <div id="authChoice" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;">
-                    <div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-width: 500px; width: 90%;">
-                        <h2 style="color: #667eea; margin-bottom: 20px; text-align: center;">🎯 WBCS Progress Tracker</h2>
-                        <p style="text-align: center; margin-bottom: 30px; color: #666;">Secure your progress with cloud backup</p>
-                        
-                        <button onclick="showSignup()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 15px;">
-                            📝 Create New Account
-                        </button>
-                        
-                        <button onclick="showLogin()" style="width: 100%; padding: 15px; background: #6c757d; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer;">
-                            🔓 Login to Existing Account
-                        </button>
-                        
-                        <p style="margin-top: 20px; font-size: 12px; color: #999; text-align: center;">
-                            ✨ Free cloud backup • 🔒 Secure authentication • 📧 Password recovery via email
-                        </p>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', loadingHTML);
-        }
-        
-        function hideLoadingScreen() {
-            const loadingScreen = document.getElementById('loadingScreen');
-            if (loadingScreen) loadingScreen.remove();
-        }
-        
-        function showAuthChoice() {
-            const choiceHTML = `
-                <div id="authChoice" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;">
-                    <div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-width: 500px; width: 90%;">
-                        <h2 style="color: #667eea; margin-bottom: 20px; text-align: center;">🎯 WBCS Progress Tracker</h2>
-                        <p style="text-align: center; margin-bottom: 30px; color: #666;">Secure your progress with cloud backup</p>
-                        
-                        <button onclick="showSignup()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 15px;">
-                            📝 Create New Account
-                        </button>
-                        
-                        <button onclick="showLogin()" style="width: 100%; padding: 15px; background: #6c757d; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer;">
-                            🔓 Login to Existing Account
-                        </button>
-                        
-                        <p style="margin-top: 20px; font-size: 12px; color: #999; text-align: center;">
-                            ✨ Free cloud backup • 🔒 Secure authentication • 📧 Password recovery via email
-                        </p>
-                    </div>
-                </div>
-            `;
+            const choiceHTML = `<div id="authChoice" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;"><div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-width: 500px; width: 90%;"><h2 style="color: #667eea; margin-bottom: 20px; text-align: center;">🎯 WBCS Progress Tracker</h2><p style="text-align: center; margin-bottom: 30px; color: #666;">Secure your progress with cloud backup</p><button onclick="showSignup()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 15px;">📝 Create New Account</button><button onclick="showLogin()" style="width: 100%; padding: 15px; background: #6c757d; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer;">🔓 Login to Existing Account</button><p style="margin-top: 20px; font-size: 12px; color: #999; text-align: center;">✨ Free cloud backup • 🔒 Secure authentication • 📧 Password recovery via email</p></div></div>`;
             document.body.insertAdjacentHTML('beforeend', choiceHTML);
         }
         
         function showSignup() {
-            document.getElementById('authChoice').remove();
-            
-            const signupHTML = `
-                <div id="signupScreen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;">
-                    <div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-width: 500px; width: 90%;">
-                        <h2 style="color: #667eea; margin-bottom: 20px; text-align: center;">📝 Create Account</h2>
-                        <p style="text-align: center; margin-bottom: 30px; color: #666;">Register with your email for cloud backup & password recovery</p>
-                        
-                        <div style="margin-bottom: 20px;">
-                            <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Email:</label>
-                            <input type="email" id="signupEmail" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;" placeholder="your.email@example.com" />
-                        </div>
-                        
-                        <div style="margin-bottom: 20px;">
-                            <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Password:</label>
-                            <input type="password" id="signupPassword" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;" placeholder="Minimum 6 characters" />
-                        </div>
-                        
-                        <div style="margin-bottom: 30px;">
-                            <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Confirm Password:</label>
-                            <input type="password" id="signupPasswordConfirm" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;" placeholder="Re-enter password" />
-                        </div>
-                        
-                        <button onclick="handleSignup()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 15px;">
-                            🔒 Create Account
-                        </button>
-                        
-                        <button onclick="backToAuthChoice()" style="width: 100%; padding: 12px; background: transparent; color: #667eea; border: 2px solid #667eea; border-radius: 5px; font-size: 14px; font-weight: bold; cursor: pointer;">
-                            ← Back
-                        </button>
-                        
-                        <p style="margin-top: 20px; font-size: 12px; color: #999; text-align: center;">
-                            By creating an account, you agree to store your data securely in Firebase
-                        </p>
-                    </div>
-                </div>
-            `;
+            const choice = document.getElementById('authChoice');
+            if(choice) choice.remove();
+            const signupHTML = `<div id="signupScreen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;"><div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-width: 500px; width: 90%;"><h2 style="color: #667eea; margin-bottom: 20px; text-align: center;">📝 Create Account</h2><p style="text-align: center; margin-bottom: 30px; color: #666;">Register with your email for cloud backup & password recovery</p><div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Email:</label><input type="email" id="signupEmail" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;" placeholder="your.email@example.com" /></div><div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Password:</label><input type="password" id="signupPassword" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;" placeholder="Minimum 6 characters" /></div><div style="margin-bottom: 30px;"><label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Confirm Password:</label><input type="password" id="signupPasswordConfirm" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;" placeholder="Re-enter password" /></div><button onclick="handleSignup()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 15px;">🔒 Create Account</button><button onclick="backToAuthChoice()" style="width: 100%; padding: 12px; background: transparent; color: #667eea; border: 2px solid #667eea; border-radius: 5px; font-size: 14px; font-weight: bold; cursor: pointer;">← Back</button></div></div>`;
             document.body.insertAdjacentHTML('beforeend', signupHTML);
-            
-            document.getElementById('signupPasswordConfirm').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') handleSignup();
-            });
+            document.getElementById('signupPasswordConfirm').addEventListener('keypress', e => { if (e.key === 'Enter') handleSignup(); });
         }
         
         function showLogin() {
-            document.getElementById('authChoice').remove();
-            
-            const loginHTML = `
-                <div id="loginScreen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;">
-                    <div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-width: 500px; width: 90%;">
-                        <h2 style="color: #667eea; margin-bottom: 20px; text-align: center;">🔓 Login</h2>
-                        <p style="text-align: center; margin-bottom: 30px; color: #666;">Access your study progress</p>
-                        
-                        <div style="margin-bottom: 20px;">
-                            <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Email:</label>
-                            <input type="email" id="loginEmail" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;" placeholder="your.email@example.com" autofocus />
-                        </div>
-                        
-                        <div style="margin-bottom: 30px;">
-                            <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Password:</label>
-                            <input type="password" id="loginPassword" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;" placeholder="Enter your password" />
-                        </div>
-                        
-                        <button onclick="handleLogin()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 15px;">
-                            🔓 Login
-                        </button>
-                        
-                        <button onclick="handleForgotPassword()" style="width: 100%; padding: 12px; background: transparent; color: #667eea; border: none; font-size: 14px; cursor: pointer; margin-bottom: 10px;">
-                            🔑 Forgot Password?
-                        </button>
-                        
-                        <button onclick="backToAuthChoice()" style="width: 100%; padding: 12px; background: transparent; color: #667eea; border: 2px solid #667eea; border-radius: 5px; font-size: 14px; font-weight: bold; cursor: pointer;">
-                            ← Back
-                        </button>
-                        
-                        <p style="margin-top: 20px; font-size: 12px; color: #999; text-align: center;">
-                            🔒 Your data is securely stored in the cloud
-                        </p>
-                    </div>
-                </div>
-            `;
+            const choice = document.getElementById('authChoice');
+            if(choice) choice.remove();
+            const loginHTML = `<div id="loginScreen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;"><div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-width: 500px; width: 90%;"><h2 style="color: #667eea; margin-bottom: 20px; text-align: center;">🔓 Login</h2><p style="text-align: center; margin-bottom: 30px; color: #666;">Access your study progress</p><div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Email:</label><input type="email" id="loginEmail" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;" placeholder="your.email@example.com" autofocus /></div><div style="margin-bottom: 30px;"><label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Password:</label><input type="password" id="loginPassword" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;" placeholder="Enter your password" /></div><button onclick="handleLogin()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 15px;">🔓 Login</button><button onclick="handleForgotPassword()" style="width: 100%; padding: 12px; background: transparent; color: #667eea; border: none; font-size: 14px; cursor: pointer; margin-bottom: 10px;">🔑 Forgot Password?</button><button onclick="backToAuthChoice()" style="width: 100%; padding: 12px; background: transparent; color: #667eea; border: 2px solid #667eea; border-radius: 5px; font-size: 14px; font-weight: bold; cursor: pointer;">← Back</button></div></div>`;
             document.body.insertAdjacentHTML('beforeend', loginHTML);
-            
-            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') handleLogin();
-            });
+            document.getElementById('loginPassword').addEventListener('keypress', e => { if (e.key === 'Enter') handleLogin(); });
         }
         
         function backToAuthChoice() {
@@ -1217,412 +1094,96 @@
             showAuthChoice();
         }
         
-        // ==================== FIREBASE AUTH HANDLERS ====================
-        
         function handleSignup() {
             const email = document.getElementById('signupEmail').value.trim();
             const password = document.getElementById('signupPassword').value;
             const confirmPassword = document.getElementById('signupPasswordConfirm').value;
-            
-            // Validation
-            if (!email || !password || !confirmPassword) {
-                alert('⚠️ Please fill in all fields');
-                return;
-            }
-            
-            if (!email.includes('@')) {
-                alert('⚠️ Please enter a valid email address');
-                return;
-            }
-            
-            if (password.length < 6) {
-                alert('⚠️ Password must be at least 6 characters long');
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                alert('⚠️ Passwords do not match!');
-                return;
-            }
-            
-            // Create account
-            auth.createUserWithEmailAndPassword(email, password)
-                .then(function(userCredential) {
-                    currentUser = userCredential.user;
-                    alert('✅ Account created successfully!');
-                    document.getElementById('signupScreen').remove();
-                    
-                    // Initialize empty data for new user
-                    saveUserData();
-                })
-                .catch(function(error) {
-                    console.error('Signup error:', error);
-                    let errorMessage = 'Failed to create account';
-                    
-                    if (error.code === 'auth/email-already-in-use') {
-                        errorMessage = 'This email is already registered. Please login instead.';
-                    } else if (error.code === 'auth/invalid-email') {
-                        errorMessage = 'Invalid email address';
-                    } else if (error.code === 'auth/weak-password') {
-                        errorMessage = 'Password is too weak';
-                    }
-                    
-                    alert('❌ ' + errorMessage);
-                });
+            if (!email || !password || !confirmPassword) { alert('⚠️ Please fill in all fields'); return; }
+            if (!email.includes('@')) { alert('⚠️ Please enter a valid email address'); return; }
+            if (password.length < 6) { alert('⚠️ Password must be at least 6 characters long'); return; }
+            if (password !== confirmPassword) { alert('⚠️ Passwords do not match!'); return; }
+            auth.createUserWithEmailAndPassword(email, password).then(function(userCredential) {
+                currentUser = userCredential.user;
+                alert('✅ Account created successfully!');
+                document.getElementById('signupScreen').remove();
+                saveUserData();
+            }).catch(function(error) {
+                alert('❌ ' + error.message);
+            });
         }
         
         function handleLogin() {
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
-            
-            if (!email || !password) {
-                alert('⚠️ Please enter both email and password');
-                return;
-            }
-            
-            auth.signInWithEmailAndPassword(email, password)
-                .then(function(userCredential) {
-                    currentUser = userCredential.user;
-                    document.getElementById('loginScreen').remove();
-                    // Auth state listener will handle the rest
-                })
-                .catch(function(error) {
-                    console.error('Login error:', error);
-                    let errorMessage = 'Failed to login';
-                    
-                    if (error.code === 'auth/user-not-found') {
-                        errorMessage = 'No account found with this email';
-                    } else if (error.code === 'auth/wrong-password') {
-                        errorMessage = 'Incorrect password';
-                    } else if (error.code === 'auth/invalid-email') {
-                        errorMessage = 'Invalid email address';
-                    }
-                    
-                    alert('❌ ' + errorMessage);
-                });
+            if (!email || !password) { alert('⚠️ Please enter both email and password'); return; }
+            auth.signInWithEmailAndPassword(email, password).then(function(userCredential) {
+                currentUser = userCredential.user;
+                document.getElementById('loginScreen').remove();
+            }).catch(function(error) {
+                alert('❌ ' + error.message);
+            });
         }
         
         function handleForgotPassword() {
             const email = document.getElementById('loginEmail').value.trim();
-            
-            if (!email) {
-                alert('⚠️ Please enter your email address first');
-                return;
-            }
-            
+            if (!email) { alert('⚠️ Please enter your email address first'); return; }
             if (confirm('📧 Send password reset email to: ' + email + '?')) {
-                auth.sendPasswordResetEmail(email)
-                    .then(function() {
-                        alert('✅ Password reset email sent!\n\nCheck your inbox and follow the instructions to reset your password.');
-                    })
-                    .catch(function(error) {
-                        console.error('Password reset error:', error);
-                        let errorMessage = 'Failed to send reset email';
-                        
-                        if (error.code === 'auth/user-not-found') {
-                            errorMessage = 'No account found with this email';
-                        } else if (error.code === 'auth/invalid-email') {
-                            errorMessage = 'Invalid email address';
-                        }
-                        
-                        alert('❌ ' + errorMessage);
-                    });
+                auth.sendPasswordResetEmail(email).then(() => alert('✅ Password reset email sent!')).catch(error => alert('❌ ' + error.message));
             }
         }
         
-        // ==================== FIRESTORE DATA SYNC ====================
-        
         function saveUserData() {
             if (!currentUser || !db) return;
-            
-            const userDoc = db.collection('users').doc(currentUser.uid);
-            
-            userDoc.set({
+            db.collection('users').doc(currentUser.uid).set({
                 email: currentUser.email,
                 lastUpdated: new Date().toISOString(),
                 appState: appState
-            }, { merge: true })
-            .then(function() {
-                console.log('✅ Data synced to cloud');
-            })
-            .catch(function(error) {
-                console.error('❌ Sync error:', error);
-            });
+            }, { merge: true }).then(() => console.log('✅ Cloud Synced')).catch(e => console.error('❌ Sync Error', e));
         }
         
         function loadUserData() {
             if (!currentUser || !db) return;
-            
-            const userDoc = db.collection('users').doc(currentUser.uid);
-            
-            userDoc.get()
-                .then(function(doc) {
-                    if (doc.exists && doc.data().appState) {
-                        // Load cloud data
-                        appState = { ...appState, ...doc.data().appState };
-                        console.log('✅ Data loaded from cloud');
-                        
-                        // Update UI
-                        document.getElementById('userNotes').value = appState.notes || '';
-                        if (appState.darkMode) {
-                            document.body.classList.add('dark-mode');
-                        }
-                    } else {
-                        console.log('ℹ️ No cloud data found, starting fresh');
-                    }
-                })
-                .catch(function(error) {
-                    console.error('❌ Load error:', error);
-                });
+            db.collection('users').doc(currentUser.uid).get().then(function(doc) {
+                if (doc.exists && doc.data().appState) {
+                    appState = { ...appState, ...doc.data().appState };
+                    document.getElementById('userNotes').value = appState.notes || '';
+                    if (appState.darkMode) document.body.classList.add('dark-mode');
+                    init();
+                }
+            });
         }
         
         function logoutUser() {
-            if (confirm('🔒 Logout from WBCS Tracker?')) {
-                auth.signOut()
-                    .then(function() {
-                        location.reload();
-                    })
-                    .catch(function(error) {
-                        console.error('Logout error:', error);
-                    });
-            }
+            if (confirm('🔒 Logout from WBCS Tracker?')) auth.signOut().then(() => location.reload());
         }
         
-        // ==================== FALLBACK TO OLD SYSTEM ====================
-        
         function showFirstTimeSetup() {
-            const setupHTML = `
-                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;">
-                    <div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-width: 500px; width: 90%;">
-                        <h2 style="color: #667eea; margin-bottom: 20px; text-align: center;">🔐 Welcome to WBCS Tracker</h2>
-                        <p style="text-align: center; margin-bottom: 30px; color: #666;">Create a secure password to protect your study progress</p>
-                        
-                        <div style="margin-bottom: 20px;">
-                            <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Create Password:</label>
-                            <input type="password" id="setupPassword" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;" placeholder="Enter password (min 4 characters)" />
-                        </div>
-                        
-                        <div style="margin-bottom: 30px;">
-                            <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Confirm Password:</label>
-                            <input type="password" id="setupPasswordConfirm" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;" placeholder="Re-enter password" />
-                        </div>
-                        
-                        <button onclick="completeSetup()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer;">
-                            🔒 Secure My Progress
-                        </button>
-                        
-                        <p style="margin-top: 20px; font-size: 12px; color: #999; text-align: center;">
-                            ⚠️ Remember this password! You'll need it to access your data.
-                        </p>
-                    </div>
-                </div>
-            `;
-            
+            const setupHTML = `<div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;"><div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-width: 500px; width: 90%;"><h2 style="color: #667eea; margin-bottom: 20px; text-align: center;">🔐 Welcome to WBCS Tracker</h2><p style="text-align: center; margin-bottom: 30px; color: #666;">Create a secure local password</p><div style="margin-bottom: 20px;"><label>Create Password:</label><input type="password" id="setupPassword" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px;" /></div><div style="margin-bottom: 30px;"><label>Confirm Password:</label><input type="password" id="setupPasswordConfirm" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px;" /></div><button onclick="completeSetup()" style="width: 100%; padding: 15px; background: #667eea; color: white; border: none; border-radius: 5px;">🔒 Secure My Progress</button></div></div>`;
             document.body.insertAdjacentHTML('beforeend', setupHTML);
-            
-            // Allow Enter key to submit
-            document.getElementById('setupPasswordConfirm').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') completeSetup();
-            });
         }
         
         function completeSetup() {
-            const password = document.getElementById('setupPassword').value;
-            const confirmPassword = document.getElementById('setupPasswordConfirm').value;
-            
-            if (password.length < 4) {
-                alert('⚠️ Password must be at least 4 characters long!');
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                alert('⚠️ Passwords do not match! Please try again.');
-                return;
-            }
-            
-            // Save password (in production, this should be hashed)
-            const hashedPassword = btoa(password); // Simple encoding (use proper hashing in production)
-            localStorage.setItem('wbcsAppPassword', hashedPassword);
-            
-            // Remove setup screen
-            document.querySelector('[style*="z-index: 10000"]').remove();
-            
-            isAuthenticated = true;
-            init();
-            
-            alert('✅ Password set successfully! Your data is now protected.');
-        }
-        
-        function showLoginScreen() {
-            const loginHTML = `
-                <div id="loginScreen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;">
-                    <div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-width: 450px; width: 90%;">
-                        <h2 style="color: #667eea; margin-bottom: 20px; text-align: center;">🔐 WBCS Progress Tracker</h2>
-                        <p style="text-align: center; margin-bottom: 30px; color: #666;">Enter your password to access your study progress</p>
-                        
-                        <div style="margin-bottom: 30px;">
-                            <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Password:</label>
-                            <input type="password" id="loginPassword" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;" placeholder="Enter your password" autofocus />
-                        </div>
-                        
-                        <button onclick="attemptLogin()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 15px;">
-                            🔓 Unlock
-                        </button>
-                        
-                        <div style="text-align: center;">
-                            <a href="#" onclick="showForgotPassword(); return false;" style="color: #667eea; font-size: 14px; text-decoration: none;">Forgot Password?</a>
-                        </div>
-                        
-                        <p style="margin-top: 20px; font-size: 12px; color: #999; text-align: center;">
-                            🔒 Your data is securely stored in your browser
-                        </p>
-                    </div>
-                </div>
-            `;
-            
-            document.body.insertAdjacentHTML('beforeend', loginHTML);
-            
-            // Allow Enter key to login
-            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') attemptLogin();
-            });
-        }
-        
-        function attemptLogin() {
-            const password = document.getElementById('loginPassword').value;
-            const savedPassword = localStorage.getItem('wbcsAppPassword');
-            const hashedPassword = btoa(password);
-            
-            if (hashedPassword === savedPassword) {
-                // Successful login
-                document.getElementById('loginScreen').remove();
-                isAuthenticated = true;
-                init();
-            } else {
-                // Failed login
-                alert('❌ Incorrect password! Please try again.');
-                document.getElementById('loginPassword').value = '';
-                document.getElementById('loginPassword').focus();
-            }
-        }
-        
-        function showForgotPassword() {
-            const confirm1 = confirm('⚠️ FORGOT PASSWORD WARNING\n\nIf you reset your password, ALL your progress data will be permanently deleted!\n\nThis includes:\n• All completed tasks\n• All test scores\n• All study notes\n• All logged hours\n\nDo you want to continue?');
-            
-            if (!confirm1) return;
-            
-            const confirm2 = confirm('🚨 FINAL WARNING\n\nThis action CANNOT be undone!\n\nAll your study progress will be lost forever.\n\nAre you absolutely sure?');
-            
-            if (!confirm2) return;
-            
-            // Clear all data
-            localStorage.clear();
+            const p = document.getElementById('setupPassword').value;
+            if (p !== document.getElementById('setupPasswordConfirm').value) { alert('Mismatch'); return; }
+            localStorage.setItem('wbcsAppPassword', btoa(p));
             location.reload();
         }
         
-        function changePasswordBtn() {
-            if (currentUser) {
-                // Firebase user - use Firebase password change
-                changeFirebasePassword();
-            } else {
-                // LocalStorage user - use old method
-                changePassword();
-            }
+        function showLoginScreen() {
+            const loginHTML = `<div id="loginScreen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;"><div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-width: 450px; width: 90%;"><h2 style="text-align: center;">🔐 Unlock Tracker</h2><input type="password" id="loginPassword" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; margin: 20px 0;" autofocus /><button onclick="attemptLogin()" style="width: 100%; padding: 15px; background: #667eea; color: white; border: none; border-radius: 5px;">🔓 Unlock</button></div></div>`;
+            document.body.insertAdjacentHTML('beforeend', loginHTML);
         }
         
-        function changeFirebasePassword() {
-            const newPassword = prompt('🔑 Enter your new password (min 6 characters):');
-            if (!newPassword || newPassword.length < 6) {
-                alert('⚠️ Password must be at least 6 characters long!');
-                return;
-            }
-            
-            const confirmPassword = prompt('🔑 Confirm your new password:');
-            if (newPassword !== confirmPassword) {
-                alert('❌ Passwords do not match!');
-                return;
-            }
-            
-            currentUser.updatePassword(newPassword)
-                .then(function() {
-                    alert('✅ Password changed successfully!');
-                })
-                .catch(function(error) {
-                    console.error('Password change error:', error);
-                    
-                    if (error.code === 'auth/requires-recent-login') {
-                        alert('⚠️ For security reasons, please logout and login again before changing your password.');
-                    } else {
-                        alert('❌ Failed to change password: ' + error.message);
-                    }
-                });
+        function attemptLogin() {
+            const p = document.getElementById('loginPassword').value;
+            if (btoa(p) === localStorage.getItem('wbcsAppPassword')) {
+                document.getElementById('loginScreen').remove();
+                isAuthenticated = true;
+                init();
+            } else alert('Wrong password');
         }
-        
-        function changePassword() {
-            const currentPassword = prompt('🔐 Enter your current password:');
-            if (!currentPassword) return;
-            
-            const savedPassword = localStorage.getItem('wbcsAppPassword');
-            const hashedCurrentPassword = btoa(currentPassword);
-            
-            if (hashedCurrentPassword !== savedPassword) {
-                alert('❌ Incorrect current password!');
-                return;
-            }
-            
-            const newPassword = prompt('🔑 Enter your new password (min 4 characters):');
-            if (!newPassword || newPassword.length < 4) {
-                alert('⚠️ Password must be at least 4 characters long!');
-                return;
-            }
-            
-            const confirmPassword = prompt('🔑 Confirm your new password:');
-            if (newPassword !== confirmPassword) {
-                alert('❌ Passwords do not match!');
-                return;
-            }
-            
-            const hashedNewPassword = btoa(newPassword);
-            localStorage.setItem('wbcsAppPassword', hashedNewPassword);
-            
-            alert('✅ Password changed successfully!');
-        }
-        
-        function secureReset() {
-            const password = prompt('🔐 Enter your password to reset all data:');
-            if (!password) return;
-            
-            const savedPassword = localStorage.getItem('wbcsAppPassword');
-            const hashedPassword = btoa(password);
-            
-            if (hashedPassword !== savedPassword) {
-                alert('❌ Incorrect password! Reset cancelled.');
-                return;
-            }
-            
-            if (confirm('⚠️ Are you sure you want to reset ALL progress? This cannot be undone!')) {
-                if (confirm('🚨 FINAL WARNING: All your data will be lost. Continue?')) {
-                    localStorage.removeItem('wbcsTrackerState');
-                    alert('✅ Progress data reset! Password retained.');
-                    location.reload();
-                }
-            }
-        }
-        
-        function lockApp() {
-            if (currentUser) {
-                // Firebase user - logout
-                logoutUser();
-            } else {
-                // LocalStorage user - reload
-                if (confirm('🔒 Lock the app? You will need to enter your password again.')) {
-                    location.reload();
-                }
-            }
-        }
-        
+
         // ==================== DATA STRUCTURES ====================
-        
         const weekdayRoutine = [
             { time: "5:00 AM", activity: "Wake Up", details: "Immediately get up, drink water, fresh up", duration: "10 min", type: "morning" },
             { time: "5:10 AM", activity: "Exercise", details: "Quick cardio, stretching, push-ups", duration: "15 min", type: "morning" },
@@ -1660,7 +1221,7 @@
             { time: "2:00 PM", activity: "Revision Session", details: "Week's important topics", duration: "90 min" },
             { time: "3:30 PM", activity: "Current Affairs", details: "Weekly compilation", duration: "30 min" },
             { time: "4:00 PM", activity: "Tea Break", details: "Complete mental break", duration: "30 min" },
-            { time: "4:30 PM", activity: "Practice Marathon", details: "100+ MCQs", duration: "120 min" },
+            { time: "4:30 PM", activity: "Practice Marathon", details: "120+ MCQs", duration: "120 min" },
             { time: "6:30 PM", activity: "Evening Walk", details: "Outdoor time", duration: "30 min" },
             { time: "7:00 PM", activity: "Dinner & Family", details: "Quality time", duration: "60 min" },
             { time: "8:00 PM", activity: "Light Revision", details: "Notes review", duration: "60 min" },
@@ -1690,109 +1251,113 @@
             { time: "9:30 PM", activity: "Early Sleep", details: "Rest for Monday", duration: "7.5 hours" }
         ];
         
-        
         const januarySchedule = [
             { date: "1 Jan", day: "Thu", morning: "Polity: Constitution Basics, Preamble", evening: "Previous year Polity MCQs (50)", test: "New Year Holiday", topics: "Features, History", hours: 3.75 },
             { date: "2 Jan", day: "Fri", morning: "History: 1857 Revolt - Causes & Course", evening: "1857 MCQs + Timeline practice", test: "-", topics: "Leaders, Results", hours: 3.75 },
             { date: "3 Jan", day: "Sat", morning: "Geography: Earth, Solar System, Latitudes (3.5 hrs)", evening: "Geography MCQs + Maps (2 hrs)", test: "Extended Saturday", topics: "Longitudes, Time", hours: 8.5 },
             { date: "4 Jan", day: "Sun", morning: "Economy: GDP, GNP, NDP, National Income (2.5 hrs)", evening: "Economy MCQs + Revision", test: "TEST 1: 50 MCQs", topics: "Basic concepts", hours: 8 },
-        
-            /* 5 Jan was missed earlier – now done as planned */
-            { date: "5 Jan", day: "Mon", morning: "Polity: Fundamental Rights (Art 12-35)", evening: "FR MCQs + Case laws", test: "-", topics: "6 Rights detail", hours: 3.75 },
-        
+            { date: "5 Jan", day: "Mon", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 26 Jan", hours: 0 },
             { date: "6 Jan", day: "Tue", morning: "History: Social Reform Movements", evening: "Reformers MCQs + Dates", test: "-", topics: "Brahmo, Arya Samaj", hours: 3.75 },
             { date: "7 Jan", day: "Wed", morning: "Geography: Indian Physiography - Himalayas", evening: "Mountain ranges MCQs + Maps", test: "-", topics: "Peaks, Passes", hours: 3.75 },
-        
-            /* 8 Jan was missed earlier – now done as planned */
-            { date: "8 Jan", day: "Thu", morning: "Economy: Money, Banking, RBI Functions", evening: "Banking MCQs + Current rates", test: "-", topics: "CRR, SLR, Repo", hours: 3.75 },
-        
+            { date: "8 Jan", day: "Thu", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 27 Jan", hours: 0 },
             { date: "9 Jan", day: "Fri", morning: "Science: Physics - Motion, Work, Energy", evening: "Physics MCQs + Numericals", test: "-", topics: "Laws of motion", hours: 3.75 },
-        
-            /* 10–12 Jan were missed earlier – now done as planned */
-            { date: "10 Jan", day: "Sat", morning: "Science: Heat, Light, Sound waves (3.5 hrs)", evening: "Science comprehensive MCQs", test: "TEST 2: 50 MCQs", topics: "Thermodynamics", hours: 8.5 },
-            { date: "11 Jan", day: "Sun", morning: "Current Affairs: December 2025 Complete (2.5 hrs)", evening: "CA MCQs + State specific", test: "Weekly Revision", topics: "National + WB", hours: 8 },
-            { date: "12 Jan", day: "Mon", morning: "Polity: DPSP (Art 36-51) & FD (51A)", evening: "DPSP vs FR comparison MCQs", test: "-", topics: "Directives detail", hours: 3.75 },
-        
+            { date: "10 Jan", day: "Sat", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 28 Jan", hours: 0 },
+            { date: "11 Jan", day: "Sun", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 29 Jan", hours: 0 },
+            { date: "12 Jan", day: "Mon", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 30 Jan", hours: 0 },
             { date: "13 Jan", day: "Tue", morning: "History: INC Formation, Moderate Phase", evening: "Early Congress MCQs", test: "-", topics: "1885-1905 leaders", hours: 3.75 },
-        
-            /* 14–23 Jan were missed earlier – now done as per original sequence */
-        
-            { date: "14 Jan", day: "Wed", morning: "Geography: Indian Drainage - Himalayan Rivers", evening: "Rivers MCQs + Map marking", test: "Makar Sankranti", topics: "Ganga system", hours: 3.75 },
-            { date: "15 Jan", day: "Thu", morning: "Economy: Fiscal Policy, Budget, Taxation", evening: "Budget MCQs + Terms", test: "-", topics: "Deficit types", hours: 3.75 },
-            { date: "16 Jan", day: "Fri", morning: "Science: Chemistry - Atomic Structure", evening: "Chemistry MCQs + Elements", test: "-", topics: "Periodic Table", hours: 3.75 },
-            { date: "17 Jan", day: "Sat", morning: "History Marathon: National Movement Timeline (3.5 hrs)", evening: "Chronology intensive practice", test: "TEST 3: 50 MCQs", topics: "1857-1919 focus", hours: 8.5 },
-            { date: "18 Jan", day: "Sun", morning: "Polity Deep Dive: Executive - President, PM (2.5 hrs)", evening: "Executive comprehensive MCQs", test: "TEST 4: 50 MCQs", topics: "Powers, Functions", hours: 8 },
-            { date: "19 Jan", day: "Mon", morning: "Polity: Parliament - Lok Sabha, Rajya Sabha", evening: "Legislature MCQs + Procedures", test: "-", topics: "Sessions, Bills", hours: 3.75 },
-            { date: "20 Jan", day: "Tue", morning: "History: Partition of Bengal 1905", evening: "Swadeshi MCQs + Leaders", test: "-", topics: "Extremist phase", hours: 3.75 },
-            { date: "21 Jan", day: "Wed", morning: "Geography: Climate of India, Monsoon", evening: "Weather pattern MCQs", test: "-", topics: "Seasons, Rainfall", hours: 3.75 },
-            { date: "22 Jan", day: "Thu", morning: "Economy: Agriculture Sector, Green Revolution", evening: "Agriculture MCQs + Schemes", test: "-", topics: "Crops, MSP", hours: 3.75 },
-            { date: "23 Jan", day: "Fri", morning: "Science: Acids, Bases, Salts, pH scale", evening: "Chemistry MCQs + Reactions", test: "Netaji Birthday", topics: "Indicators", hours: 3.75 },
-        
-            /* From 24 Jan onwards, same as original plan */
-        
-            { date: "24 Jan", day: "Sat", morning: "Geography Complete: India Physical + Economic (3.5 hrs)", evening: "Map work + Location MCQs", test: "TEST 5: 50 MCQs", topics: "Integration", hours: 8.5 },
-            { date: "25 Jan", day: "Sun", morning: "Economy Marathon: All topics revision (2.5 hrs)", evening: "Economy comprehensive MCQs", test: "TEST 6: 50 MCQs", topics: "Complete economy", hours: 8 },
-            { date: "26 Jan", day: "Mon", morning: "Republic Day: Constitution Special Study", evening: "Polity 100 MCQs practice", test: "Republic Day", topics: "Amendments", hours: 3.75 },
-            { date: "27 Jan", day: "Tue", morning: "History: Home Rule, Lucknow Pact", evening: "1916-1919 MCQs", test: "-", topics: "Gandhi's arrival", hours: 3.75 },
-            { date: "28 Jan", day: "Wed", morning: "Geography: Soils of India, Vegetation", evening: "Soil types MCQs + Maps", test: "-", topics: "Forest types", hours: 3.75 },
-            { date: "29 Jan", day: "Thu", morning: "Economy: Industry, Make in India, MSMEs", evening: "Industry MCQs + Policies", test: "-", topics: "Manufacturing", hours: 3.75 },
-            { date: "30 Jan", day: "Fri", morning: "Science: Biology - Cell, Tissues, Organs", evening: "Biology MCQs + Diagrams", test: "-", topics: "Human systems", hours: 3.75 },
-            { date: "31 Jan", day: "Sat", morning: "Polity Complete Revision: All topics (3.5 hrs)", evening: "Polity 100 MCQs marathon", test: "TEST 7: 75 MCQs", topics: "Constitution complete", hours: 8.5 }
+            { date: "14 Jan", day: "Wed", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 31 Jan", hours: 0 },
+            { date: "15 Jan", day: "Thu", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 1 Feb", hours: 0 },
+            { date: "16 Jan", day: "Fri", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 2 Feb", hours: 0 },
+            { date: "17 Jan", day: "Sat", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 3 Feb", hours: 0 },
+            { date: "18 Jan", day: "Sun", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 4 Feb", hours: 0 },
+            { date: "19 Jan", day: "Mon", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 5 Feb", hours: 0 },
+            { date: "20 Jan", day: "Tue", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 6 Feb", hours: 0 },
+            { date: "21 Jan", day: "Wed", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 7 Feb", hours: 0 },
+            { date: "22 Jan", day: "Thu", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 8 Feb", hours: 0 },
+            { date: "23 Jan", day: "Fri", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 9 Feb", hours: 0 },
+            { date: "24 Jan", day: "Sat", morning: "MISSED", evening: "MISSED", test: "-", topics: "Rescheduled to 10 Feb", hours: 0 },
+            { date: "25 Jan", day: "Sun", morning: "MISSED (Up to 10 AM)", evening: "MISSED", test: "-", topics: "Rescheduled to 11 Feb", hours: 0 },
+            { date: "26 Jan", day: "Mon", morning: "Makeup: Fundamental Rights (Art 12-35)", evening: "FR MCQs + Case laws", test: "-", topics: "Rescheduled from 5 Jan", hours: 3.75 },
+            { date: "27 Jan", day: "Tue", morning: "Makeup: Money, Banking, RBI Functions", evening: "Banking MCQs + Current rates", test: "-", topics: "Rescheduled from 8 Jan", hours: 3.75 },
+            { date: "28 Jan", day: "Wed", morning: "Makeup: Heat, Light, Sound (Science)", evening: "Science comprehensive MCQs", test: "-", topics: "Rescheduled from 10 Jan", hours: 3.75 },
+            { date: "29 Jan", day: "Thu", morning: "Makeup: Current Affairs Dec 2025", evening: "CA MCQs + State specific", test: "-", topics: "Rescheduled from 11 Jan", hours: 3.75 },
+            { date: "30 Jan", day: "Fri", morning: "Makeup: DPSP (Art 36-51) & FD", evening: "DPSP comparison MCQs", test: "-", topics: "Rescheduled from 12 Jan", hours: 3.75 },
+            { date: "31 Jan", day: "Sat", morning: "Makeup: Indian Drainage - Rivers", evening: "Rivers MCQs + Maps", test: "Makeup Day", topics: "Rescheduled from 14 Jan", hours: 8.5 }
         ];
         
         const februarySchedule = [
-            { date: "1 Feb", day: "Sun", morning: "Environment: Ecology, Biodiversity (2.5 hrs)", evening: "Environment comprehensive MCQs", test: "TEST 8: 75 MCQs", topics: "Ecosystems", hours: 8 },
-            { date: "2 Feb", day: "Mon", morning: "Polity: Judiciary - Supreme Court, High Courts", evening: "Judicial MCQs + Cases", test: "-", topics: "Article 124-147", hours: 3.75 },
-            { date: "3 Feb", day: "Tue", morning: "History: Non-Cooperation Movement 1920-22", evening: "Gandhi era MCQs", test: "-", topics: "Khilafat, Chauri", hours: 3.75 },
-            { date: "4 Feb", day: "Wed", morning: "Geography: Minerals & Energy Resources", evening: "Resources MCQs + Maps", test: "-", topics: "Coal, Iron, Oil", hours: 3.75 },
-            { date: "5 Feb", day: "Thu", morning: "Economy: Planning, NITI Aayog, 5 Year Plans", evening: "Planning MCQs + Schemes", test: "-", topics: "Plan objectives", hours: 3.75 },
-            { date: "6 Feb", day: "Fri", morning: "Science: Human Body Systems", evening: "Biology MCQs + Health", test: "-", topics: "Organs, Diseases", hours: 3.75 },
-            { date: "7 Feb", day: "Sat", morning: "History Complete: 1857-1947 Timeline (3.5 hrs)", evening: "Chronology intensive drill", test: "TEST 9: 75 MCQs", topics: "Full timeline", hours: 8.5 },
-            { date: "8 Feb", day: "Sun", morning: "Integrated: Polity + Geography (2.5 hrs)", evening: "Combined topic MCQs", test: "TEST 10: 75 MCQs", topics: "Integration", hours: 8 },
-            { date: "9 Feb", day: "Mon", morning: "Polity: Local Government, 73rd & 74th Amendment", evening: "Panchayat/Municipality MCQs", test: "-", topics: "3-tier system", hours: 3.75 },
-            { date: "10 Feb", day: "Tue", morning: "History: Civil Disobedience 1930-34", evening: "Salt March MCQs + Events", test: "-", topics: "RTCs, Pacts", hours: 3.75 },
-            { date: "11 Feb", day: "Wed", morning: "Geography WB: Physical Features, Rivers", evening: "WB specific MCQs + Maps", test: "-", topics: "State geography", hours: 3.75 },
-            { date: "12 Feb", day: "Thu", morning: "Economy: Recent Govt Schemes", evening: "Schemes MCQs + Details", test: "-", topics: "Central + WB", hours: 3.75 },
-            { date: "13 Feb", day: "Fri", morning: "Science: Environment Issues, Pollution", evening: "Environment MCQs + Treaties", test: "-", topics: "Climate change", hours: 3.75 },
-            { date: "14 Feb", day: "Sat", morning: "Mixed Revision: All weak areas (3.5 hrs)", evening: "Problem topics intensive", test: "TEST 11: 75 MCQs", topics: "Valentine's Day", hours: 8.5 },
-            { date: "15 Feb", day: "Sun", morning: "Science Complete: Physics + Chemistry + Bio (2.5 hrs)", evening: "Science comprehensive MCQs", test: "TEST 12: 100 MCQs", topics: "All science", hours: 8 },
-            { date: "16 Feb", day: "Mon", morning: "Polity: Emergency Provisions (352-360)", evening: "Emergency MCQs + History", test: "-", topics: "Types, Effects", hours: 3.75 },
-            { date: "17 Feb", day: "Tue", morning: "History: Quit India 1942 & INA", evening: "1942-47 MCQs + Leaders", test: "-", topics: "Final phase", hours: 3.75 },
-            { date: "18 Feb", day: "Wed", morning: "Geography WB: Economy, Industries", evening: "WB economy MCQs", test: "-", topics: "Agriculture, Mining", hours: 3.75 },
-            { date: "19 Feb", day: "Thu", morning: "Reasoning: Series, Analogy, Classification", evening: "Reasoning 50 MCQs practice", test: "-", topics: "Logic patterns", hours: 3.75 },
-            { date: "20 Feb", day: "Fri", morning: "Quant: Percentage, Ratio, Proportion", evening: "Math MCQs + Shortcuts", test: "-", topics: "Speed math", hours: 3.75 },
-            { date: "21 Feb", day: "Sat", morning: "Complete GS Revision: All subjects (3.5 hrs)", evening: "Mock test practice", test: "TEST 13: 100 MCQs", topics: "Full syllabus", hours: 8.5 },
-            { date: "22 Feb", day: "Sun", morning: "Current Affairs: Jan-Feb 2026 (2.5 hrs)", evening: "CA comprehensive MCQs", test: "TEST 14: 100 MCQs", topics: "Recent events", hours: 8 },
-            { date: "23 Feb", day: "Mon", morning: "English: Vocabulary, Grammar basics", evening: "English MCQs + RC practice", test: "Light revision", topics: "Comprehension", hours: 3 },
-            { date: "24 Feb", day: "Tue", morning: "Formulas & Important Facts", evening: "Quick revision MCQs (30)", test: "Light revision", topics: "Key points only", hours: 2.5 },
-            { date: "25 Feb", day: "Wed", morning: "Important Dates & Events Review", evening: "Chronology final check", test: "Light revision", topics: "Timeline refresh", hours: 2.5 },
-            { date: "26 Feb", day: "Thu", morning: "Maps & Diagrams Final Review", evening: "Visual memory practice", test: "Light revision", topics: "Geography focus", hours: 2.5 },
-            { date: "27 Feb", day: "Fri", morning: "Error Log Final Review (1 hr only)", evening: "Most frequent mistakes", test: "Very light study", topics: "Problem areas", hours: 2 },
-            { date: "28 Feb", day: "Sat", morning: "No morning study", evening: "Rest & Mental prep", test: "FULL MOCK: 200 MCQs", topics: "Complete simulation", hours: 3 }
+            { date: "1 Feb", day: "Sun", morning: "Makeup: Fiscal Policy, Budget", evening: "Budget MCQs", test: "TEST 2: 50 MCQs", topics: "Rescheduled from 15 Jan", hours: 8 },
+            { date: "2 Feb", day: "Mon", morning: "Makeup: Chem - Atomic Structure", evening: "Chemistry MCQs", test: "-", topics: "Rescheduled from 16 Jan", hours: 3.75 },
+            { date: "3 Feb", day: "Tue", morning: "Makeup: Hist - National Movement Timeline", evening: "Chronology Practice", test: "-", topics: "Rescheduled from 17 Jan", hours: 3.75 },
+            { date: "4 Feb", day: "Wed", morning: "Makeup: Polity - Executive (President/PM)", evening: "Executive MCQs", test: "-", topics: "Rescheduled from 18 Jan", hours: 3.75 },
+            { date: "5 Feb", day: "Thu", morning: "Makeup: Polity - Parliament", evening: "Legislature MCQs", test: "-", topics: "Rescheduled from 19 Jan", hours: 3.75 },
+            { date: "6 Feb", day: "Fri", morning: "Makeup: Hist - Swadeshi Movement", evening: "Extremist phase MCQs", test: "-", topics: "Rescheduled from 20 Jan", hours: 3.75 },
+            { date: "7 Feb", day: "Sat", morning: "Makeup: Geo - Climate & Monsoon", evening: "Weather MCQs", test: "TEST 3: 50 MCQs", topics: "Rescheduled from 21 Jan", hours: 8.5 },
+            { date: "8 Feb", day: "Sun", morning: "Makeup: Eco - Agriculture & Green Rev", evening: "Agriculture MCQs", test: "TEST 4: 50 MCQs", topics: "Rescheduled from 22 Jan", hours: 8 },
+            { date: "9 Feb", day: "Mon", morning: "Makeup: Science - Acids, Bases, Salts", evening: "Chem MCQs", test: "-", topics: "Rescheduled from 23 Jan", hours: 3.75 },
+            { date: "10 Feb", day: "Tue", morning: "Makeup: Geo Complete - Physical/Eco", evening: "Map work MCQs", test: "-", topics: "Rescheduled from 24 Jan", hours: 3.75 },
+            { date: "11 Feb", day: "Wed", morning: "Makeup: Eco Marathon Revision", evening: "Eco Comp MCQs", test: "-", topics: "Rescheduled from 25 Jan", hours: 3.75 },
+            { date: "12 Feb", day: "Thu", morning: "Republic Day makeup: Constitution Special", evening: "Polity 100 MCQs", test: "-", topics: "Rescheduled from 26 Jan", hours: 3.75 },
+            { date: "13 Feb", day: "Fri", morning: "History: Home Rule, Lucknow Pact", evening: "1916-1919 MCQs", test: "-", topics: "Rescheduled from 27 Jan", hours: 3.75 },
+            { date: "14 Feb", day: "Sat", morning: "Geography: Soils of India, Vegetation", evening: "Soil MCQs + Maps", test: "TEST 5: 50 MCQs", topics: "Rescheduled from 28 Jan", hours: 8.5 },
+            { date: "15 Feb", day: "Sun", morning: "Economy: Industry, Make in India", evening: "Industry MCQs", test: "TEST 6: 50 MCQs", topics: "Rescheduled from 29 Jan", hours: 8 },
+            { date: "16 Feb", day: "Mon", morning: "Science: Biology - Cell, Tissues", evening: "Bio MCQs", test: "-", topics: "Rescheduled from 30 Jan", hours: 3.75 },
+            { date: "17 Feb", day: "Tue", morning: "Polity Complete Revision", evening: "Polity 100 MCQs marathon", test: "-", topics: "Rescheduled from 31 Jan", hours: 3.75 },
+            { date: "18 Feb", day: "Wed", morning: "Environment: Ecology, Biodiversity", evening: "Env Comp MCQs", test: "-", topics: "Rescheduled from 1 Feb", hours: 3.75 },
+            { date: "19 Feb", day: "Thu", morning: "Polity: Judiciary - SC, High Courts", evening: "Judicial MCQs", test: "-", topics: "Rescheduled from 2 Feb", hours: 3.75 },
+            { date: "20 Feb", day: "Fri", morning: "History: Non-Cooperation Movement", evening: "Gandhi era MCQs", test: "-", topics: "Rescheduled from 3 Feb", hours: 3.75 },
+            { date: "21 Feb", day: "Sat", morning: "Geography: Minerals & Energy", evening: "Resources MCQs", test: "TEST 7: 75 MCQs", topics: "Rescheduled from 4 Feb", hours: 8.5 },
+            { date: "22 Feb", day: "Sun", morning: "Economy: Planning, NITI Aayog", evening: "Planning MCQs", test: "TEST 8: 75 MCQs", topics: "Rescheduled from 5 Feb", hours: 8 },
+            { date: "23 Feb", day: "Mon", morning: "Science: Human Body Systems", evening: "Biology MCQs", test: "-", topics: "Rescheduled from 6 Feb", hours: 3.75 },
+            { date: "24 Feb", day: "Tue", morning: "History Complete: 1857-1947", evening: "Timeline Drill", test: "-", topics: "Rescheduled from 7 Feb", hours: 3.75 },
+            { date: "25 Feb", day: "Wed", morning: "Integrated: Polity + Geography", evening: "Combined topic MCQs", test: "-", topics: "Rescheduled from 8 Feb", hours: 3.75 },
+            { date: "26 Feb", day: "Thu", morning: "Polity: Local Government", evening: "Panchayat MCQs", test: "-", topics: "Rescheduled from 9 Feb", hours: 3.75 },
+            { date: "27 Feb", day: "Fri", morning: "History: Civil Disobedience", evening: "Salt March MCQs", test: "-", topics: "Rescheduled from 10 Feb", hours: 3.75 },
+            { date: "28 Feb", day: "Sat", morning: "Geography WB: Physical & Rivers", evening: "WB specific MCQs", test: "TEST 9: 75 MCQs", topics: "Rescheduled from 11 Feb", hours: 8.5 }
+        ];
+
+        const marchSchedule = [
+            { date: "1 Mar", day: "Sun", morning: "Economy: Recent Govt Schemes", evening: "Schemes MCQs", test: "TEST 10: 75 MCQs", topics: "Rescheduled from 12 Feb", hours: 8 },
+            { date: "2 Mar", day: "Mon", morning: "Science: Environment Issues", evening: "Env MCQs + Treaties", test: "-", topics: "Rescheduled from 13 Feb", hours: 3.75 },
+            { date: "3 Mar", day: "Tue", morning: "Mixed Revision: All weak areas", evening: "Problem topics intensive", test: "-", topics: "Rescheduled from 14 Feb", hours: 3.75 },
+            { date: "4 Mar", day: "Wed", morning: "Science Complete: Phy/Chem/Bio", evening: "Science comp MCQs", test: "-", topics: "Rescheduled from 15 Feb", hours: 3.75 },
+            { date: "5 Mar", day: "Thu", morning: "Polity: Emergency Provisions", evening: "Emergency MCQs", test: "-", topics: "Rescheduled from 16 Feb", hours: 3.75 },
+            { date: "6 Mar", day: "Fri", morning: "History: Quit India & INA", evening: "1942-47 MCQs", test: "-", topics: "Rescheduled from 17 Feb", hours: 3.75 },
+            { date: "7 Mar", day: "Sat", morning: "Geography WB: Economy/Industry", evening: "WB economy MCQs", test: "TEST 11: 75 MCQs", topics: "Rescheduled from 18 Feb", hours: 8.5 },
+            { date: "8 Mar", day: "Sun", morning: "Reasoning: Logic patterns", evening: "Reasoning 50 practice", test: "TEST 12: 100 MCQs", topics: "Rescheduled from 19 Feb", hours: 8 },
+            { date: "9 Mar", day: "Mon", morning: "Quant: Perc/Ratio/Shortcuts", evening: "Math MCQs", test: "-", topics: "Rescheduled from 20 Feb", hours: 3.75 },
+            { date: "10 Mar", day: "Tue", morning: "Complete GS Revision", evening: "Mock practice", test: "-", topics: "Rescheduled from 21 Feb", hours: 3.75 },
+            { date: "11 Mar", day: "Wed", morning: "Current Affairs Jan-Feb 2026", evening: "CA comp MCQs", test: "-", topics: "Rescheduled from 22 Feb", hours: 3.75 },
+            { date: "12 Mar", day: "Thu", morning: "English: Vocabulary/Grammar", evening: "English comp MCQs", test: "-", topics: "Rescheduled from 23 Feb", hours: 3.75 },
+            { date: "13 Mar", day: "Fri", morning: "Formulas & Quick Facts", evening: "Quick revision MCQs", test: "-", topics: "Rescheduled from 24 Feb", hours: 3.75 },
+            { date: "14 Mar", day: "Sat", morning: "Timeline Revision: All Hist", evening: "Chronology final check", test: "TEST 13: 100 MCQs", topics: "Rescheduled from 25 Feb", hours: 8.5 },
+            { date: "15 Mar", day: "Sun", morning: "Maps & Visual Diagrams", evening: "Geography visual practice", test: "TEST 14: 100 MCQs", topics: "Rescheduled from 26 Feb", hours: 8 },
+            { date: "16 Mar", day: "Mon", morning: "Final Weak Point Analysis", evening: "Most frequent mistakes review", test: "-", topics: "Rescheduled from 27 Feb", hours: 3.75 },
+            { date: "17 Mar", day: "Tue", morning: "LIGHT STUDY ONLY", evening: "Mantra: Focus on accuracy", test: "Self-Review", topics: "Mental Preparation", hours: 2 },
+            { date: "18 Mar", day: "Wed", morning: "REST / Chill", evening: "Packing Exam Kit", test: "Mock Simulation", topics: "Preparation Done", hours: 0 },
+            { date: "19 Mar", day: "Thu", morning: "PRE-EXAM RELAXATION", evening: "Early Bed", test: "FULL MOCK: 200 MCQs", topics: "Exam Conditions", hours: 3 },
+            { date: "20 Mar", day: "Fri", morning: "WBCS EXAM 2026", evening: "Success!", test: "FINAL EXAM DAY", topics: "🎯 GOAL ACHIEVED", hours: 0 }
         ];
         
         const testSchedule = [
             { num: 1, date: "4 Jan", type: "Weekly", mcqs: 50, focus: "Polity + History", target: 25 },
-            { num: 2, date: "10 Jan", type: "Weekly", mcqs: 50, focus: "Geography + Economy + Science", target: 27 },
-            { num: 3, date: "17 Jan", type: "Weekly", mcqs: 50, focus: "History focus", target: 30 },
-            { num: 4, date: "18 Jan", type: "Weekly", mcqs: 50, focus: "Polity focus", target: 30 },
-            { num: 5, date: "24 Jan", type: "Weekly", mcqs: 50, focus: "Geography complete", target: 32 },
-            { num: 6, date: "25 Jan", type: "Weekly", mcqs: 50, focus: "Economy complete", target: 33 },
-            { num: 7, date: "31 Jan", type: "Advanced", mcqs: 75, focus: "Polity comprehensive", target: 51 },
-            { num: 8, date: "1 Feb", type: "Advanced", mcqs: 75, focus: "Environment + Science", target: 51 },
-            { num: 9, date: "7 Feb", type: "Advanced", mcqs: 75, focus: "History complete", target: 53 },
-            { num: 10, date: "8 Feb", type: "Advanced", mcqs: 75, focus: "Polity + Geography", target: 53 },
-            { num: 11, date: "14 Feb", type: "Advanced", mcqs: 75, focus: "Mixed all subjects", target: 53 },
-            { num: 12, date: "15 Feb", type: "Comprehensive", mcqs: 100, focus: "Science + Environment", target: 70 },
-            { num: 13, date: "21 Feb", type: "Comprehensive", mcqs: 100, focus: "Full GS coverage", target: 72 },
-            { num: 14, date: "22 Feb", type: "Comprehensive", mcqs: 100, focus: "Current Affairs + All", target: 72 },
-            { num: 15, date: "28 Feb", type: "Full Mock", mcqs: 200, focus: "Complete syllabus", target: 150 },
-            { num: 16, date: "1 Mar", type: "FINAL EXAM", mcqs: 200, focus: "WBCS Preliminary", target: 140 }
+            { num: 2, date: "1 Feb", type: "Weekly", mcqs: 50, focus: "Makeup Topics 1", target: 30 },
+            { num: 3, date: "7 Feb", type: "Weekly", mcqs: 50, focus: "Makeup Topics 2", target: 30 },
+            { num: 4, date: "8 Feb", type: "Weekly", mcqs: 50, focus: "Makeup Topics 3", target: 32 },
+            { num: 5, date: "14 Feb", type: "Advanced", mcqs: 75, focus: "Geo/Eco Focus", target: 51 },
+            { num: 6, date: "15 Feb", type: "Advanced", mcqs: 75, focus: "Polity Complete", target: 51 },
+            { num: 7, date: "21 Feb", type: "Advanced", mcqs: 75, focus: "Science/Hist", target: 53 },
+            { num: 8, date: "22 Feb", type: "Advanced", mcqs: 75, focus: "Env/Science", target: 53 },
+            { num: 9, date: "28 Feb", type: "Comprehensive", mcqs: 100, focus: "WB Geo/Hist", target: 70 },
+            { num: 10, date: "1 Mar", type: "Comprehensive", mcqs: 100, focus: "Schemes/GS", target: 72 },
+            { num: 11, date: "7 Mar", type: "Comprehensive", mcqs: 100, focus: "Mixed Full", target: 72 },
+            { num: 12, date: "8 Mar", type: "Comprehensive", mcqs: 100, focus: "Math/Reasoning", target: 75 },
+            { num: 13, date: "14 Mar", type: "Mock", mcqs: 150, focus: "Final Sprint 1", target: 110 },
+            { num: 14, date: "15 Mar", type: "Mock", mcqs: 150, focus: "Final Sprint 2", target: 110 },
+            { num: 15, date: "19 Mar", type: "Full Mock", mcqs: 200, focus: "Simulation", target: 145 },
+            { num: 16, date: "20 Mar", type: "FINAL EXAM", mcqs: 200, focus: "WBCS 2026", target: 140 }
         ];
 
-        
-        // ==================== STATE MANAGEMENT ====================
-        
         let appState = {
             completedTasks: {},
             testScores: {},
@@ -1805,28 +1370,19 @@
             lastSaveDate: null
         };
         
-        // ==================== INITIALIZATION ====================
-        
         function init() {
-            if (!isAuthenticated) {
-                return; // Don't initialize until authenticated
-            }
+            if (!isAuthenticated) return;
             loadState();
             renderAllSchedules();
             renderTestSchedule();
             updateDashboard();
             updateAnalytics();
-            checkCurrentDay();
             calculateDaysRemaining();
             attachEventListeners();
             checkAchievements();
-            
-            // Show user email if Firebase user
             if (currentUser && currentUser.email) {
-                const emailDisplay = document.getElementById('userEmailDisplay');
-                if (emailDisplay) {
-                    emailDisplay.textContent = '👤 ' + currentUser.email;
-                }
+                const display = document.getElementById('userEmailDisplay');
+                if (display) display.textContent = '👤 ' + currentUser.email;
             }
         }
         
@@ -1835,30 +1391,30 @@
             if (saved) {
                 appState = { ...appState, ...JSON.parse(saved) };
                 document.getElementById('userNotes').value = appState.notes || '';
-                if (appState.darkMode) {
-                    document.body.classList.add('dark-mode');
-                }
+                if (appState.darkMode) document.body.classList.add('dark-mode');
             }
         }
         
         function saveState() {
             appState.lastSaveDate = new Date().toISOString();
             localStorage.setItem('wbcsTrackerState', JSON.stringify(appState));
-            
-            // Also save to Firebase if authenticated
-            if (currentUser && db) {
-                saveUserData();
-            }
+            if (currentUser && db) saveUserData();
         }
         
-        // ==================== RENDERING ====================
-        
         function renderAllSchedules() {
-            renderWeekdaySchedule();
-            renderSaturdaySchedule();
-            renderSundaySchedule();
-            renderJanuarySchedule();
-            renderFebruarySchedule();
+            renderWeekdaySchedule(); renderSaturdaySchedule(); renderSundaySchedule();
+            renderJanuarySchedule(); renderFebruarySchedule(); renderMarchSchedule();
+        }
+        
+        function renderMarchSchedule() {
+            const tbody = document.getElementById('marchSchedule');
+            if(!tbody) return;
+            tbody.innerHTML = marchSchedule.map((item, index) => {
+                const taskId = `mar-${index}`;
+                const isCompleted = appState.completedTasks[taskId] || false;
+                const rowClass = isCompleted ? 'completed-row' : (item.day === 'Sat' || item.day === 'Sun' ? 'weekend-test' : '');
+                return `<tr class="${rowClass}"><td><strong>${item.date}</strong></td><td>${item.day}</td><td>${item.morning}</td><td>${item.evening}</td><td>${item.test}</td><td>${item.topics}</td><td>${item.hours}</td><td><button class="btn btn-info" style="padding: 4px 8px; font-size: 11px;" onclick="openNoteForDay('${taskId}')">✏️</button></td><td><input type="checkbox" class="task-checkbox" data-task="${taskId}" ${isCompleted ? 'checked' : ''}></td></tr>`;
+            }).join('');
         }
         
         function renderWeekdaySchedule() {
@@ -1867,16 +1423,7 @@
                 const taskId = `weekday-${index}`;
                 const isCompleted = appState.completedTasks[taskId] || false;
                 const rowClass = isCompleted ? 'completed-row' : (item.type === 'study' ? 'highlight' : '');
-                
-                return `
-                    <tr class="${rowClass}">
-                        <td><strong>${item.time}</strong></td>
-                        <td><strong>${item.activity}</strong></td>
-                        <td>${item.details}</td>
-                        <td>${item.duration}</td>
-                        <td><input type="checkbox" class="task-checkbox" data-task="${taskId}" ${isCompleted ? 'checked' : ''}></td>
-                    </tr>
-                `;
+                return `<tr class="${rowClass}"><td><strong>${item.time}</strong></td><td><strong>${item.activity}</strong></td><td>${item.details}</td><td>${item.duration}</td><td><input type="checkbox" class="task-checkbox" data-task="${taskId}" ${isCompleted ? 'checked' : ''}></td></tr>`;
             }).join('');
         }
         
@@ -1885,17 +1432,7 @@
             tbody.innerHTML = saturdayRoutine.map((item, index) => {
                 const taskId = `saturday-${index}`;
                 const isCompleted = appState.completedTasks[taskId] || false;
-                const rowClass = isCompleted ? 'completed-row' : '';
-                
-                return `
-                    <tr class="${rowClass}">
-                        <td><strong>${item.time}</strong></td>
-                        <td><strong>${item.activity}</strong></td>
-                        <td>${item.details}</td>
-                        <td>${item.duration}</td>
-                        <td><input type="checkbox" class="task-checkbox" data-task="${taskId}" ${isCompleted ? 'checked' : ''}></td>
-                    </tr>
-                `;
+                return `<tr class="${isCompleted ? 'completed-row' : ''}"><td><strong>${item.time}</strong></td><td><strong>${item.activity}</strong></td><td>${item.details}</td><td>${item.duration}</td><td><input type="checkbox" class="task-checkbox" data-task="${taskId}" ${isCompleted ? 'checked' : ''}></td></tr>`;
             }).join('');
         }
         
@@ -1904,17 +1441,7 @@
             tbody.innerHTML = sundayRoutine.map((item, index) => {
                 const taskId = `sunday-${index}`;
                 const isCompleted = appState.completedTasks[taskId] || false;
-                const rowClass = isCompleted ? 'completed-row' : '';
-                
-                return `
-                    <tr class="${rowClass}">
-                        <td><strong>${item.time}</strong></td>
-                        <td><strong>${item.activity}</strong></td>
-                        <td>${item.details}</td>
-                        <td>${item.duration}</td>
-                        <td><input type="checkbox" class="task-checkbox" data-task="${taskId}" ${isCompleted ? 'checked' : ''}></td>
-                    </tr>
-                `;
+                return `<tr class="${isCompleted ? 'completed-row' : ''}"><td><strong>${item.time}</strong></td><td><strong>${item.activity}</strong></td><td>${item.details}</td><td>${item.duration}</td><td><input type="checkbox" class="task-checkbox" data-task="${taskId}" ${isCompleted ? 'checked' : ''}></td></tr>`;
             }).join('');
         }
         
@@ -1924,20 +1451,7 @@
                 const taskId = `jan-${index}`;
                 const isCompleted = appState.completedTasks[taskId] || false;
                 const rowClass = isCompleted ? 'completed-row' : (item.day === 'Sat' || item.day === 'Sun' ? 'weekend-test' : '');
-                
-                return `
-                    <tr class="${rowClass}">
-                        <td><strong>${item.date}</strong></td>
-                        <td>${item.day}</td>
-                        <td>${item.morning}</td>
-                        <td>${item.evening}</td>
-                        <td>${item.test}</td>
-                        <td>${item.topics}</td>
-                        <td>${item.hours}</td>
-                        <td><button class="btn btn-info" style="padding: 4px 8px; font-size: 11px;" onclick="openNoteForDay('${taskId}')">✏️</button></td>
-                        <td><input type="checkbox" class="task-checkbox" data-task="${taskId}" ${isCompleted ? 'checked' : ''}></td>
-                    </tr>
-                `;
+                return `<tr class="${rowClass}"><td><strong>${item.date}</strong></td><td>${item.day}</td><td>${item.morning}</td><td>${item.evening}</td><td>${item.test}</td><td>${item.topics}</td><td>${item.hours}</td><td><button class="btn btn-info" style="padding: 4px 8px; font-size: 11px;" onclick="openNoteForDay('${taskId}')">✏️</button></td><td><input type="checkbox" class="task-checkbox" data-task="${taskId}" ${isCompleted ? 'checked' : ''}></td></tr>`;
             }).join('');
         }
         
@@ -1947,20 +1461,7 @@
                 const taskId = `feb-${index}`;
                 const isCompleted = appState.completedTasks[taskId] || false;
                 const rowClass = isCompleted ? 'completed-row' : (item.day === 'Sat' || item.day === 'Sun' ? 'weekend-test' : '');
-                
-                return `
-                    <tr class="${rowClass}">
-                        <td><strong>${item.date}</strong></td>
-                        <td>${item.day}</td>
-                        <td>${item.morning}</td>
-                        <td>${item.evening}</td>
-                        <td>${item.test}</td>
-                        <td>${item.topics}</td>
-                        <td>${item.hours}</td>
-                        <td><button class="btn btn-info" style="padding: 4px 8px; font-size: 11px;" onclick="openNoteForDay('${taskId}')">✏️</button></td>
-                        <td><input type="checkbox" class="task-checkbox" data-task="${taskId}" ${isCompleted ? 'checked' : ''}></td>
-                    </tr>
-                `;
+                return `<tr class="${rowClass}"><td><strong>${item.date}</strong></td><td>${item.day}</td><td>${item.morning}</td><td>${item.evening}</td><td>${item.test}</td><td>${item.topics}</td><td>${item.hours}</td><td><button class="btn btn-info" style="padding: 4px 8px; font-size: 11px;" onclick="openNoteForDay('${taskId}')">✏️</button></td><td><input type="checkbox" class="task-checkbox" data-task="${taskId}" ${isCompleted ? 'checked' : ''}></td></tr>`;
             }).join('');
         }
         
@@ -1971,906 +1472,251 @@
                 const score = appState.testScores[testId] || '';
                 const percentage = score ? Math.round((score / test.mcqs) * 100) : 0;
                 const targetPerc = Math.round((test.target / test.mcqs) * 100);
-                
-                let scoreClass = '';
-                if (score) {
-                    if (percentage >= targetPerc) scoreClass = 'score-good';
-                    else if (percentage >= targetPerc - 10) scoreClass = 'score-average';
-                    else scoreClass = 'score-poor';
-                }
-                
-                const status = score ? (percentage >= targetPerc ? '✅ Met' : '⚠️ Below') : '⏳ Pending';
-                
-                return `
-                    <tr>
-                        <td><strong>Test ${test.num}</strong></td>
-                        <td>${test.date}</td>
-                        <td>${test.type}</td>
-                        <td>${test.mcqs}</td>
-                        <td>${test.focus}</td>
-                        <td>${test.target}/${test.mcqs} (${targetPerc}%)</td>
-                        <td><input type="number" class="score-input ${scoreClass}" min="0" max="${test.mcqs}" data-test="${testId}" data-total="${test.mcqs}" value="${score}" placeholder="0"></td>
-                        <td>${percentage}%</td>
-                        <td>${status}</td>
-                    </tr>
-                `;
+                let scClass = score ? (percentage >= targetPerc ? 'score-good' : (percentage >= targetPerc - 10 ? 'score-average' : 'score-poor')) : '';
+                return `<tr><td><strong>Test ${test.num}</strong></td><td>${test.date}</td><td>${test.type}</td><td>${test.mcqs}</td><td>${test.focus}</td><td>${test.target}/${test.mcqs} (${targetPerc}%)</td><td><input type="number" class="score-input ${scClass}" min="0" max="${test.mcqs}" data-test="${testId}" data-total="${test.mcqs}" value="${score}" placeholder="0"></td><td>${percentage}%</td><td>${score ? (percentage >= targetPerc ? '✅ Met' : '⚠️ Below') : '⏳ Pending'}</td></tr>`;
             }).join('');
         }
-        
-        // ==================== DASHBOARD ====================
-        
+
+        // ==================== DASHBOARD LOGIC ====================
         function updateDashboard() {
-            // Calculate overall progress
-            const totalTasks = Object.keys(appState.completedTasks).length;
-            const totalPossible = januarySchedule.length + februarySchedule.length + 60; // approximate
-            const progressPerc = Math.round((totalTasks / totalPossible) * 100);
-            
+            const completed = Object.keys(appState.completedTasks).length;
+            const totalTasks = januarySchedule.length + februarySchedule.length + marchSchedule.length + 60; 
+            const progressPerc = Math.round((completed / totalTasks) * 100);
             document.getElementById('overallProgress').textContent = progressPerc + '%';
             document.getElementById('overallProgressBar').style.width = progressPerc + '%';
             document.getElementById('overallProgressBar').textContent = progressPerc + '%';
-            
-            // Study streak
-            const streak = calculateStreak();
-            document.getElementById('studyStreak').textContent = streak;
-            
-            // Total hours
-            const hours = calculateTotalHours();
-            document.getElementById('totalHours').textContent = hours.toFixed(1) + 'h';
-            
-            // Tests completed
-            const testsCompleted = Object.keys(appState.testScores).filter(k => appState.testScores[k] > 0).length;
-            document.getElementById('testsCompleted').textContent = `${testsCompleted}/16`;
-            
-            // Average score
-            const avgScore = calculateAverageScore();
-            document.getElementById('avgScore').textContent = avgScore + '%';
-            
-            // Current status
+            document.getElementById('studyStreak').textContent = calculateStreak();
+            document.getElementById('totalHours').textContent = calculateTotalHours().toFixed(1) + 'h';
+            const testsDone = Object.keys(appState.testScores).filter(k => appState.testScores[k] > 0).length;
+            document.getElementById('testsCompleted').textContent = `${testsDone}/16`;
+            document.getElementById('avgScore').textContent = calculateAverageScore() + '%';
             updateStatus(progressPerc);
         }
         
         function calculateStreak() {
-            // Simple calculation - count consecutive days with completed tasks
-            let streak = 0;
-            const today = new Date();
-            
-            for (let i = 0; i < 60; i++) {
-                const date = new Date(today);
-                date.setDate(date.getDate() - i);
-                const dateStr = date.toISOString().split('T')[0];
-                
-                const hasTasks = Object.keys(appState.completedTasks).some(key => 
-                    key.includes(dateStr)
-                );
-                
-                if (hasTasks) streak++;
-                else break;
+            let streak = 0; const today = new Date();
+            for (let i = 0; i < 80; i++) {
+                const d = new Date(today); d.setDate(d.getDate() - i);
+                const dStr = d.toISOString().split('T')[0];
+                const hasTasks = Object.keys(appState.completedTasks).some(k => k.includes(dStr));
+                if (hasTasks) streak++; else break;
             }
-            
             return streak;
         }
         
         function calculateTotalHours() {
             let total = 0;
-            
-            // From daily tasks
-            januarySchedule.forEach((day, i) => {
-                if (appState.completedTasks[`jan-${i}`]) {
-                    total += day.hours;
-                }
-            });
-            
-            februarySchedule.forEach((day, i) => {
-                if (appState.completedTasks[`feb-${i}`]) {
-                    total += day.hours;
-                }
-            });
-            
-            // From manual timer
-            if (appState.studyHours) {
-                Object.values(appState.studyHours).forEach(h => total += h);
-            }
-            
+            januarySchedule.forEach((d, i) => { if (appState.completedTasks[`jan-${i}`]) total += d.hours; });
+            februarySchedule.forEach((d, i) => { if (appState.completedTasks[`feb-${i}`]) total += d.hours; });
+            marchSchedule.forEach((d, i) => { if (appState.completedTasks[`mar-${i}`]) total += d.hours; });
+            if (appState.studyHours) Object.values(appState.studyHours).forEach(h => total += h);
             return total;
         }
         
         function calculateAverageScore() {
             const scores = Object.values(appState.testScores).filter(s => s > 0);
-            if (scores.length === 0) return 0;
-            
-            let totalPerc = 0;
-            scores.forEach((score, i) => {
-                const test = testSchedule[i];
-                if (test) {
-                    totalPerc += (score / test.mcqs) * 100;
-                }
-            });
-            
-            return Math.round(totalPerc / scores.length);
+            if (!scores.length) return 0;
+            let totalP = 0;
+            scores.forEach((s, i) => { const t = testSchedule[i]; if(t) totalP += (s / t.mcqs) * 100; });
+            return Math.round(totalP / scores.length);
         }
         
         function updateStatus(progress) {
-            let status = "Getting Started";
-            let motivation = "Every expert was once a beginner!";
-            
-            if (progress >= 75) {
-                status = "Almost There!";
-                motivation = "Final sprint - you've got this!";
-            } else if (progress >= 50) {
-                status = "Great Progress!";
-                motivation = "Halfway there - keep pushing!";
-            } else if (progress >= 25) {
-                status = "Building Momentum";
-                motivation = "Consistency is the key!";
-            } else if (progress > 0) {
-                status = "Good Start!";
-                motivation = "One day at a time!";
-            }
-            
-            document.getElementById('currentStatus').textContent = status;
-            document.getElementById('motivationText').textContent = motivation;
+            let s = "Getting Started", m = "Every expert was once a beginner!";
+            if (progress >= 75) { s = "Almost There!"; m = "Final sprint - you've got this!"; }
+            else if (progress >= 50) { s = "Great Progress!"; m = "Halfway there - keep pushing!"; }
+            else if (progress >= 25) { s = "Building Momentum"; m = "Consistency is the key!"; }
+            document.getElementById('currentStatus').textContent = s;
+            document.getElementById('motivationText').textContent = m;
         }
         
         function calculateDaysRemaining() {
-            const examDate = new Date('2026-03-01');
-            const today = new Date();
-            const diffTime = examDate - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            document.getElementById('daysRemaining').textContent = diffDays > 0 ? diffDays : 0;
+            const exam = new Date('2026-03-20'), today = new Date();
+            const diff = Math.ceil((exam - today) / (1000 * 60 * 60 * 24));
+            document.getElementById('daysRemaining').textContent = diff > 0 ? diff : 0;
         }
-        
+
         // ==================== ANALYTICS ====================
-        
-        function updateAnalytics() {
-            renderPerformanceChart();
-            updateSubjectAnalytics();
-            updateWeeklyBreakdown();
-        }
+        function updateAnalytics() { renderPerformanceChart(); updateSubjectAnalytics(); updateWeeklyBreakdown(); }
         
         function renderPerformanceChart() {
-            const chartContainer = document.getElementById('performanceChart');
-            const scores = testSchedule.map(test => {
-                const testId = `test-${test.num}`;
-                const score = appState.testScores[testId] || 0;
-                return score ? Math.round((score / test.mcqs) * 100) : 0;
-            }).filter((_, i) => i < 15); // Exclude final exam
-            
-            const maxScore = Math.max(...scores, 100);
-            
-            chartContainer.innerHTML = scores.map((score, i) => {
-                const height = (score / maxScore) * 250;
-                const color = score >= 70 ? '#28a745' : score >= 50 ? '#ffc107' : '#dc3545';
-                
-                return `
-                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;">
-                        <div style="width: 100%; background: ${color}; height: ${height}px; border-radius: 5px 5px 0 0; position: relative;">
-                            <span style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: bold;">${score}%</span>
-                        </div>
-                        <div style="margin-top: 5px; font-size: 10px;">T${i + 1}</div>
-                    </div>
-                `;
+            const container = document.getElementById('performanceChart');
+            const scores = testSchedule.slice(0, 16).map(t => {
+                const s = appState.testScores[`test-${t.num}`] || 0;
+                return s ? Math.round((s / t.mcqs) * 100) : 0;
+            });
+            container.innerHTML = scores.map((s, i) => {
+                const h = (s / 100) * 250;
+                const c = s >= 70 ? '#28a745' : s >= 50 ? '#ffc107' : '#dc3545';
+                return `<div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end;"><div style="width:100%; background:${c}; height:${h}px; border-radius:5px 5px 0 0; position:relative;"><span style="position:absolute; top:-20px; left:50%; transform:translateX(-50%); font-size:11px; font-weight:bold;">${s}%</span></div><div style="margin-top:5px; font-size:10px;">T${i+1}</div></div>`;
             }).join('');
         }
         
         function updateSubjectAnalytics() {
             const tbody = document.querySelector('#subjectAnalytics tbody');
-            
-            // Calculate real subject-wise data
-            const subjectData = calculateSubjectWiseProgress();
-            
-            tbody.innerHTML = subjectData.map(subject => {
-                return `
-                    <tr>
-                        <td><strong>${subject.name}</strong></td>
-                        <td>${subject.completed}/${subject.total}</td>
-                        <td>${subject.hours.toFixed(1)}h</td>
-                        <td>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar" style="width: ${subject.percentage}%">${subject.percentage}%</div>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            const data = calculateSubjectWiseProgress();
+            tbody.innerHTML = data.map(s => `<tr><td><strong>${s.name}</strong></td><td>${s.completed}/${s.total}</td><td>${s.hours.toFixed(1)}h</td><td><div class="progress-bar-container"><div class="progress-bar" style="width:${s.percentage}%">${s.percentage}%</div></div></td></tr>`).join('');
         }
         
         function calculateSubjectWiseProgress() {
-            const subjects = {
-                'Polity': { name: 'Polity', completed: 0, total: 0, hours: 0 },
-                'History': { name: 'History', completed: 0, total: 0, hours: 0 },
-                'Geography': { name: 'Geography', completed: 0, total: 0, hours: 0 },
-                'Economy': { name: 'Economy', completed: 0, total: 0, hours: 0 },
-                'Science': { name: 'Science', completed: 0, total: 0, hours: 0 },
-                'Environment': { name: 'Environment', completed: 0, total: 0, hours: 0 },
-                'Current Affairs': { name: 'Current Affairs', completed: 0, total: 0, hours: 0 }
-            };
-            
-            // Process January schedule
-            januarySchedule.forEach((day, index) => {
-                const taskId = `jan-${index}`;
-                const isCompleted = appState.completedTasks[taskId] || false;
+            const subs = { 'Polity':0, 'History':0, 'Geography':0, 'Economy':0, 'Science':0, 'Environment':0, 'Current Affairs':0 };
+            const res = Object.keys(subs).map(n => ({ name: n, completed: 0, total: 0, hours: 0 }));
+            [...januarySchedule, ...februarySchedule, ...marchSchedule].forEach((day, idx) => {
+                let taskId;
+                if (idx < januarySchedule.length) taskId = `jan-${idx}`;
+                else if (idx < januarySchedule.length + februarySchedule.length) taskId = `feb-${idx - januarySchedule.length}`;
+                else taskId = `mar-${idx - januarySchedule.length - februarySchedule.length}`;
                 
-                // Check morning theory
-                const morning = day.morning.toLowerCase();
-                for (let subjectName in subjects) {
-                    if (morning.includes(subjectName.toLowerCase())) {
-                        subjects[subjectName].total++;
-                        if (isCompleted) {
-                            subjects[subjectName].completed++;
-                            subjects[subjectName].hours += day.hours;
-                        }
-                        break;
+                const done = appState.completedTasks[taskId];
+                res.forEach(s => {
+                    if (day.morning.toLowerCase().includes(s.name.toLowerCase())) {
+                        s.total++; if (done) { s.completed++; s.hours += day.hours; }
                     }
-                }
+                });
             });
-            
-            // Process February schedule
-            februarySchedule.forEach((day, index) => {
-                const taskId = `feb-${index}`;
-                const isCompleted = appState.completedTasks[taskId] || false;
-                
-                // Check morning theory
-                const morning = day.morning.toLowerCase();
-                for (let subjectName in subjects) {
-                    if (morning.includes(subjectName.toLowerCase())) {
-                        subjects[subjectName].total++;
-                        if (isCompleted) {
-                            subjects[subjectName].completed++;
-                            subjects[subjectName].hours += day.hours;
-                        }
-                        break;
-                    }
-                }
-            });
-            
-            // Calculate percentages
-            return Object.values(subjects).map(subject => {
-                subject.percentage = subject.total > 0 ? Math.round((subject.completed / subject.total) * 100) : 0;
-                return subject;
-            });
+            res.forEach(s => s.percentage = s.total ? Math.round((s.completed/s.total)*100) : 0);
+            return res;
         }
         
         function updateWeeklyBreakdown() {
             const tbody = document.querySelector('#weeklyBreakdown tbody');
-            
-            // Calculate real weekly data
-            const weeklyData = calculateWeeklyProgress();
-            
-            tbody.innerHTML = weeklyData.map(week => {
-                const avgScoreDisplay = week.avgScore > 0 ? week.avgScore + '%' : '-';
-                
-                return `
-                    <tr>
-                        <td><strong>${week.name}</strong></td>
-                        <td>${week.daysCompleted}/7</td>
-                        <td>${week.hours.toFixed(1)}h</td>
-                        <td>${week.testsCompleted}</td>
-                        <td>${avgScoreDisplay}</td>
-                    </tr>
-                `;
-            }).join('');
+            const data = calculateWeeklyProgress();
+            tbody.innerHTML = data.map(w => `<tr><td><strong>${w.name}</strong></td><td>${w.daysCompleted}/7</td><td>${w.hours.toFixed(1)}h</td><td>${w.testsCompleted}</td><td>${w.avgScore ? w.avgScore + '%' : '-'}</td></tr>`).join('');
         }
-        
+
         function calculateWeeklyProgress() {
-            const weeks = [
-                { name: 'Week 1', days: [], tests: [1], daysCompleted: 0, hours: 0, testsCompleted: 0, totalScore: 0, testCount: 0 },
-                { name: 'Week 2', days: [], tests: [2], daysCompleted: 0, hours: 0, testsCompleted: 0, totalScore: 0, testCount: 0 },
-                { name: 'Week 3', days: [], tests: [3, 4], daysCompleted: 0, hours: 0, testsCompleted: 0, totalScore: 0, testCount: 0 },
-                { name: 'Week 4', days: [], tests: [5, 6], daysCompleted: 0, hours: 0, testsCompleted: 0, totalScore: 0, testCount: 0 },
-                { name: 'Week 5', days: [], tests: [7], daysCompleted: 0, hours: 0, testsCompleted: 0, totalScore: 0, testCount: 0 },
-                { name: 'Week 6', days: [], tests: [8, 9, 10], daysCompleted: 0, hours: 0, testsCompleted: 0, totalScore: 0, testCount: 0 },
-                { name: 'Week 7', days: [], tests: [11, 12], daysCompleted: 0, hours: 0, testsCompleted: 0, totalScore: 0, testCount: 0 },
-                { name: 'Week 8', days: [], tests: [13, 14], daysCompleted: 0, hours: 0, testsCompleted: 0, totalScore: 0, testCount: 0 }
-            ];
-            
-            // Map January days to weeks (January has 31 days, starting from day 1 = Thursday)
-            // Week 1: Jan 1-4 (Thu-Sun) = indices 0-3
-            for (let i = 0; i <= 3; i++) {
-                weeks[0].days.push({ type: 'jan', index: i });
-            }
-            // Week 2: Jan 5-11 = indices 4-10
-            for (let i = 4; i <= 10; i++) {
-                weeks[1].days.push({ type: 'jan', index: i });
-            }
-            // Week 3: Jan 12-18 = indices 11-17
-            for (let i = 11; i <= 17; i++) {
-                weeks[2].days.push({ type: 'jan', index: i });
-            }
-            // Week 4: Jan 19-25 = indices 18-24
-            for (let i = 18; i <= 24; i++) {
-                weeks[3].days.push({ type: 'jan', index: i });
-            }
-            // Week 5: Jan 26-31 = indices 25-30
-            for (let i = 25; i <= 30; i++) {
-                weeks[4].days.push({ type: 'jan', index: i });
-            }
-            
-            // Map February days to weeks (February 2026 has 28 days, starting from Feb 1 = Sunday)
-            // Week 6: Feb 1-7 = indices 0-6
-            for (let i = 0; i <= 6; i++) {
-                weeks[5].days.push({ type: 'feb', index: i });
-            }
-            // Week 7: Feb 8-14 = indices 7-13
-            for (let i = 7; i <= 13; i++) {
-                weeks[6].days.push({ type: 'feb', index: i });
-            }
-            // Week 8: Feb 15-21 = indices 14-20
-            for (let i = 14; i <= 20; i++) {
-                weeks[7].days.push({ type: 'feb', index: i });
-            }
-            
-            // Calculate stats for each week
-            weeks.forEach(week => {
-                week.days.forEach(day => {
-                    const taskId = `${day.type}-${day.index}`;
-                    const schedule = day.type === 'jan' ? januarySchedule[day.index] : februarySchedule[day.index];
-                    
-                    if (appState.completedTasks[taskId]) {
-                        week.daysCompleted++;
-                        if (schedule) {
-                            week.hours += schedule.hours;
-                        }
-                    }
-                });
+            const weeks = Array.from({length:12}, (_,i) => ({ name:`Week ${i+1}`, daysCompleted:0, hours:0, testsCompleted:0, totalScore:0, count:0, avgScore:0 }));
+            const allDays = [...januarySchedule, ...februarySchedule, ...marchSchedule];
+            allDays.forEach((day, i) => {
+                let taskId;
+                if (i < januarySchedule.length) taskId = `jan-${i}`;
+                else if (i < januarySchedule.length + februarySchedule.length) taskId = `feb-${i-januarySchedule.length}`;
+                else taskId = `mar-${i-januarySchedule.length-februarySchedule.length}`;
                 
-                // Calculate test scores for the week
-                week.tests.forEach(testNum => {
-                    const testId = `test-${testNum}`;
-                    const score = appState.testScores[testId];
-                    
-                    if (score && score > 0) {
-                        const test = testSchedule.find(t => t.num === testNum);
-                        if (test) {
-                            week.testsCompleted++;
-                            const percentage = Math.round((score / test.mcqs) * 100);
-                            week.totalScore += percentage;
-                            week.testCount++;
-                        }
-                    }
-                });
-                
-                // Calculate average score
-                week.avgScore = week.testCount > 0 ? Math.round(week.totalScore / week.testCount) : 0;
+                const wIdx = Math.floor(i / 7); 
+                if (wIdx < 12 && appState.completedTasks[taskId]) { 
+                    weeks[wIdx].daysCompleted++; 
+                    weeks[wIdx].hours += day.hours; 
+                }
             });
-            
+            testSchedule.slice(0,16).forEach((test, i) => {
+                const s = appState.testScores[`test-${test.num}`];
+                const wIdx = Math.floor(i / 1.5); // spread tests across weeks
+                if (wIdx < 12 && s > 0) { 
+                    weeks[wIdx].testsCompleted++; 
+                    weeks[wIdx].totalScore += (s/test.mcqs)*100; 
+                    weeks[wIdx].count++; 
+                }
+            });
+            weeks.forEach(w => w.avgScore = w.count ? Math.round(w.totalScore/w.count) : 0);
             return weeks;
         }
-        
+
         // ==================== EVENT HANDLERS ====================
-        
         function attachEventListeners() {
-            // Task checkboxes
-            document.addEventListener('change', (e) => {
+            document.addEventListener('change', e => {
                 if (e.target.classList.contains('task-checkbox')) {
-                    const taskId = e.target.dataset.task;
-                    appState.completedTasks[taskId] = e.target.checked;
-                    
-                    // Update row styling
+                    const id = e.target.dataset.task;
+                    appState.completedTasks[id] = e.target.checked;
                     const row = e.target.closest('tr');
-                    if (e.target.checked) {
-                        row.classList.add('completed-row');
-                        showConfetti();
-                    } else {
-                        row.classList.remove('completed-row');
-                    }
-                    
-                    saveState();
-                    updateDashboard();
-                    updateAnalytics();  // Add this to update analytics in real-time
-                    checkAchievements();
+                    if (e.target.checked) { row.classList.add('completed-row'); showConfetti(); } else row.classList.remove('completed-row');
+                    saveState(); updateDashboard(); updateAnalytics(); checkAchievements();
                 }
             });
-            
-            // Test score inputs
-            document.addEventListener('input', (e) => {
+            document.addEventListener('input', e => {
                 if (e.target.classList.contains('score-input')) {
-                    const testId = e.target.dataset.test;
-                    const total = parseInt(e.target.dataset.total);
-                    const score = parseInt(e.target.value) || 0;
-                    
-                    appState.testScores[testId] = score;
-                    
-                    // Update styling
-                    const percentage = (score / total) * 100;
-                    e.target.classList.remove('score-good', 'score-average', 'score-poor');
-                    
-                    if (percentage >= 70) e.target.classList.add('score-good');
-                    else if (percentage >= 50) e.target.classList.add('score-average');
-                    else e.target.classList.add('score-poor');
-                    
-                    saveState();
-                    renderTestSchedule();
-                    updateDashboard();
-                    updateAnalytics();
+                    const id = e.target.dataset.test, tot = parseInt(e.target.dataset.total), val = parseInt(e.target.value) || 0;
+                    appState.testScores[id] = val;
+                    saveState(); renderTestSchedule(); updateDashboard(); updateAnalytics();
                 }
             });
         }
         
-        // ==================== TABS ====================
-        
-        function switchTab(tabName) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            // Remove active class from all tabs
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Show selected tab content
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-            
-            // Add active class to clicked tab
+        function switchTab(name) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${name}`).classList.add('active');
             event.target.classList.add('active');
         }
         
-        // ==================== MODALS ====================
-        
-        function showModal(modalId) {
-            document.getElementById(modalId).style.display = 'block';
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-        
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        }
-        
-        // ==================== STUDY TIMER ====================
-        
-        function startTimer() {
-            if (!appState.timerRunning) {
-                appState.timerRunning = true;
-                appState.timerInterval = setInterval(() => {
-                    appState.timerSeconds++;
-                    updateTimerDisplay();
-                }, 1000);
-            }
-        }
-        
-        function pauseTimer() {
-            appState.timerRunning = false;
-            if (appState.timerInterval) {
-                clearInterval(appState.timerInterval);
-            }
-        }
-        
-        function resetTimer() {
-            pauseTimer();
-            appState.timerSeconds = 0;
-            updateTimerDisplay();
-        }
-        
+        function showModal(id) { document.getElementById(id).style.display = 'block'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        window.onclick = e => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
+
+        // ==================== TIMER ====================
+        function startTimer() { if (!appState.timerRunning) { appState.timerRunning = true; appState.timerInterval = setInterval(() => { appState.timerSeconds++; updateTimerDisplay(); }, 1000); } }
+        function pauseTimer() { appState.timerRunning = false; clearInterval(appState.timerInterval); }
+        function resetTimer() { pauseTimer(); appState.timerSeconds = 0; updateTimerDisplay(); }
         function updateTimerDisplay() {
-            const hours = Math.floor(appState.timerSeconds / 3600);
-            const minutes = Math.floor((appState.timerSeconds % 3600) / 60);
-            const seconds = appState.timerSeconds % 60;
-            
-            const display = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            document.getElementById('timerDisplay').textContent = display;
+            const h = Math.floor(appState.timerSeconds/3600), m = Math.floor((appState.timerSeconds%3600)/60), s = appState.timerSeconds%60;
+            document.getElementById('timerDisplay').textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
         }
-        
         function saveStudySession() {
-            if (appState.timerSeconds > 0) {
-                const hours = appState.timerSeconds / 3600;
-                const today = new Date().toISOString().split('T')[0];
-                
-                if (!appState.studyHours) appState.studyHours = {};
-                appState.studyHours[today] = (appState.studyHours[today] || 0) + hours;
-                
-                resetTimer();
-                saveState();
-                updateDashboard();
-                
-                alert(`✅ Study session saved! ${hours.toFixed(2)} hours added to today's total.`);
-            }
+            const hrs = appState.timerSeconds/3600; const today = new Date().toISOString().split('T')[0];
+            if (!appState.studyHours) appState.studyHours = {};
+            appState.studyHours[today] = (appState.studyHours[today] || 0) + hrs;
+            resetTimer(); saveState(); updateDashboard(); alert('Session Saved');
         }
-        
-        // ==================== NOTES ====================
-        
-        function saveNotes() {
-            appState.notes = document.getElementById('userNotes').value;
-            saveState();
-            alert('✅ Notes saved successfully!');
-        }
-        
-        function openNoteForDay(taskId) {
-            const note = prompt('Enter note for this day:');
-            if (note !== null) {
-                if (!appState.dailyNotes) appState.dailyNotes = {};
-                appState.dailyNotes[taskId] = note;
-                saveState();
-            }
-        }
-        
-        // ==================== DATA MANAGEMENT ====================
+
+        function saveNotes() { appState.notes = document.getElementById('userNotes').value; saveState(); alert('Notes Saved'); }
+        function openNoteForDay(id) { const n = prompt('Enter note:'); if(n!==null){ if(!appState.dailyNotes) appState.dailyNotes={}; appState.dailyNotes[id]=n; saveState(); } }
         
         function exportData() {
-            const dataStr = JSON.stringify(appState, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `wbcs-progress-${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-        }
-        
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            let yPosition = 20;
-            const pageHeight = doc.internal.pageSize.height;
-            const margin = 20;
-            const lineHeight = 7;
-            
-            // Helper function to check if we need a new page
-            function checkPageBreak(neededSpace = 20) {
-                if (yPosition + neededSpace > pageHeight - margin) {
-                    doc.addPage();
-                    yPosition = 20;
-                    return true;
-                }
-                return false;
-            }
-            
-            // Title
-            doc.setFontSize(18);
-            doc.setFont(undefined, 'bold');
-            doc.text('WBCS Exam Preparation 2026', 105, yPosition, { align: 'center' });
-            yPosition += 10;
-            
-            doc.setFontSize(12);
-            doc.text('Progress Report', 105, yPosition, { align: 'center' });
-            yPosition += 10;
-            
-            doc.setFontSize(10);
-            doc.setFont(undefined, 'normal');
-            const exportDate = new Date().toLocaleDateString('en-IN', { 
-                year: 'numeric', month: 'long', day: 'numeric' 
-            });
-            doc.text(`Generated on: ${exportDate}`, 105, yPosition, { align: 'center' });
-            yPosition += 15;
-            
-            // Dashboard Statistics
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('Dashboard Overview', margin, yPosition);
-            yPosition += 10;
-            
-            doc.setFontSize(10);
-            doc.setFont(undefined, 'normal');
-            
-            const totalTasks = Object.keys(appState.completedTasks).length;
-            const totalPossible = januarySchedule.length + februarySchedule.length;
-            const progressPerc = Math.round((totalTasks / totalPossible) * 100);
-            const streak = calculateStreak();
-            const hours = calculateTotalHours();
-            const testsCompleted = Object.keys(appState.testScores).filter(k => appState.testScores[k] > 0).length;
-            const avgScore = calculateAverageScore();
-            
-            const examDate = new Date('2026-03-01');
-            const today = new Date();
-            const diffTime = examDate - today;
-            const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            doc.text(`Overall Progress: ${progressPerc}% (${totalTasks}/${totalPossible} days completed)`, margin, yPosition);
-            yPosition += lineHeight;
-            doc.text(`Study Streak: ${streak} consecutive days`, margin, yPosition);
-            yPosition += lineHeight;
-            doc.text(`Total Study Hours: ${hours.toFixed(1)} hours (Target: 240 hours)`, margin, yPosition);
-            yPosition += lineHeight;
-            doc.text(`Tests Completed: ${testsCompleted}/16`, margin, yPosition);
-            yPosition += lineHeight;
-            doc.text(`Average Test Score: ${avgScore}%`, margin, yPosition);
-            yPosition += lineHeight;
-            doc.text(`Days Remaining to Exam: ${daysRemaining > 0 ? daysRemaining : 0} days`, margin, yPosition);
-            yPosition += 15;
-            
-            checkPageBreak(40);
-            
-            // Test Performance
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('Test Performance Summary', margin, yPosition);
-            yPosition += 10;
-            
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'normal');
-            
-            // Table header
-            doc.setFont(undefined, 'bold');
-            doc.text('Test', margin, yPosition);
-            doc.text('Date', margin + 20, yPosition);
-            doc.text('MCQs', margin + 50, yPosition);
-            doc.text('Target', margin + 70, yPosition);
-            doc.text('Score', margin + 95, yPosition);
-            doc.text('%', margin + 120, yPosition);
-            doc.text('Status', margin + 140, yPosition);
-            yPosition += 5;
-            doc.setFont(undefined, 'normal');
-            
-            testSchedule.forEach((test, index) => {
-                checkPageBreak(10);
-                
-                const testId = `test-${test.num}`;
-                const score = appState.testScores[testId] || 0;
-                const percentage = score ? Math.round((score / test.mcqs) * 100) : 0;
-                const targetPerc = Math.round((test.target / test.mcqs) * 100);
-                const status = score ? (percentage >= targetPerc ? 'Met' : 'Below') : 'Pending';
-                
-                doc.text(`Test ${test.num}`, margin, yPosition);
-                doc.text(test.date, margin + 20, yPosition);
-                doc.text(`${test.mcqs}`, margin + 50, yPosition);
-                doc.text(`${test.target} (${targetPerc}%)`, margin + 70, yPosition);
-                doc.text(`${score}`, margin + 95, yPosition);
-                doc.text(`${percentage}%`, margin + 120, yPosition);
-                doc.text(status, margin + 140, yPosition);
-                yPosition += lineHeight;
-            });
-            
-            yPosition += 10;
-            checkPageBreak(40);
-            
-            // Subject-wise Performance
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('Subject-wise Progress', margin, yPosition);
-            yPosition += 10;
-            
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'bold');
-            doc.text('Subject', margin, yPosition);
-            doc.text('Sessions', margin + 40, yPosition);
-            doc.text('Hours', margin + 75, yPosition);
-            doc.text('Completion', margin + 110, yPosition);
-            yPosition += 5;
-            doc.setFont(undefined, 'normal');
-            
-            const subjectData = calculateSubjectWiseProgress();
-            subjectData.forEach(subject => {
-                checkPageBreak(10);
-                doc.text(subject.name, margin, yPosition);
-                doc.text(`${subject.completed}/${subject.total}`, margin + 40, yPosition);
-                doc.text(`${subject.hours.toFixed(1)}h`, margin + 75, yPosition);
-                doc.text(`${subject.percentage}%`, margin + 110, yPosition);
-                yPosition += lineHeight;
-            });
-            
-            yPosition += 10;
-            checkPageBreak(40);
-            
-            // Weekly Breakdown
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('Weekly Study Summary', margin, yPosition);
-            yPosition += 10;
-            
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'bold');
-            doc.text('Week', margin, yPosition);
-            doc.text('Days', margin + 30, yPosition);
-            doc.text('Hours', margin + 60, yPosition);
-            doc.text('Tests', margin + 90, yPosition);
-            doc.text('Avg Score', margin + 120, yPosition);
-            yPosition += 5;
-            doc.setFont(undefined, 'normal');
-            
-            const weeklyData = calculateWeeklyProgress();
-            weeklyData.forEach(week => {
-                checkPageBreak(10);
-                const avgScoreDisplay = week.avgScore > 0 ? week.avgScore + '%' : '-';
-                
-                doc.text(week.name, margin, yPosition);
-                doc.text(`${week.daysCompleted}/7`, margin + 30, yPosition);
-                doc.text(`${week.hours.toFixed(1)}h`, margin + 60, yPosition);
-                doc.text(`${week.testsCompleted}`, margin + 90, yPosition);
-                doc.text(avgScoreDisplay, margin + 120, yPosition);
-                yPosition += lineHeight;
-            });
-            
-            yPosition += 10;
-            checkPageBreak(40);
-            
-            // January Completed Days
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('January 2026 - Completed Days', margin, yPosition);
-            yPosition += 10;
-            
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'normal');
-            
-            let janCompleted = 0;
-            januarySchedule.forEach((day, index) => {
-                const taskId = `jan-${index}`;
-                if (appState.completedTasks[taskId]) {
-                    checkPageBreak(10);
-                    doc.text(`✓ ${day.date} (${day.day}): ${day.morning}`, margin, yPosition);
-                    yPosition += lineHeight;
-                    janCompleted++;
-                }
-            });
-            
-            if (janCompleted === 0) {
-                doc.text('No days completed yet in January', margin, yPosition);
-                yPosition += lineHeight;
-            }
-            
-            yPosition += 10;
-            checkPageBreak(40);
-            
-            // February Completed Days
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('February 2026 - Completed Days', margin, yPosition);
-            yPosition += 10;
-            
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'normal');
-            
-            let febCompleted = 0;
-            februarySchedule.forEach((day, index) => {
-                const taskId = `feb-${index}`;
-                if (appState.completedTasks[taskId]) {
-                    checkPageBreak(10);
-                    doc.text(`✓ ${day.date} (${day.day}): ${day.morning}`, margin, yPosition);
-                    yPosition += lineHeight;
-                    febCompleted++;
-                }
-            });
-            
-            if (febCompleted === 0) {
-                doc.text('No days completed yet in February', margin, yPosition);
-                yPosition += lineHeight;
-            }
-            
-            yPosition += 10;
-            checkPageBreak(40);
-            
-            // Notes Section
-            if (appState.notes && appState.notes.trim() !== '') {
-                doc.setFontSize(14);
-                doc.setFont(undefined, 'bold');
-                doc.text('My Study Notes', margin, yPosition);
-                yPosition += 10;
-                
-                doc.setFontSize(9);
-                doc.setFont(undefined, 'normal');
-                
-                const notes = appState.notes;
-                const splitNotes = doc.splitTextToSize(notes, 170);
-                
-                splitNotes.forEach(line => {
-                    checkPageBreak(10);
-                    doc.text(line, margin, yPosition);
-                    yPosition += lineHeight;
-                });
-            }
-            
-            // Footer
-            const totalPages = doc.internal.getNumberOfPages();
-            for (let i = 1; i <= totalPages; i++) {
-                doc.setPage(i);
-                doc.setFontSize(8);
-                doc.setFont(undefined, 'normal');
-                doc.text(
-                    `WBCS 2026 Progress Report - Page ${i} of ${totalPages}`,
-                    105,
-                    pageHeight - 10,
-                    { align: 'center' }
-                );
-            }
-            
-            // Save PDF
-            const filename = `WBCS-Progress-Report-${new Date().toISOString().split('T')[0]}.pdf`;
-            doc.save(filename);
-            
-            alert('✅ PDF report exported successfully!');
+            const blob = new Blob([JSON.stringify(appState, null, 2)], {type:'application/json'});
+            const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'wbcs-data.json'; a.click();
         }
         
         function importData() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            input.onchange = (e) => {
-                const file = e.target.files[0];
+            const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
+            input.onchange = e => {
                 const reader = new FileReader();
-                reader.onload = (event) => {
-                    try {
-                        const imported = JSON.parse(event.target.result);
-                        appState = { ...appState, ...imported };
-                        saveState();
-                        location.reload();
-                    } catch (err) {
-                        alert('❌ Error importing data. Please check the file.');
-                    }
-                };
-                reader.readAsText(file);
+                reader.onload = ev => { appState = JSON.parse(ev.target.result); saveState(); location.reload(); };
+                reader.readAsText(e.target.files[0]);
             };
             input.click();
         }
-        
-        function resetProgress() {
-            // This function is replaced by secureReset()
-            secureReset();
-        }
-        
-        // ==================== DARK MODE ====================
-        
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            appState.darkMode = document.body.classList.contains('dark-mode');
-            saveState();
-        }
-        
-        // ==================== ACHIEVEMENTS ====================
+
+        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); appState.darkMode = document.body.classList.contains('dark-mode'); saveState(); }
         
         function checkAchievements() {
-            const badges = [];
-            const completed = Object.keys(appState.completedTasks).length;
-            const avgScore = calculateAverageScore();
-            const streak = calculateStreak();
-            
-            if (completed >= 10) badges.push({ text: '🎯 First 10 Days', class: 'badge-bronze' });
-            if (completed >= 30) badges.push({ text: '🔥 30 Day Streak', class: 'badge-silver' });
-            if (completed >= 60) badges.push({ text: '👑 All Days Complete', class: 'badge-gold' });
-            if (avgScore >= 70) badges.push({ text: '📈 70%+ Average', class: 'badge-gold' });
-            if (streak >= 7) badges.push({ text: '💪 7 Day Streak', class: 'badge-silver' });
-            
-            const badgesContainer = document.getElementById('achievementBadges');
-            badgesContainer.innerHTML = badges.map(b => 
-                `<div class="badge ${b.class}">${b.text}</div>`
-            ).join('');
+            const badges = [], done = Object.keys(appState.completedTasks).length, streak = calculateStreak();
+            if (done >= 10) badges.push({ text: '🎯 10 Days', class: 'badge-bronze' });
+            if (done >= 30) badges.push({ text: '🔥 30 Days', class: 'badge-silver' });
+            if (streak >= 7) badges.push({ text: '💪 Week Streak', class: 'badge-silver' });
+            document.getElementById('achievementBadges').innerHTML = badges.map(b => `<div class="badge ${b.class}">${b.text}</div>`).join('');
         }
-        
-        // ==================== CONFETTI ====================
         
         function showConfetti() {
-            for (let i = 0; i < 30; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * window.innerWidth + 'px';
-                    confetti.style.background = ['#667eea', '#764ba2', '#f093fb', '#4facfe'][Math.floor(Math.random() * 4)];
-                    document.body.appendChild(confetti);
-                    
-                    setTimeout(() => confetti.remove(), 3000);
-                }, i * 50);
+            for (let i = 0; i < 20; i++) {
+                const c = document.createElement('div'); c.className = 'confetti';
+                c.style.left = Math.random() * window.innerWidth + 'px';
+                c.style.background = ['#667eea','#764ba2','#28a745'][Math.floor(Math.random()*3)];
+                document.body.appendChild(c); setTimeout(() => c.remove(), 2000);
             }
         }
-        
-        // ==================== CURRENT DAY HIGHLIGHTING ====================
-        
-        function checkCurrentDay() {
-            const today = new Date();
-            const currentDate = today.getDate();
-            const currentMonth = today.getMonth(); // 0 = Jan, 1 = Feb
-            
-            // Highlight current day in schedules
-            // This is a simplified version - you can expand it
+
+        function changePasswordBtn() {
+            const p = prompt('Current password:');
+            if (btoa(p) !== localStorage.getItem('wbcsAppPassword')) return alert('Wrong');
+            const n = prompt('New password:'); localStorage.setItem('wbcsAppPassword', btoa(n)); alert('Changed');
         }
-        
-        // ==================== INITIALIZE ON LOAD ====================
-        
-        window.addEventListener('DOMContentLoaded', function() {
-            checkAuthentication();
-        });
-        
-        // Auto-save every 30 seconds (only if authenticated)
-        setInterval(function() {
-            if (isAuthenticated) {
-                saveState();
-            }
-        }, 30000);
+
+        function secureReset() {
+            if(confirm('Reset all progress?')) { localStorage.removeItem('wbcsTrackerState'); location.reload(); }
+        }
+
+        function lockApp() { location.reload(); }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.text("WBCS 2026 Progress Report", 105, 20, {align:'center'});
+            doc.text(`Overall Progress: ${document.getElementById('overallProgress').textContent}`, 20, 40);
+            doc.text(`Hours Studied: ${document.getElementById('totalHours').textContent}`, 20, 50);
+            doc.save("WBCS-Report.pdf");
+        }
+
+        window.onload = checkAuthentication;
+        setInterval(() => { if(isAuthenticated) saveState(); }, 30000);
     </script>
 </body>
 </html>
