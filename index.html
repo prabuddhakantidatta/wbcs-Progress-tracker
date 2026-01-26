@@ -237,7 +237,7 @@
     <div id="notesModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>📝 Global Study Notes</h3><span class="close" onclick="closeModal('notesModal')">&times;</span></div>
-            <textarea id="userNotes" style="width: 100%; height: 300px; padding: 15px; border-radius: 8px; border: 1px solid #ddd;"></textarea>
+            <textarea id="userNotes" style="width: 100%; height: 300px; padding: 15px; border-radius: 8px; border: 1px solid #ddd; font-family: inherit; font-size: 14px;"></textarea>
             <button class="btn btn-success" style="width: 100%; margin-top: 15px;" onclick="saveNotes()">💾 Save Global Notes</button>
         </div>
     </div>
@@ -270,41 +270,118 @@
             appId: "1:9259146:web:7f5a5f23f655ea1bf40573"
         };
         
-        let firebaseApp, auth, db, currentUser = null;
+        let firebaseApp, auth, db, currentUser = null, isAuthenticated = false;
         try {
             firebaseApp = firebase.initializeApp(firebaseConfig);
             auth = firebase.auth();
             db = firebase.firestore();
         } catch (e) { console.error("Firebase init failed", e); }
 
+        // --- AUTH UI HELPERS ---
+        function showLoadingScreen() {
+            const loadingHTML = `
+                <div id="loadingScreen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <div style="text-align: center; color: white;">
+                        <div class="loading" style="width: 50px; height: 50px; margin: 0 auto 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: white; animation: spin 1s infinite linear;"></div>
+                        <h2>Loading WBCS Tracker...</h2>
+                    </div>
+                </div>`;
+            document.body.insertAdjacentHTML('beforeend', loadingHTML);
+        }
+        function hideLoadingScreen() { const ls = document.getElementById('loadingScreen'); if(ls) ls.remove(); }
+
+        function showAuthChoice() {
+            const choiceHTML = `
+                <div id="authChoice" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-width: 500px; width: 90%;">
+                        <h2 style="color: #667eea; margin-bottom: 20px; text-align: center;">🎯 WBCS Progress Tracker</h2>
+                        <button onclick="showSignup()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 15px;">📝 Create New Account</button>
+                        <button onclick="showLogin()" style="width: 100%; padding: 15px; background: #6c757d; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer;">🔓 Login</button>
+                        <p style="margin-top: 20px; font-size: 12px; color: #999; text-align: center;">Cloud backup & sync included</p>
+                    </div>
+                </div>`;
+            document.body.insertAdjacentHTML('beforeend', choiceHTML);
+        }
+
+        function showSignup() {
+            const ac = document.getElementById('authChoice'); if(ac) ac.remove();
+            const signupHTML = `
+                <div id="signupScreen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <div style="background: white; padding: 40px; border-radius: 15px; width: 90%; max-width: 450px;">
+                        <h2 style="text-align:center; color:#667eea;">Create Account</h2>
+                        <input type="email" id="signupEmail" style="width:100%; padding:12px; margin:20px 0 10px; border:2px solid #ddd; border-radius:5px;" placeholder="Email">
+                        <input type="password" id="signupPassword" style="width:100%; padding:12px; margin-bottom:20px; border:2px solid #ddd; border-radius:5px;" placeholder="Password (min 6 chars)">
+                        <button onclick="handleSignup()" style="width:100%; padding:15px; background:#667eea; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">Sign Up</button>
+                        <button onclick="location.reload()" style="width:100%; margin-top:10px; background:transparent; border:none; color:#667eea; cursor:pointer;">Back</button>
+                    </div>
+                </div>`;
+            document.body.insertAdjacentHTML('beforeend', signupHTML);
+        }
+
+        function showLogin() {
+            const ac = document.getElementById('authChoice'); if(ac) ac.remove();
+            const loginHTML = `
+                <div id="loginScreen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <div style="background: white; padding: 40px; border-radius: 15px; width: 90%; max-width: 450px;">
+                        <h2 style="text-align:center; color:#667eea;">Login</h2>
+                        <input type="email" id="loginEmail" style="width:100%; padding:12px; margin:20px 0 10px; border:2px solid #ddd; border-radius:5px;" placeholder="Email">
+                        <input type="password" id="loginPassword" style="width:100%; padding:12px; margin-bottom:20px; border:2px solid #ddd; border-radius:5px;" placeholder="Password">
+                        <button onclick="handleLogin()" style="width:100%; padding:15px; background:#667eea; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">Login</button>
+                        <button onclick="location.reload()" style="width:100%; margin-top:10px; background:transparent; border:none; color:#667eea; cursor:pointer;">Back</button>
+                    </div>
+                </div>`;
+            document.body.insertAdjacentHTML('beforeend', loginHTML);
+        }
+
+        function handleSignup() {
+            const e = document.getElementById('signupEmail').value;
+            const p = document.getElementById('signupPassword').value;
+            if(!e || p.length < 6) return alert("Invalid email or password (min 6 chars)");
+            auth.createUserWithEmailAndPassword(e, p).then(() => location.reload()).catch(err => alert(err.message));
+        }
+
+        function handleLogin() {
+            const e = document.getElementById('loginEmail').value;
+            const p = document.getElementById('loginPassword').value;
+            auth.signInWithEmailAndPassword(e, p).then(() => location.reload()).catch(err => alert(err.message));
+        }
+
+        function saveUserData() {
+            if (currentUser && db) {
+                db.collection('users').doc(currentUser.uid).set({ appState }, { merge: true })
+                    .then(() => console.log("Cloud sync success"))
+                    .catch(err => console.error("Cloud sync fail", err));
+            }
+        }
+
         // Master Blueprint
         const janBlueprint = [
-            { date: "1 Jan", morning: "Polity: Constitution Basics, Preamble", evening: "Polity MCQs (50)", test: "New Year Holiday", topics: "Polity", hours: 3.75 },
-            { date: "2 Jan", morning: "History: 1857 Revolt - Causes & Course", evening: "1857 MCQs", test: "-", topics: "History", hours: 3.75 },
-            { date: "3 Jan", morning: "Geography: Earth, Solar System", evening: "Geography MCQs", test: "Weekend Study", topics: "Geography", hours: 8.5 },
-            { date: "4 Jan", morning: "Economy: National Income Concepts", evening: "Economy MCQs", test: "TEST 1: 50 MCQs", topics: "Economy", hours: 8 },
-            { date: "5 Jan", morning: "Polity: Fundamental Rights (Art 12-35)", evening: "FR MCQs + Case laws", test: "Rescheduled", topics: "Polity", hours: 3.75 },
-            { date: "6 Jan", morning: "History: Social Reform Movements", evening: "Reformers MCQs", test: "-", topics: "History", hours: 3.75 },
-            { date: "7 Jan", morning: "Geography: Indian Physiography", evening: "Mountain ranges MCQs", test: "-", topics: "Geography", hours: 3.75 },
-            { date: "8 Jan", morning: "Economy: Money, Banking, RBI Functions", evening: "Banking MCQs", test: "Rescheduled", topics: "Economy", hours: 3.75 },
-            { date: "9 Jan", morning: "Science: Physics - Motion, Work, Energy", evening: "Physics MCQs", test: "-", topics: "Science", hours: 3.75 },
-            { date: "10 Jan", morning: "Science: Heat, Light, Sound waves", evening: "Science comp MCQs", test: "Rescheduled", topics: "Science", hours: 8.5 },
-            { date: "11 Jan", morning: "Current Affairs: Dec 2025 Wrap-up", evening: "CA MCQs", test: "Rescheduled", topics: "Current Affairs", hours: 8 },
-            { date: "12 Jan", morning: "Polity: DPSP (Art 36-51) & FD", evening: "Directives MCQs", test: "Rescheduled", topics: "Polity", hours: 3.75 },
-            { date: "13 Jan", morning: "History: INC Formation, Moderate Phase", evening: "Early Congress MCQs", test: "-", topics: "History", hours: 3.75 },
-            { date: "14 Jan", morning: "Geography: Indian Drainage - Rivers", evening: "Rivers Map Marking", test: "Rescheduled", topics: "Geography", hours: 3.75 },
-            { date: "15 Jan", morning: "Economy: Fiscal Policy, Budget", evening: "Budget Terms MCQs", test: "Rescheduled", topics: "Economy", hours: 3.75 },
-            { date: "16 Jan", morning: "Science: Atomic Structure", evening: "Chemistry Elements", test: "Rescheduled", topics: "Science", hours: 3.75 },
-            { date: "17 Jan", morning: "History: National Movement Timeline", evening: "Chronology Practice", test: "Rescheduled", topics: "History", hours: 8.5 },
-            { date: "18 Jan", morning: "Polity: Union Executive", evening: "Executive MCQs", test: "Rescheduled", topics: "Polity", hours: 8 },
-            { date: "19 Jan", morning: "Polity: Parliament Basics", evening: "Legislature MCQs", test: "Rescheduled", topics: "Polity", hours: 3.75 },
-            { date: "20 Jan", morning: "History: Partition of Bengal 1905", evening: "Swadeshi Movement MCQs", test: "Rescheduled", topics: "History", hours: 3.75 },
-            { date: "21 Jan", morning: "Geography: Climate & Monsoon", evening: "Monsoon patterns MCQs", test: "Rescheduled", topics: "Geography", hours: 3.75 },
-            { date: "22 Jan", morning: "Economy: Agriculture Sector", evening: "Green Revolution MCQs", test: "Rescheduled", topics: "Economy", hours: 3.75 },
-            { date: "23 Jan", morning: "Science: Acids, Bases, Salts", evening: "pH scale reactions", test: "Rescheduled", topics: "Science", hours: 3.75 },
-            { date: "24 Jan", morning: "Geography: Indian Map Comprehensive", evening: "Map locations drill", test: "Rescheduled", topics: "Geography", hours: 8.5 },
-            { date: "25 Jan", morning: "Economy: Full Economy Marathon", evening: "Economy comprehensive MCQs", test: "Rescheduled", topics: "Economy", hours: 8 },
-            { date: "26 Jan", morning: "Republic Day: Constitution Deep Study", evening: "Polity 100 MCQs marathon", test: "-", topics: "Polity", hours: 3.75 },
+            { date: "1 Jan", morning: "Polity: Constitution Basics, Preamble", evening: "Polity MCQs (50)", test: "New Year Holiday", topics: "Constitution Features", hours: 3.75 },
+            { date: "2 Jan", morning: "History: 1857 Revolt - Causes & Course", evening: "1857 MCQs", test: "-", topics: "1857 Mutiny", hours: 3.75 },
+            { date: "3 Jan", morning: "Geography: Earth, Solar System", evening: "Geography MCQs", test: "Weekend Study", topics: "Solar System", hours: 8.5 },
+            { date: "4 Jan", morning: "Economy: National Income Concepts", evening: "Economy MCQs", test: "TEST 1: 50 MCQs", topics: "National Income", hours: 8 },
+            { date: "5 Jan", morning: "Polity: Fundamental Rights (Art 12-35)", evening: "FR MCQs + Case laws", test: "MISSING", topics: "Fundamental Rights", hours: 3.75 },
+            { date: "6 Jan", morning: "History: Social Reform Movements", evening: "Reformers MCQs", test: "-", topics: "Social Reformers", hours: 3.75 },
+            { date: "7 Jan", morning: "Geography: Indian Physiography", evening: "Mountain ranges MCQs", test: "-", topics: "Physiography", hours: 3.75 },
+            { date: "8 Jan", morning: "Economy: Money, Banking, RBI Functions", evening: "Banking MCQs", test: "MISSING", topics: "Money & Banking", hours: 3.75 },
+            { date: "9 Jan", morning: "Science: Physics - Motion, Work, Energy", evening: "Physics MCQs", test: "-", topics: "Physics Basics", hours: 3.75 },
+            { date: "10 Jan", morning: "Science: Heat, Light, Sound waves", evening: "Science comp MCQs", test: "MISSING", topics: "Waves & Heat", hours: 8.5 },
+            { date: "11 Jan", morning: "Current Affairs: Dec 2025 Wrap-up", evening: "CA MCQs", test: "MISSING", topics: "Current Affairs", hours: 8 },
+            { date: "12 Jan", morning: "Polity: DPSP (Art 36-51) & FD", evening: "Directives MCQs", test: "MISSING", topics: "DPSP & Duties", hours: 3.75 },
+            { date: "13 Jan", morning: "History: INC Formation, Moderate Phase", evening: "Early Congress MCQs", test: "-", topics: "Indian National Congress", hours: 3.75 },
+            { date: "14 Jan", morning: "Geography: Indian Drainage - Rivers", evening: "Rivers Map Marking", test: "MISSING", topics: "Drainage Systems", hours: 3.75 },
+            { date: "15 Jan", morning: "Economy: Fiscal Policy, Budget", evening: "Budget Terms MCQs", test: "MISSING", topics: "Fiscal Policy", hours: 3.75 },
+            { date: "16 Jan", morning: "Science: Atomic Structure", evening: "Chemistry Elements", test: "MISSING", topics: "Atomic Structure", hours: 3.75 },
+            { date: "17 Jan", morning: "History: National Movement Timeline", evening: "Chronology Practice", test: "MISSING", topics: "Freedom Struggle", hours: 8.5 },
+            { date: "18 Jan", morning: "Polity: Union Executive", evening: "Executive MCQs", test: "MISSING", topics: "Executive Powers", hours: 8 },
+            { date: "19 Jan", morning: "Polity: Parliament Basics", evening: "Legislature MCQs", test: "MISSING", topics: "Parliament", hours: 3.75 },
+            { date: "20 Jan", morning: "History: Partition of Bengal 1905", evening: "Swadeshi Movement MCQs", test: "MISSING", topics: "Swadeshi Movement", hours: 3.75 },
+            { date: "21 Jan", morning: "Geography: Climate & Monsoon", evening: "Monsoon patterns MCQs", test: "MISSING", topics: "Indian Climate", hours: 3.75 },
+            { date: "22 Jan", morning: "Economy: Agriculture Sector", evening: "Green Revolution MCQs", test: "MISSING", topics: "Agriculture", hours: 3.75 },
+            { date: "23 Jan", morning: "Science: Acids, Bases, Salts", evening: "pH scale reactions", test: "MISSING", topics: "Chemical Compounds", hours: 3.75 },
+            { date: "24 Jan", morning: "Geography: Indian Map Comprehensive", evening: "Map locations drill", test: "MISSING", topics: "Mapping", hours: 8.5 },
+            { date: "25 Jan", morning: "Economy: Full Economy Marathon (Missed till 10am)", evening: "Economy comprehensive MCQs", test: "MISSING", topics: "Economy Marathon", hours: 8 },
+            { date: "26 Jan", morning: "Republic Day: Constitution Deep Study", evening: "Polity 100 MCQs marathon", test: "-", topics: "Constitution Revision", hours: 3.75 },
             { date: "27 Jan", morning: "History: Home Rule, Lucknow Pact", evening: "1916-1919 MCQs", test: "-", topics: "History", hours: 3.75 },
             { date: "28 Jan", morning: "Geography: Soils & Vegetation", evening: "Forest types MCQs", test: "-", topics: "Geography", hours: 3.75 },
             { date: "29 Jan", morning: "Economy: Industry & MSMEs", evening: "Manufacturing policies MCQs", test: "-", topics: "Economy", hours: 3.75 },
@@ -344,21 +421,21 @@
         ];
 
         const marBlueprint = [
-            { date: "1 Mar", morning: "Makeup: Fundamental Rights (Missed Jan 5)", evening: "FR Case Laws", test: "Makeup Session", topics: "Polity", hours: 4 },
-            { date: "2 Mar", morning: "Makeup: Money & Banking (Missed Jan 8)", evening: "RBI MCQs", test: "Makeup Session", topics: "Economy", hours: 4 },
-            { date: "3 Mar", morning: "Makeup: Heat, Light, Sound (Missed Jan 10)", evening: "Waves MCQs", test: "Makeup Session", topics: "Science", hours: 4 },
-            { date: "4 Mar", morning: "Makeup: Indian Drainage (Missed Jan 14)", evening: "River Maps", test: "Makeup Session", topics: "Geography", hours: 4 },
-            { date: "5 Mar", morning: "Makeup: Fiscal Policy & Budget (Missed Jan 15)", evening: "Taxation MCQs", test: "Makeup Session", topics: "Economy", hours: 4 },
-            { date: "6 Mar", morning: "Makeup: Atomic Structure (Missed Jan 16)", evening: "Chem MCQs", test: "Makeup Session", topics: "Science", hours: 4 },
-            { date: "7 Mar", morning: "Makeup: National Movement Timeline (Missed Jan 17)", evening: "Chronology Drills", test: "Makeup Session", topics: "History", hours: 4 },
-            { date: "8 Mar", morning: "Makeup: Union Executive (Missed Jan 18)", evening: "President/PM MCQs", test: "Makeup Session", topics: "Polity", hours: 4 },
-            { date: "9 Mar", morning: "Makeup: Parliament (Missed Jan 19)", evening: "Bills/Procedures", test: "Makeup Session", topics: "Polity", hours: 4 },
-            { date: "10 Mar", morning: "Makeup: Partition of Bengal (Missed Jan 20)", evening: "Swadeshi MCQs", test: "Makeup Session", topics: "History", hours: 4 },
-            { date: "11 Mar", morning: "Makeup: Climate & Monsoon (Missed Jan 21)", evening: "Weather Maps", test: "Makeup Session", topics: "Geography", hours: 4 },
-            { date: "12 Mar", morning: "Makeup: Agriculture (Missed Jan 22)", evening: "Agri Schemes", test: "Makeup Session", topics: "Economy", hours: 4 },
-            { date: "13 Mar", morning: "Makeup: Acids, Bases, Salts (Missed Jan 23)", evening: "Chem Practice", test: "Makeup Session", topics: "Science", hours: 4 },
-            { date: "14 Mar", morning: "Makeup: Map Comprehensive (Missed Jan 24)", evening: "Location Drills", test: "Makeup Session", topics: "Geography", hours: 4 },
-            { date: "15 Mar", morning: "Makeup: Economy Marathon (Missed Jan 25)", evening: "Economy Final MCQs", test: "Makeup Session", topics: "Economy", hours: 6 },
+            { date: "1 Mar", morning: "Polity: Fundamental Rights (Missed Jan 5)", evening: "FR Case Laws", test: "Makeup Session", topics: "Fundamental Rights", hours: 4 },
+            { date: "2 Mar", morning: "Economy: Money & Banking (Missed Jan 8)", evening: "RBI MCQs", test: "Makeup Session", topics: "Money & Banking", hours: 4 },
+            { date: "3 Mar", morning: "Science: Heat, Light, Sound (Missed Jan 10)", evening: "Waves MCQs", test: "Makeup Session", topics: "Physics Basics", hours: 4 },
+            { date: "4 Mar", morning: "Geography: Indian Drainage (Missed Jan 14)", evening: "River Maps", test: "Makeup Session", topics: "River Systems", hours: 4 },
+            { date: "5 Mar", morning: "Economy: Fiscal Policy & Budget (Missed Jan 15)", evening: "Taxation MCQs", test: "Makeup Session", topics: "Fiscal Policy", hours: 4 },
+            { date: "6 Mar", morning: "Science: Atomic Structure (Missed Jan 16)", evening: "Chem MCQs", test: "Makeup Session", topics: "Chemistry", hours: 4 },
+            { date: "7 Mar", morning: "History: National Movement Timeline (Missed Jan 17)", evening: "Chronology Drills", test: "Makeup Session", topics: "Timeline", hours: 4 },
+            { date: "8 Mar", morning: "Polity: Union Executive (Missed Jan 18)", evening: "President/PM MCQs", test: "Makeup Session", topics: "Executive Powers", hours: 4 },
+            { date: "9 Mar", morning: "Polity: Parliament (Missed Jan 19)", evening: "Bills/Procedures", test: "Makeup Session", topics: "Legislature", hours: 4 },
+            { date: "10 Mar", morning: "History: Partition of Bengal (Missed Jan 20)", evening: "Swadeshi MCQs", test: "Makeup Session", topics: "Modern History", hours: 4 },
+            { date: "11 Mar", morning: "Geography: Climate & Monsoon (Missed Jan 21)", evening: "Weather Maps", test: "Makeup Session", topics: "Monsoon", hours: 4 },
+            { date: "12 Mar", morning: "Economy: Agriculture (Missed Jan 22)", evening: "Agri Schemes", test: "Makeup Session", topics: "Agriculture", hours: 4 },
+            { date: "13 Mar", morning: "Science: Acids, Bases, Salts (Missed Jan 23)", evening: "Chem Practice", test: "Makeup Session", topics: "Chemical Reactions", hours: 4 },
+            { date: "14 Mar", morning: "Geography: Map Comprehensive (Missed Jan 24)", evening: "Location Drills", test: "Makeup Session", topics: "Indian Mapping", hours: 4 },
+            { date: "15 Mar", morning: "Economy: Economy Marathon (Missed Jan 25)", evening: "Economy Final MCQs", test: "Makeup Session", topics: "Economic Survey", hours: 6 },
             { date: "16 Mar", morning: "Current Affairs: 1-15 March 2026", evening: "CA MCQs", test: "-", topics: "Current Affairs", hours: 4 },
             { date: "17 Mar", morning: "Full Revision: Weak Areas", evening: "Rapid Fire MCQs", test: "-", topics: "General", hours: 6 },
             { date: "18 Mar", morning: "Final Simulation Mock", evening: "Mistake Log Review", test: "TEST 15: FINAL SIM", topics: "General", hours: 8 },
@@ -404,7 +481,7 @@
         }
 
         // European Date Helper
-        function formatEuro(dateStr) { if(!dateStr) return ""; const [y,m,d] = dateStr.split('-'); return `${d}/${m}/${y}`; }
+        function formatEuro(dateStr) { if(!dateStr) return ""; const parts = dateStr.split('-'); return `${parts[2]}/${parts[1]}/${parts[0]}`; }
         function getDayOfWeek(dateStr) { const d = new Date(dateStr); return d.toLocaleDateString('en-US', {weekday:'short'}); }
 
         function getMasterSchedule() {
@@ -419,22 +496,24 @@
 
             rawBlueprint.forEach(t => {
                 // Skip if deleted
-                if (appState.deletedTasks.includes(t.id)) return;
+                if (appState.deletedTasks && appState.deletedTasks.includes(t.id)) return;
                 
                 // Apply modifications
                 let task = {...t, origin: 'blueprint'};
-                if (appState.modifiedTasks[t.id]) {
+                if (appState.modifiedTasks && appState.modifiedTasks[t.id]) {
                     task = {...task, ...appState.modifiedTasks[t.id]};
                 }
                 master.push(task);
             });
 
             // 2. Add Custom Tasks
-            appState.customTasks.forEach(t => master.push({...t, origin: 'custom'}));
+            if (appState.customTasks) {
+                appState.customTasks.forEach(t => master.push({...t, origin: 'custom'}));
+            }
 
             // 3. Normalize dates and sort
             return master.map(t => {
-                let d = appState.customDates[t.id] || t.date;
+                let d = (appState.customDates && appState.customDates[t.id]) || t.date;
                 // Convert "1 Jan" to "2026-01-01" if needed
                 if(!d.includes('-')) {
                     const parts = d.split(' ');
@@ -710,28 +789,45 @@
             openInputModal("Day Note", (v) => { appState.dailyNotes[id] = v.note; saveState(); }, [{id:'note', label:'Note', type:'textarea', value:old}]);
         }
 
-        function saveNotes() { appState.notes = document.getElementById('userNotes').value; saveState(); alert("Global notes saved!"); }
         function toggleDarkMode() { document.body.classList.toggle('dark-mode'); appState.darkMode = document.body.classList.contains('dark-mode'); saveState(); }
         
-        function saveState() {
-            localStorage.setItem('wbcsTrackerState', JSON.stringify(appState));
-            if(currentUser && db) db.collection('users').doc(currentUser.uid).set({appState}, {merge:true});
+        function saveNotes() { 
+            appState.notes = document.getElementById('userNotes').value; 
+            saveState(); 
+            alert("Global notes saved!"); 
+            closeModal('notesModal');
         }
 
-        function secureReset() { if(confirm("Reset all data?")) { localStorage.removeItem('wbcsTrackerState'); location.reload(); } }
+        function saveState() {
+            localStorage.setItem('wbcsTrackerState', JSON.stringify(appState));
+            saveUserData();
+        }
+
+        function secureReset() { if(confirm("Reset all data?")) { localStorage.removeItem('wbcsTrackerState'); if(currentUser) db.collection('users').doc(currentUser.uid).delete(); location.reload(); } }
         function logoutUser() { auth.signOut().then(() => location.reload()); }
 
         window.onload = () => {
+            showLoadingScreen();
             const saved = localStorage.getItem('wbcsTrackerState');
-            if(saved) appState = {...appState, ...JSON.parse(saved)};
+            if(saved) appState = { ...appState, ...JSON.parse(saved) };
             if(appState.darkMode) document.body.classList.add('dark-mode');
-            document.getElementById('userNotes').value = appState.notes || "";
             
             auth.onAuthStateChanged(user => {
+                hideLoadingScreen();
                 if(user) {
-                    currentUser = user; document.getElementById('userEmailDisplay').textContent = "👤 " + user.email;
-                    db.collection('users').doc(user.uid).get().then(doc => { if(doc.exists) { appState = {...appState, ...doc.data().appState}; renderAll(); } });
-                } else { renderAll(); }
+                    currentUser = user; 
+                    isAuthenticated = true;
+                    document.getElementById('userEmailDisplay').textContent = "👤 " + (user.email || "Anonymous");
+                    db.collection('users').doc(user.uid).get().then(doc => { 
+                        if(doc.exists && doc.data().appState) { 
+                            // Deep merge to ensure subjects list etc is maintained
+                            appState = { ...appState, ...doc.data().appState }; 
+                        } 
+                        renderAll(); 
+                    });
+                } else { 
+                    showAuthChoice();
+                }
             });
         };
     </script>
