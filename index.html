@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WBCS 2026 - Interactive Prep Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #667eea;
@@ -209,7 +212,11 @@
 
         .progress-bar { transition: width 0.5s ease; }
 
-        .table-row-hover:hover { background: rgba(99, 102, 241, 0.06); }
+        .table-row-hover:hover {
+            background: rgba(99, 102, 241, 0.06);
+            animation: microBounce 360ms cubic-bezier(.34, 1.56, .64, 1);
+            transform-origin: center;
+        }
 
         .date-chip {
             display: inline-flex;
@@ -511,6 +518,385 @@
             }
             .dock-btn::after, .dock-btn::before { display: none; }
         }
+
+        /* =========================================================
+           USER THEME OVERRIDE (Provided CSS)
+           Applies a clean modern "card" design across the app.
+        ========================================================= */
+        :root {
+            --primary: #667eea;
+            --primary-dark: #764ba2;
+            --primary-2: var(--primary-dark);
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --bg: #f4f6fb;
+            --card: #ffffff;
+            --text: #2d3748;
+            --border: #e2e8f0;
+
+            /* compatibility with older styles */
+            --dark-bg: #1a202c;
+            --dark-card: #2d3748;
+        }
+
+        html, body { height: 100%; }
+        body {
+            background: var(--bg) !important;
+            color: var(--text) !important;
+            font-family: "Segoe UI", Tahoma, system-ui, -apple-system, Arial, sans-serif !important;
+            min-height: 100vh;
+        }
+
+        /* Dark mode mapped to your variables */
+        body.dark-mode {
+            --bg: #1a202c;
+            --card: #2d3748;
+            --text: #edf2f7;
+            --border: #4a5568;
+            --light: #111827;
+            --dark: #0f172a;
+
+            background: var(--bg) !important;
+            color: var(--text) !important;
+        }
+
+        /* Main container */
+        .app-container {
+            max-width: 1280px !important;
+            margin: auto !important;
+            padding: 24px 104px 28px 104px !important; /* room for dock + sidebar toggle */
+        }
+        @media (max-width: 768px) {
+            .app-container { padding: 88px 16px 20px 16px !important; }
+        }
+
+        /* Cards */
+        .glass, .glass-strong {
+            background: var(--card) !important;
+            border: 1px solid var(--border) !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+
+        /* Tables */
+        table {
+            background: var(--card) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+        }
+        table thead { background: var(--light) !important; }
+        table thead th {
+            background: transparent !important;
+            color: var(--text) !important;
+            font-weight: 800;
+        }
+        td {
+            border-color: var(--border) !important;
+            color: var(--text) !important;
+        }
+        .dark-mode td { border-color: var(--border) !important; }
+
+        /* Inputs */
+        input, textarea, select {
+            background: var(--card) !important;
+            color: var(--text) !important;
+            border-color: var(--border) !important;
+        }
+
+        /* Sidebar (match page palette + strong contrast) */
+        .sidebar {
+            /* override inline background */
+            background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,252,0.96)) !important;
+            color: var(--text) !important;
+            border-right: 1px solid var(--border) !important;
+            box-shadow: 8px 0 26px rgba(2, 6, 23, 0.10) !important;
+        }
+
+        body.dark-mode .sidebar {
+            background: linear-gradient(180deg, rgba(15,23,42,0.96), rgba(2,6,23,0.96)) !important;
+            color: rgba(255,255,255,0.92) !important;
+            border-right: 1px solid rgba(255,255,255,0.10) !important;
+            box-shadow: 8px 0 30px rgba(0,0,0,0.45) !important;
+        }
+
+        /* Sidebar typography + readable colors */
+        .sidebar h2 { color: rgba(30, 41, 59, 0.95) !important; }
+        body.dark-mode .sidebar h2 { color: rgba(224, 231, 255, 0.95) !important; }
+
+        .sidebar nav .menu-item,
+        .sidebar-section-toggle,
+        .sidebar-subitem {
+            color: rgba(15,23,42,0.92) !important;
+        }
+        body.dark-mode .sidebar nav .menu-item,
+        body.dark-mode .sidebar-section-toggle,
+        body.dark-mode .sidebar-subitem {
+            color: rgba(255,255,255,0.92) !important;
+        }
+
+        /* Sub-panels inside sidebar */
+        #monthMenu, #subjectMenu {
+            background: rgba(15, 23, 42, 0.04) !important;
+            border: 1px solid rgba(15, 23, 42, 0.06) !important;
+        }
+        body.dark-mode #monthMenu, body.dark-mode #subjectMenu {
+            background: rgba(255,255,255,0.06) !important;
+            border: 1px solid rgba(255,255,255,0.08) !important;
+        }
+
+        /* Hover states aligned with theme */
+        .sidebar nav .menu-item:hover,
+        .sidebar-section-toggle:hover,
+        .sidebar-subitem:hover {
+            background: rgba(102, 126, 234, 0.12) !important;
+        }
+        body.dark-mode .sidebar nav .menu-item:hover,
+        body.dark-mode .sidebar-section-toggle:hover,
+        body.dark-mode .sidebar-subitem:hover {
+            background: rgba(255,255,255,0.08) !important;
+        }
+
+        /* Date chip */
+        .date-chip {
+            background: rgba(102, 126, 234, 0.12) !important;
+            border-color: rgba(102, 126, 234, 0.25) !important;
+            color: var(--text) !important;
+        }
+
+        /* Action dock matches cards */
+        .action-dock {
+            background: var(--card) !important;
+            border-color: var(--border) !important;
+        }
+
+        /* Buttons (keep existing gradients, but improve base feel) */
+        .btn-glow { border-radius: 10px !important; }
+
+        /* =========================================================
+           BOUNCY HOVER (Cards/Boxes)
+        ========================================================= */
+        @keyframes softBounce {
+            0% { transform: translateY(0) scale(1); }
+            45% { transform: translateY(-4px) scale(1.01); }
+            75% { transform: translateY(1px) scale(0.995); }
+            100% { transform: translateY(0) scale(1); }
+        }
+
+        /* Micro-bounce (for specific table items like date/topic only) */
+        @keyframes microBounce {
+            0% { transform: translateY(0) scale(1); }
+            42% { transform: translateY(-3px) scale(1.01); }
+            72% { transform: translateY(1px) scale(0.995); }
+            100% { transform: translateY(0) scale(1); }
+        }
+
+        .hover-bounce {
+            display: inline-block;
+            will-change: transform;
+        }
+        .hover-bounce:hover {
+            animation: microBounce 360ms cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        /* Use alongside existing components (e.g., <div class="date-chip bounceable">) */
+        .bounceable {
+            will-change: transform;
+        }
+        .bounceable:hover {
+            animation: microBounce 360ms cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .glass, .glass-strong {
+            will-change: transform;
+            transition: box-shadow 200ms ease, transform 200ms ease;
+        }
+
+        /* Card bounce is opt-in (dashboard only). */
+        .bouncy-card {
+            will-change: transform;
+            transition: box-shadow 200ms ease, transform 200ms ease;
+        }
+        .bouncy-card:hover {
+            animation: softBounce 420ms cubic-bezier(.34, 1.56, .64, 1);
+            box-shadow: 0 16px 34px rgba(2, 6, 23, 0.12) !important;
+        }
+
+        /* Sidebar should NOT bounce as a whole (disable card hover bounce on sidebar container) */
+        .sidebar.glass:hover,
+        .sidebar.glass-strong:hover,
+        .sidebar:hover {
+            animation: none !important;
+            transform: none !important;
+        }
+
+        /* Instead, bounce each individual navigation line item */
+        .sidebar nav .menu-item,
+        .sidebar-section-toggle,
+        .sidebar-subitem {
+            will-change: transform;
+            transform-origin: left center;
+        }
+        .sidebar nav .menu-item:hover,
+        .sidebar-section-toggle:hover,
+        .sidebar-subitem:hover {
+            animation: microBounce 360ms cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        /* Disable card hover animation for specific surfaces (login + monthly + subject table cards) */
+        .no-hover-card.glass:hover,
+        .no-hover-card.glass-strong:hover {
+            animation: none !important;
+            transform: none !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        .dark-mode .no-hover-card.glass:hover,
+        .dark-mode .no-hover-card.glass-strong:hover {
+            animation: none !important;
+            transform: none !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22) !important;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .bouncy-card:hover,
+            .hover-bounce:hover,
+            .bounceable:hover,
+            .table-row-hover:hover {
+                animation: none !important;
+                transform: none !important;
+            }
+        }
+
+        /* =========================================================
+           UI POLISH: Sizing & Layout Harmony
+        ========================================================= */
+        #mainApp main h1 { letter-spacing: -0.02em; }
+        #mainApp main h2 { letter-spacing: -0.015em; }
+        #mainApp main h3 { letter-spacing: -0.01em; }
+
+        /* Buttons: consistent sizing (exclude dock + sidebar toggle) */
+        #mainApp button:not(.dock-btn):not(.w-12):not(.h-12) {
+            min-height: 44px;
+            font-size: 14px;
+            line-height: 1.1;
+        }
+        #authScreen button {
+            min-height: 44px;
+            font-size: 14px;
+            line-height: 1.1;
+        }
+
+        /* Action dock: slightly more premium */
+        .dock-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            font-size: 18px;
+        }
+
+        /* Sidebar navigation sizing */
+        .sidebar nav .menu-item,
+        .sidebar-section-toggle {
+            min-height: 46px;
+            font-size: 14px;
+        }
+        .sidebar-subitem {
+            min-height: 40px;
+            font-size: 13px;
+        }
+
+        /* Tables: improve density/whitespace balance */
+        table th.p-3 { padding: 14px 16px !important; }
+        table td.p-3 { padding: 12px 16px !important; }
+        table th.p-2 { padding: 12px 14px !important; }
+        table td.p-2 { padding: 10px 14px !important; }
+
+        /* Dashboard subject cards: more consistent height */
+        #subjectCards > div { min-height: 132px; }
+
+        /* Inputs: comfortable tap targets */
+        input, select, textarea {
+            min-height: 42px;
+        }
+        textarea { min-height: 120px; }
+
+        /* Print */
+        @media print {
+            body { background: white !important; color: #000 !important; }
+            .glass, .glass-strong, table { box-shadow: none !important; }
+        }
+
+        /* =========================================================
+           TYPOGRAPHY + SPACING POLISH (Lato)
+        ========================================================= */
+        html, body {
+            font-family: 'Lato', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+            text-rendering: geometricPrecision;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Stronger hierarchy */
+        #mainApp main h1 { font-weight: 900 !important; }
+        #mainApp main h2 { font-weight: 900 !important; }
+        #mainApp main h3 { font-weight: 800 !important; }
+        #mainApp main h4 { font-weight: 800 !important; }
+
+        /* Make small labels readable */
+        #mainApp .text-xs { font-weight: 700 !important; letter-spacing: 0.02em; }
+        #mainApp .text-sm { font-weight: 700; }
+
+        /* More breathing space inside card-like surfaces */
+        .glass.rounded-3xl,
+        .glass-strong.rounded-3xl {
+            padding: 26px !important;
+        }
+        /* Don’t affect cards that already set their own padding strongly */
+        .glass.rounded-3xl.p-4,
+        .glass.rounded-3xl.p-5,
+        .glass.rounded-3xl.p-6,
+        .glass-strong.rounded-3xl.p-8,
+        .glass-strong.rounded-3xl.p-10 {
+            padding: unset !important;
+        }
+
+        /* Bigger cards + nicer spacing */
+        #tab-overview .grid { gap: 18px !important; }
+        #subjectCards { gap: 18px !important; }
+        #subjectCards > div {
+            min-height: 132px;
+            padding: 18px !important;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Dashboard stat tiles: richer typography */
+        #statProgress, #statStreak, #statHours, #statDays {
+            font-weight: 900 !important;
+            letter-spacing: -0.02em;
+        }
+
+        /* Tables: a little more editorial */
+        table thead th {
+            font-weight: 900 !important;
+            font-size: 13px !important;
+        }
+        table td {
+            font-weight: 600;
+        }
+
+        /* Sidebar titles feel premium */
+        .sidebar h2 {
+            font-weight: 900 !important;
+            letter-spacing: -0.01em;
+        }
     </style>
 </head>
 <body class="min-h-screen antialiased">
@@ -521,7 +907,7 @@
         <div class="absolute -bottom-28 -right-24 w-[28rem] h-[28rem] bg-fuchsia-500/30 blur-3xl rounded-full"></div>
         <div class="absolute top-1/3 left-1/2 -translate-x-1/2 w-[38rem] h-[14rem] bg-emerald-400/15 blur-3xl rounded-full"></div>
 
-        <div class="w-full max-w-md glass-strong rounded-3xl p-8 sm:p-10 relative soft-ring">
+        <div class="w-full max-w-md glass-strong no-hover-card rounded-3xl p-8 sm:p-10 relative soft-ring">
             <div class="text-center mb-8">
                 <div class="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white flex items-center justify-center text-2xl shadow-lg">🎯</div>
                 <h1 class="text-3xl font-extrabold mt-4 tracking-tight"><span class="gradient-text">WBCS 2026</span></h1>
@@ -537,29 +923,29 @@
             <div id="loginForm" class="mt-6">
                 <div class="mb-4">
                     <label class="block text-slate-700 font-bold mb-2">Email</label>
-                    <input type="email" id="loginEmail" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="you@email.com">
+                    <input type="email" id="loginEmail" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="you@email.com" autocomplete="username">
                 </div>
                 <div class="mb-6">
                     <label class="block text-slate-700 font-bold mb-2">Password</label>
-                    <input type="password" id="loginPassword" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="••••••••">
+                    <input type="password" id="loginPassword" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="••••••••" autocomplete="current-password">
                 </div>
                 <button onclick="handleLogin()" class="w-full py-3 rounded-2xl font-extrabold text-white bg-gradient-to-r from-indigo-500 to-fuchsia-500 hover:brightness-110 transition shadow-lg btn-glow">Sign In</button>
-                <p class="text-xs text-slate-500 mt-4 text-center">Tip: use <span class="font-semibold">admin@wbcs.com</span> to access admin panel (if server seeded).</p>
+                <p class="text-xs text-slate-500 mt-4 text-center">Tip: use <span class="font-semibold">admin@wbcs.com</span> / <span class="font-semibold">admin123</span> to access admin panel (if server seeded).</p>
             </div>
 
             <!-- Register Form -->
             <div id="registerForm" class="hidden mt-6">
                 <div class="mb-4">
                     <label class="block text-slate-700 font-bold mb-2">Full Name</label>
-                    <input type="text" id="regName" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="Your Name">
+                    <input type="text" id="regName" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="Your Name" autocomplete="name">
                 </div>
                 <div class="mb-4">
                     <label class="block text-slate-700 font-bold mb-2">Email</label>
-                    <input type="email" id="regEmail" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="you@email.com">
+                    <input type="email" id="regEmail" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="you@email.com" autocomplete="username">
                 </div>
                 <div class="mb-6">
                     <label class="block text-slate-700 font-bold mb-2">Password</label>
-                    <input type="password" id="regPassword" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="Min 6 characters">
+                    <input type="password" id="regPassword" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="Min 6 characters" autocomplete="new-password">
                 </div>
                 <button onclick="handleRegister()" class="w-full py-3 rounded-2xl font-extrabold text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:brightness-110 transition shadow-lg btn-glow">Create Account</button>
             </div>
@@ -593,7 +979,7 @@
 
         <!-- Sidebar -->
         <aside class="sidebar fixed left-0 top-0 w-72 h-full z-50 overflow-y-auto no-print glass"
-               style="background: rgba(2, 6, 23, 0.62); border-right: 1px solid rgba(255,255,255,0.10); color: rgba(226, 232, 240, 0.92); border-top-right-radius: 18px; border-bottom-right-radius: 18px;">
+               style="border-top-right-radius: 18px; border-bottom-right-radius: 18px;">
             <div class="p-6 border-b" style="border-color: rgba(255,255,255,0.10);">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center shadow">🎯</div>
@@ -680,36 +1066,39 @@
             <!-- Tab Contents -->
             <!-- Overview Tab -->
             <div id="tab-overview" class="tab-content active">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div class="glass rounded-3xl p-5 border-l-4 border-indigo-500">
-                        <h3 class="text-xs uppercase text-slate-500 font-bold tracking-wider">Overall Progress</h3>
-                        <div class="text-3xl font-extrabold text-indigo-600 mt-2" id="statProgress">0%</div>
-                        <div class="h-2 bg-white/70 rounded-full mt-3 overflow-hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-7">
+                    <div class="glass bouncy-card rounded-3xl p-7 border-l-4 border-indigo-500">
+                        <h3 class="text-sm uppercase text-slate-500 font-extrabold tracking-wider">Overall Progress</h3>
+                        <div class="text-4xl font-extrabold text-indigo-600 mt-3" id="statProgress">0%</div>
+                        <div class="h-3 bg-white/70 rounded-full mt-4 overflow-hidden">
                             <div class="progress-bar h-full" id="progressBar" style="width: 0%; background: linear-gradient(90deg, var(--primary), var(--primary-2));"></div>
                         </div>
                     </div>
-                    <div class="glass rounded-3xl p-5 border-l-4 border-emerald-500">
-                        <h3 class="text-xs uppercase text-slate-500 font-bold tracking-wider">Study Streak</h3>
-                        <div class="text-3xl font-extrabold text-emerald-600 mt-2" id="statStreak">0 days</div>
+                    <div class="glass bouncy-card rounded-3xl p-7 border-l-4 border-emerald-500">
+                        <h3 class="text-sm uppercase text-slate-500 font-extrabold tracking-wider">Study Streak</h3>
+                        <div class="text-4xl font-extrabold text-emerald-600 mt-3" id="statStreak">0 days</div>
+                        <div class="text-xs text-slate-500 mt-2 font-bold">Keep it alive daily</div>
                     </div>
-                    <div class="glass rounded-3xl p-5 border-l-4 border-sky-500">
-                        <h3 class="text-xs uppercase text-slate-500 font-bold tracking-wider">Total Hours</h3>
-                        <div class="text-3xl font-extrabold text-sky-600 mt-2" id="statHours">0.0h</div>
+                    <div class="glass bouncy-card rounded-3xl p-7 border-l-4 border-sky-500">
+                        <h3 class="text-sm uppercase text-slate-500 font-extrabold tracking-wider">Total Hours</h3>
+                        <div class="text-4xl font-extrabold text-sky-600 mt-3" id="statHours">0.0h</div>
+                        <div class="text-xs text-slate-500 mt-2 font-bold">Completed task hours</div>
                     </div>
-                    <div class="glass rounded-3xl p-5 border-l-4 border-rose-500">
-                        <h3 class="text-xs uppercase text-slate-500 font-bold tracking-wider">Days to Exam</h3>
-                        <div class="text-3xl font-extrabold text-rose-600 mt-2" id="statDays">0</div>
+                    <div class="glass bouncy-card rounded-3xl p-7 border-l-4 border-rose-500">
+                        <h3 class="text-sm uppercase text-slate-500 font-extrabold tracking-wider">Days to Exam</h3>
+                        <div class="text-4xl font-extrabold text-rose-600 mt-3" id="statDays">0</div>
+                        <div class="text-xs text-slate-500 mt-2 font-bold">Until 20 Mar 2026</div>
                     </div>
                 </div>
 
-                <div class="glass rounded-3xl p-6 mb-6">
-                    <h3 class="text-lg font-extrabold text-slate-800 mb-2">📋 Preparation Summary</h3>
-                    <p class="text-slate-700">Target Date: <strong class="text-indigo-700">20 March 2026 (Preliminary)</strong></p>
-                    <p class="text-slate-600 mt-1">Your plan includes comprehensive GS coverage with regular mock tests and rescheduling support per user.</p>
+                <div class="glass bouncy-card rounded-3xl p-8 mb-7">
+                    <h3 class="text-xl font-extrabold text-slate-800 mb-3">📋 Preparation Summary</h3>
+                    <p class="text-slate-700 text-base">Target Date: <strong class="text-indigo-700">20 March 2026 (Preliminary)</strong></p>
+                    <p class="text-slate-600 mt-2 text-sm">Your plan includes comprehensive GS coverage with regular mock tests and rescheduling support per user.</p>
                 </div>
 
                 <h2 class="text-xl font-extrabold text-slate-800 mb-4">📚 Quick Subject Access</h2>
-                <div id="subjectCards" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                <div id="subjectCards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
             </div>
 
             <!-- Weekday Tab -->
@@ -759,10 +1148,10 @@
             <!-- Subject View Tab -->
             <div id="tab-subject-view" class="tab-content">
                 <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
-                    <h2 class="text-2xl font-extrabold text-slate-800" id="subjectViewTitle">Subject</h2>
+                    <h2 class="text-2xl font-extrabold" id="subjectViewTitle">Subject</h2>
                     <button onclick="deleteCurrentSubject()" class="px-4 py-2 rounded-2xl text-sm font-extrabold text-white btn-glow" style="background: linear-gradient(135deg, #ef4444, #f43f5e);">🗑️ Delete Subject</button>
                 </div>
-                <div class="glass rounded-3xl overflow-x-auto">
+                <div class="glass no-hover-card rounded-3xl overflow-x-auto">
                     <table class="w-full">
                         <thead class="text-white" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
                             <tr>
@@ -992,6 +1381,72 @@
         let timerSeconds = 0;
 
         // =============================================
+        // SMALL UTILITIES
+        // =============================================
+        function hashString(str) {
+            let h = 0;
+            for (let i = 0; i < (str || '').length; i++) {
+                h = (h * 31 + str.charCodeAt(i)) >>> 0;
+            }
+            return h;
+        }
+
+        function getSubjectAccent(subject) {
+            const hue = hashString(subject) % 360;
+            const border = `hsl(${hue} 78% 52%)`;
+            const text = document.body.classList.contains('dark-mode')
+                ? `hsl(${hue} 80% 78%)`
+                : `hsl(${hue} 58% 34%)`;
+            const bar = `linear-gradient(90deg, hsl(${hue} 78% 52%), hsl(${(hue + 44) % 360} 78% 52%))`;
+            return { hue, border, text, bar };
+        }
+
+        function clamp(n, min, max) {
+            return Math.min(max, Math.max(min, n));
+        }
+
+        // Progress palette (0% = red, 100% = green)
+        function getProgressPalette(pct) {
+            const p = clamp(Number(pct) || 0, 0, 100);
+            const hue = (p / 100) * 120; // 0..120 (red→green)
+            const isDark = document.body.classList.contains('dark-mode');
+
+            // Text must remain readable across light/dark + row highlights.
+            const text = isDark
+                ? `hsl(${hue} 85% 78%)`
+                : `hsl(${hue} 75% 28%)`;
+
+            const mutedText = isDark
+                ? `hsl(${hue} 55% 78%)`
+                : `hsl(${hue} 55% 26%)`;
+
+            const border = `hsl(${hue} 80% 44%)`;
+            const bar = `linear-gradient(90deg, hsl(${clamp(hue - 10, 0, 120)} 85% 50%), hsl(${clamp(hue + 10, 0, 120)} 85% 45%))`;
+
+            const pillBg = isDark
+                ? `hsla(${hue}, 80%, 52%, 0.18)`
+                : `hsla(${hue}, 85%, 55%, 0.16)`;
+
+            const pillBorder = isDark
+                ? `hsla(${hue}, 90%, 70%, 0.22)`
+                : `hsla(${hue}, 65%, 38%, 0.22)`;
+
+            return { pct: p, hue, text, mutedText, border, bar, pillBg, pillBorder };
+        }
+
+        function getSubjectProgress(subject) {
+            const subjectTasks = (appData.tasks || []).filter(t => t.subject === subject);
+            const completed = subjectTasks.filter(t => appData.userProgress?.completedTasks?.[t.id]).length;
+            const total = subjectTasks.length;
+            const pct = total ? Math.round((completed / total) * 100) : 0;
+            return { completed, total, pct };
+        }
+
+        function getSubjectProgressPalette(subject) {
+            return getProgressPalette(getSubjectProgress(subject).pct);
+        }
+
+        // =============================================
         // DATE HELPERS (avoid timezone shifts)
         // =============================================
         function parseISODate(dateStr) {
@@ -1143,12 +1598,23 @@
 
             try {
                 const response = await fetch(`${API_BASE}${endpoint}`, options);
-                const result = await response.json();
-                if (!response.ok) throw new Error(result.message || 'API Error');
+
+                const ct = response.headers.get('content-type') || '';
+                let result = null;
+
+                // If API returns HTML/text (common when /api is not deployed), avoid JSON parse crash.
+                if (ct.includes('application/json')) {
+                    result = await response.json().catch(() => null);
+                } else {
+                    const text = await response.text().catch(() => '');
+                    throw new Error(text || `Non-JSON API response (${response.status})`);
+                }
+
+                if (!response.ok) throw new Error(result?.message || `API Error (${response.status})`);
                 return result;
             } catch (error) {
-                console.error('API Error:', error);
-                // Fallback to localStorage if API fails
+                // Quiet fallback: use localStorage data when API is missing/unreachable.
+                console.warn('API unavailable, using local fallback:', error?.message || error);
                 return null;
             }
         }
@@ -1173,7 +1639,7 @@
         }
 
         async function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
+            const email = document.getElementById('loginEmail').value?.trim();
             const password = document.getElementById('loginPassword').value;
 
             if (!email || !password) {
@@ -1181,26 +1647,53 @@
                 return;
             }
 
+            document.getElementById('authError').classList.add('hidden');
             document.getElementById('authLoader').classList.remove('hidden');
-            const result = await apiCall('/auth/login', 'POST', { email, password });
-            document.getElementById('authLoader').classList.add('hidden');
 
-            if (result && result.token) {
+            // Helper: enter demo mode (old behavior)
+            const enterDemo = async (reasonMsg) => {
+                document.getElementById('authLoader').classList.add('hidden');
+                localStorage.removeItem('wbcs_token');
+                currentUser = { email, name: email.split('@')[0], isAdmin: email.includes('admin') };
+                localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
+                if (reasonMsg) showToast(reasonMsg, 'info');
+                await initializeApp();
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                // If backend returns HTML (wrong API_BASE), JSON parsing can fail.
+                const result = await response.json().catch(() => ({}));
+
+                // If login fails (invalid credentials OR API mismatch), fall back to demo (old sign-in behavior)
+                if (!response.ok || !result?.token) {
+                    const msg = result?.message || (!response.ok ? 'Login failed.' : 'Login failed: invalid server response.');
+                    // Keep the error visible, but still allow entry into app in demo mode.
+                    showAuthError(msg + ' (Entering Demo Mode)');
+                    await enterDemo('Started in Demo Mode');
+                    return;
+                }
+
+                // Success
                 localStorage.setItem('wbcs_token', result.token);
                 currentUser = result.user;
                 localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
+                document.getElementById('authLoader').classList.add('hidden');
                 await initializeApp();
-            } else {
-                // Fallback: demo mode with localStorage
-                currentUser = { email, name: email.split('@')[0], isAdmin: email.includes('admin') };
-                localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
-                await initializeApp();
+            } catch (e) {
+                console.warn('Login API unreachable, switching to demo mode:', e);
+                await enterDemo('Server unreachable — started in Demo Mode');
             }
         }
 
         async function handleRegister() {
-            const name = document.getElementById('regName').value;
-            const email = document.getElementById('regEmail').value;
+            const name = document.getElementById('regName').value?.trim();
+            const email = document.getElementById('regEmail').value?.trim();
             const password = document.getElementById('regPassword').value;
 
             if (!name || !email || !password) {
@@ -1213,21 +1706,44 @@
                 return;
             }
 
+            document.getElementById('authError').classList.add('hidden');
             document.getElementById('authLoader').classList.remove('hidden');
-            const result = await apiCall('/auth/register', 'POST', { name, email, password });
-            document.getElementById('authLoader').classList.add('hidden');
 
-            if (result && result.token) {
+            const enterDemo = async (reasonMsg) => {
+                document.getElementById('authLoader').classList.add('hidden');
+                localStorage.removeItem('wbcs_token');
+                currentUser = { email, name, isAdmin: false };
+                localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
+                if (reasonMsg) showToast(reasonMsg, 'info');
+                await initializeApp();
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const result = await response.json().catch(() => ({}));
+
+                // Old behavior: if registration can't complete (API mismatch, server rules, etc.)
+                // allow user to still proceed in demo mode.
+                if (!response.ok || !result?.token) {
+                    const msg = result?.message || (!response.ok ? 'Registration failed.' : 'Registration failed: invalid server response.');
+                    showAuthError(msg + ' (Entering Demo Mode)');
+                    await enterDemo('Created account in Demo Mode');
+                    return;
+                }
+
                 localStorage.setItem('wbcs_token', result.token);
                 currentUser = result.user;
                 localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
+                document.getElementById('authLoader').classList.add('hidden');
                 await initializeApp();
-            } else {
-                // Fallback: demo mode
-                currentUser = { email, name, isAdmin: false };
-                localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
-                showToast('Account created (Demo Mode)', 'success');
-                await initializeApp();
+            } catch (e) {
+                console.warn('Register API unreachable, switching to demo mode:', e);
+                await enterDemo('Server unreachable — created account in Demo Mode');
             }
         }
 
@@ -1235,8 +1751,20 @@
             localStorage.removeItem('wbcs_token');
             localStorage.removeItem('wbcs_user');
             currentUser = null;
+            activeSubject = null;
+            activeTabId = 'overview';
+
+            // stop timer if running
+            pauseTimer();
+            timerSeconds = 0;
+            updateTimerDisplay();
+
             document.getElementById('authScreen').classList.remove('hidden');
             document.getElementById('mainApp').classList.add('hidden');
+
+            // close sidebar if open
+            document.querySelector('.sidebar')?.classList.remove('active');
+            document.querySelector('.overlay')?.classList.remove('active');
         }
 
         function showAuthError(msg) {
@@ -1544,15 +2072,20 @@
             document.getElementById('statStreak').textContent = calculateStreak() + ' days';
 
             const cardsHtml = appData.subjects.map(s => {
-                const subjectTasks = tasks.filter(t => t.subject === s);
-                const subjectCompleted = subjectTasks.filter(t => appData.userProgress.completedTasks[t.id]).length;
-                const subjectProgress = subjectTasks.length ? Math.round((subjectCompleted / subjectTasks.length) * 100) : 0;
+                const { completed: subjectCompleted, total: subjectTotal, pct: subjectProgress } = getSubjectProgress(s);
+                const pal = getProgressPalette(subjectProgress);
+
                 return `
-                    <div onclick="viewSubject('${s}')" class="glass rounded-3xl p-4 cursor-pointer hover:shadow-lg transition border-l-4 border-indigo-500">
-                        <h4 class="font-extrabold text-slate-800">${s}</h4>
-                        <div class="text-sm text-slate-600">${subjectCompleted}/${subjectTasks.length} topics</div>
+                    <div onclick="viewSubject('${s}')" class="glass bouncy-card rounded-3xl p-5 cursor-pointer hover:shadow-lg transition border-l-4" style="border-left-color: ${pal.border};">
+                        <div class="flex items-start justify-between gap-3">
+                            <h4 class="font-extrabold text-lg md:text-xl" style="color: ${pal.text};">${s}</h4>
+                            <span class="px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: ${pal.pillBg}; border: 1px solid ${pal.pillBorder}; color: ${pal.text};">
+                                ${subjectProgress}%
+                            </span>
+                        </div>
+                        <div class="text-sm" style="color: ${pal.mutedText};">${subjectCompleted}/${subjectTotal} topics</div>
                         <div class="h-2 bg-white/70 rounded-full mt-3 overflow-hidden">
-                            <div class="h-full" style="width: ${subjectProgress}%; background: linear-gradient(90deg, var(--primary), var(--primary-2));"></div>
+                            <div class="h-full" style="width: ${subjectProgress}%; background: ${pal.bar};"></div>
                         </div>
                     </div>
                 `;
@@ -1624,7 +2157,7 @@
                                 <h2 class="text-2xl font-extrabold text-slate-800">📆 ${monthNames[idx]} 2026</h2>
                                 <div class="text-xs text-slate-500">Edit dates to reschedule tasks (saved per-user)</div>
                             </div>
-                            <div class="glass rounded-3xl overflow-x-auto">
+                            <div class="glass no-hover-card rounded-3xl overflow-x-auto">
                                 <table class="w-full">
                                     <thead class="text-white" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
                                         <tr>
@@ -1645,19 +2178,24 @@
                                             const displayDate = formatDate(effDate);
                                             const dayName = getDayName(effDate);
                                             const highlightClass = getTaskRowHighlightClass(effDate, isCompleted);
+                                            const pal = getSubjectProgressPalette(t.subject);
                                             return `
                                                 <tr class="${highlightClass} ${isCompleted ? 'completed-row' : ''} border-b border-black/5 table-row-hover">
                                                     <td class="p-3">
-                                                        <div class="date-chip">${displayDate} • ${dayName}</div>
+                                                        <div class="date-chip bounceable">${displayDate} • ${dayName}</div>
                                                         <div class="mt-2">
                                                             <input type="date" value="${effDate}" onchange="updateTaskDate('${t.id}', this.value)" class="input-mini bg-white/70">
                                                         </div>
                                                     </td>
                                                     <td class="p-3 font-bold">${dayName}</td>
-                                                    <td class="p-3">${t.morning}</td>
-                                                    <td class="p-3">${t.evening}</td>
+                                                    <td class="p-3"><span class="hover-bounce" style="color: ${pal.text};">${t.morning}</span></td>
+                                                    <td class="p-3"><span class="hover-bounce" style="color: ${pal.mutedText};">${t.evening}</span></td>
                                                     <td class="p-3">${t.test}</td>
-                                                    <td class="p-3"><span class="px-2 py-1 rounded-xl text-xs font-bold" style="background: rgba(99,102,241,0.12); color: rgb(79,70,229); border: 1px solid rgba(99,102,241,0.18);">${t.subject}</span></td>
+                                                    <td class="p-3">
+                                                        <span class="px-2 py-1 rounded-xl text-xs font-bold" style="background: ${pal.pillBg}; color: ${pal.text}; border: 1px solid ${pal.pillBorder};">
+                                                            ${t.subject}
+                                                        </span>
+                                                    </td>
                                                     <td class="p-3 font-bold">${t.hours}</td>
                                                     <td class="p-3">
                                                         <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleTask('${t.id}')" class="w-5 h-5 accent-indigo-500 cursor-pointer">
@@ -1830,7 +2368,10 @@
         // =============================================
         function renderSubjectViewTable() {
             if (!activeSubject) return;
-            document.getElementById('subjectViewTitle').textContent = '📚 ' + activeSubject;
+            const palHead = getSubjectProgressPalette(activeSubject);
+            const titleEl = document.getElementById('subjectViewTitle');
+            titleEl.textContent = '📚 ' + activeSubject;
+            titleEl.style.color = palHead.text;
 
             const subjectTasks = appData.tasks
                 .filter(t => t.subject === activeSubject)
@@ -1842,14 +2383,15 @@
                 const effDate = getEffectiveTaskDate(t);
                 const dayName = getDayName(effDate);
                 const highlightClass = getTaskRowHighlightClass(effDate, isCompleted);
+                const pal = getSubjectProgressPalette(activeSubject);
                 return `
                     <tr class="${highlightClass} ${isCompleted ? 'completed-row' : ''} border-b border-black/5 table-row-hover">
                         <td class="p-3">
-                            <div class="font-extrabold">${t.morning}</div>
-                            <div class="text-sm text-slate-600">${t.evening}</div>
+                            <div class="font-extrabold hover-bounce" style="color: ${pal.text};">${t.morning}</div>
+                            <div class="text-sm hover-bounce" style="color: ${pal.mutedText};">${t.evening}</div>
                         </td>
                         <td class="p-3">
-                            <div class="date-chip">${formatDate(effDate)} • ${dayName}</div>
+                            <div class="date-chip bounceable">${formatDate(effDate)} • ${dayName}</div>
                             <div class="mt-2">
                                 <input type="date" value="${effDate}" onchange="updateTaskDate('${t.id}', this.value)" class="input-mini bg-white/70">
                             </div>
@@ -2565,7 +3107,14 @@
 
             if (token || savedUser) {
                 currentUser = savedUser ? JSON.parse(savedUser) : { email: 'user@demo.com', name: 'User', isAdmin: false };
+
+                // If we have a saved user but NO token, it's likely demo mode.
+                // Try to initialize, but if API requires token it will fall back to localStorage.
                 initializeApp();
+            } else {
+                // Ensure auth screen visible when not signed in
+                document.getElementById('authScreen').classList.remove('hidden');
+                document.getElementById('mainApp').classList.add('hidden');
             }
         };
     </script>
