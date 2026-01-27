@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WBCS 2026 - Interactive Prep Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        /* CSS variables for theme consistency */
         :root {
             --primary: #667eea;
             --primary-dark: #764ba2;
@@ -14,725 +14,1635 @@
             --warning: #ffc107;
             --dark-bg: #1a1a2e;
             --dark-card: #16213e;
-            --text-main: #333;
-            --text-light: #eee;
-        }
-
-        @media print {
-            .no-print { display: none !important; }
-            body { font-size: 10pt !important; color: #000 !important; background: white !important; }
-            .container { padding: 0 !important; box-shadow: none !important; margin: 0 !important; max-width: 100% !important; }
-            table { font-size: 8pt !important; border: 1px solid #ddd !important; }
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; line-height: 1.6; color: var(--text-main); background: #f5f7fa; transition: 0.3s; }
-        body.dark-mode { background: var(--dark-bg); color: var(--text-light); }
+        
+        .loader { 
+            border: 4px solid #f3f3f3; 
+            border-top: 4px solid var(--primary); 
+            border-radius: 50%; 
+            width: 40px; 
+            height: 40px; 
+            animation: spin 1s linear infinite; 
+            margin: 20px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .container { max-width: 1400px; margin: 0 auto; padding: 20px 20px 20px 80px; transition: margin-left 0.3s; }
-        @media (max-width: 768px) { .container { padding-left: 20px; padding-top: 80px; } }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+        }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        .toast.info { background: var(--primary); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* Sidebar */
-        .sidebar { position: fixed; left: -280px; top: 0; width: 280px; height: 100%; background: #16213e; color: white; transition: 0.3s; z-index: 2000; overflow-y: auto; padding: 20px 0; box-shadow: 4px 0 15px rgba(0,0,0,0.3); }
-        .sidebar.active { left: 0; }
-        .sidebar-header { padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .menu-item { padding: 12px 25px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; border-left: 4px solid transparent; font-weight: 500; }
-        .menu-item:hover { background: rgba(255,255,255,0.1); border-left-color: var(--primary); }
-        .menu-item.active { background: var(--primary); border-left-color: var(--primary-dark); }
-        .menu-submenu { background: rgba(0,0,0,0.2); display: none; padding: 5px 0; }
-        .menu-submenu.active { display: block; }
-        .submenu-item { padding: 10px 45px; font-size: 14px; cursor: pointer; opacity: 0.8; transition: 0.2s; }
-        .submenu-item:hover { opacity: 1; color: var(--primary); background: rgba(255,255,255,0.05); }
-        .submenu-item.active { color: var(--primary); font-weight: bold; }
+        .dark-mode { background: var(--dark-bg) !important; color: #eee !important; }
+        .dark-mode .bg-white { background: var(--dark-card) !important; }
+        .dark-mode input, .dark-mode textarea, .dark-mode select { background: #0a2647 !important; color: white !important; border-color: #333 !important; }
+        .dark-mode table { background: var(--dark-card) !important; }
+        .dark-mode td { border-color: rgba(255,255,255,0.1) !important; }
 
-        .sidebar-toggle { position: fixed; left: 20px; top: 20px; z-index: 1500; background: var(--primary); color: white; width: 45px; height: 45px; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 1999; }
-        .sidebar-overlay.active { display: block; }
+        .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+        .sidebar.active { transform: translateX(0); }
+        .overlay { display: none; }
+        .overlay.active { display: block; }
 
-        /* UI Components */
-        .app-header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px; }
-        .controls-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; align-items: center; }
-        body.dark-mode .controls-bar { background: var(--dark-card); }
-
-        .btn { padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.2s; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-warning { background: var(--warning); color: #333; }
-        .btn-secondary { background: #6c757d; color: white; }
-        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
-
-        /* Stats Dashboard */
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .stats-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); }
-        body.dark-mode .stats-card { background: var(--dark-card); border-color: var(--primary); }
-        .stats-card h3 { font-size: 12px; text-transform: uppercase; color: #888; margin-bottom: 10px; }
-        .stats-card .value { font-size: 28px; font-weight: bold; color: var(--primary); }
-
-        /* Tables */
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        body.dark-mode table { background: var(--dark-card); color: var(--text-light); }
-        th { background: var(--primary); color: white; padding: 12px; text-align: left; font-size: 14px; }
-        td { padding: 10px; border: 1px solid #eee; font-size: 13px; vertical-align: middle; }
-        body.dark-mode td { border-color: rgba(255,255,255,0.05); }
-        tr:nth-child(even) { background: #fafafa; }
-        body.dark-mode tr:nth-child(even) { background: rgba(255,255,255,0.02); }
-        .completed-row { background: #d4edda !important; opacity: 0.7; }
-        body.dark-mode .completed-row { background: #1a4d2e !important; }
-        .completed-row td { text-decoration: line-through; }
-
-        /* Inputs */
-        .date-edit-input { border: 1px solid transparent; background: transparent; font-family: inherit; font-size: inherit; color: inherit; cursor: pointer; padding: 4px; border-radius: 4px; width: 100%; max-width: 130px; }
-        .date-edit-input:hover { border-color: var(--primary); background: rgba(102, 126, 234, 0.1); }
-        .task-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
-        .score-input { width: 60px; padding: 4px; text-align: center; border-radius: 4px; border: 1px solid #ddd; }
-
-        /* Tabs */
-        .tab-content { display: none; animation: fadeIn 0.3s; }
-        .tab-content.active { display: block; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Modals */
-        .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); }
-        .modal-content { background: white; margin: 10vh auto; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
-        body.dark-mode .modal-content { background: var(--dark-card); color: white; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .close { font-size: 24px; cursor: pointer; color: #888; }
-        .modal-body input, .modal-body textarea, .modal-body select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; }
-        body.dark-mode .modal-body input, body.dark-mode .modal-body textarea { background: #0a2647; color: white; border-color: #333; }
+        .completed-row { background: #d4edda !important; }
+        .dark-mode .completed-row { background: #1a4d2e !important; }
+        .completed-row td { text-decoration: line-through; opacity: 0.7; }
 
-        /* Progress Bar */
-        .progress-bar-container { height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden; margin-top: 5px; }
-        .progress-bar { height: 100%; background: var(--primary); transition: 0.5s; width: 0%; }
+        .progress-bar { transition: width 0.5s ease; }
 
-        .summary-box { border: 1px solid var(--primary); background: rgba(102, 126, 234, 0.05); padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        @media print {
+            .no-print { display: none !important; }
+            body { font-size: 10pt !important; }
+        }
     </style>
 </head>
-<body>
-    <button class="sidebar-toggle no-print" onclick="toggleSidebar()">☰</button>
-    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
-
-    <div class="sidebar no-print" id="sidebar">
-        <div class="sidebar-header">
-            <h2 style="color: var(--primary); font-size: 20px;">🎯 WBCS 2026</h2>
-            <p style="font-size: 11px; opacity: 0.6;">Interactive Study Portal</p>
-        </div>
-        <div class="sidebar-menu">
-            <div class="menu-item active" onclick="switchTab('overview')">📊 Dashboard Overview</div>
-            <div class="menu-item" onclick="switchTab('weekday')">📅 Weekday Routine</div>
-            <div class="menu-item" onclick="switchTab('weekend')">🌅 Weekend Routine</div>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Auth Screen -->
+    <div id="authScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">🎯 WBCS 2026</h1>
+                <p class="text-gray-500 mt-2">Interactive Study Portal</p>
+            </div>
             
-            <div class="menu-item" onclick="toggleSubmenu('monthSubmenu')">
-                📆 Monthly Schedules <span style="margin-left: auto;">▼</span>
-            </div>
-            <div id="monthSubmenu" class="menu-submenu"></div>
-
-            <div class="menu-item" onclick="toggleSubmenu('subjectSubmenu')">
-                📚 Subjects <span style="margin-left: auto;">▼</span>
-            </div>
-            <div id="subjectSubmenu" class="menu-submenu">
-                <div class="submenu-item" onclick="createNewSubject()" style="color: var(--success); font-weight: bold;">➕ Add Subject</div>
-                <div id="subjectList"></div>
+            <div id="authTabs" class="flex mb-6 bg-gray-100 rounded-lg p-1">
+                <button onclick="showAuthTab('login')" id="loginTab" class="flex-1 py-2 px-4 rounded-lg bg-indigo-500 text-white font-semibold transition">Login</button>
+                <button onclick="showAuthTab('register')" id="registerTab" class="flex-1 py-2 px-4 rounded-lg text-gray-600 font-semibold transition">Register</button>
             </div>
 
-            <div class="menu-item" onclick="switchTab('tests')">✅ Test Tracker</div>
-            <div class="menu-item" onclick="switchTab('analytics')">📈 Progress Analytics</div>
-            <div class="menu-item" onclick="showModal('notesModal')">📝 Global Notes</div>
-            <div class="menu-item" onclick="showModal('timerModal')">⏱️ Session Timer</div>
+            <!-- Login Form -->
+            <div id="loginForm">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-2">Email</label>
+                    <input type="email" id="loginEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="your@email.com">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-semibold mb-2">Password</label>
+                    <input type="password" id="loginPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="••••••••">
+                </div>
+                <button onclick="handleLogin()" class="w-full bg-indigo-500 text-white py-3 rounded-lg font-semibold hover:bg-indigo-600 transition">Sign In</button>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="hidden">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-2">Full Name</label>
+                    <input type="text" id="regName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="John Doe">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-2">Email</label>
+                    <input type="email" id="regEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="your@email.com">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-semibold mb-2">Password</label>
+                    <input type="password" id="regPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Min 6 characters">
+                </div>
+                <button onclick="handleRegister()" class="w-full bg-indigo-500 text-white py-3 rounded-lg font-semibold hover:bg-indigo-600 transition">Create Account</button>
+            </div>
+
+            <div id="authError" class="mt-4 text-red-500 text-center hidden"></div>
+            <div id="authLoader" class="hidden"><div class="loader"></div></div>
         </div>
     </div>
 
-    <div class="container">
-        <div class="app-header no-print">
-            <h1>🎯 WBCS Exam Preparation 2026 - Interactive Tracker</h1>
-            <p class="subtitle">Complete Study Blueprint & Rescheduling Engine</p>
-        </div>
+    <!-- Main App (Hidden until login) -->
+    <div id="mainApp" class="hidden">
+        <!-- Sidebar Toggle -->
+        <button onclick="toggleSidebar()" class="fixed left-4 top-4 z-50 bg-indigo-500 text-white w-12 h-12 rounded-lg shadow-lg flex items-center justify-center text-xl no-print hover:bg-indigo-600 transition">☰</button>
 
-        <div class="controls-bar no-print">
-            <button class="btn btn-secondary" onclick="toggleDarkMode()">🌙 Theme</button>
-            <button class="btn btn-info" onclick="exportData()">💾 Backup</button>
-            <button class="btn btn-warning" onclick="importData()">📥 Restore</button>
-            <button class="btn btn-primary" onclick="window.print()">🖨️ Print</button>
-            <button class="btn btn-danger" onclick="secureReset()">🔄 Reset</button>
-            <button class="btn btn-secondary" onclick="logoutUser()">🔒 Logout</button>
-            <span id="userEmailDisplay" style="margin-left: auto; font-weight: bold; color: var(--primary);"></span>
-        </div>
+        <!-- Overlay -->
+        <div class="overlay fixed inset-0 bg-black/50 z-40" onclick="toggleSidebar()"></div>
 
-        <!-- Dashboard -->
-        <div id="tab-overview" class="tab-content active">
-            <div class="dashboard no-print">
-                <div class="stats-card"><h3>Overall Progress</h3><div class="value" id="overallProgress">0%</div><div class="progress-bar-container"><div class="progress-bar" id="overallProgressBar"></div></div></div>
-                <div class="stats-card"><h3>Study Streak</h3><div class="value" id="studyStreak">0</div></div>
-                <div class="stats-card"><h3>Total Hours</h3><div class="value" id="totalHours">0.0h</div></div>
-                <div class="stats-card"><h3>Days to Exam</h3><div class="value" id="daysRemaining">0</div></div>
+        <!-- Sidebar -->
+        <aside class="sidebar fixed left-0 top-0 w-72 h-full bg-slate-800 text-white z-50 overflow-y-auto no-print">
+            <div class="p-6 border-b border-slate-700">
+                <h2 class="text-xl font-bold text-indigo-400">🎯 WBCS 2026</h2>
+                <p class="text-xs text-slate-400 mt-1">Interactive Study Portal</p>
+                <p class="text-xs text-indigo-300 mt-2" id="sidebarUserEmail"></p>
             </div>
             
-            <div class="summary-box">
-                <h3>📋 Preparation Summary</h3>
-                <p>Target Date: <strong>20 March 2026 (Preliminary)</strong></p>
-                <p>Plan includes 16 full tests and comprehensive GS coverage.</p>
+            <nav class="py-4">
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="switchTab('overview')">
+                    <span>📊</span> Dashboard
+                </div>
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="switchTab('weekday')">
+                    <span>📅</span> Weekday Routine
+                </div>
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="switchTab('weekend')">
+                    <span>🌅</span> Weekend Routine
+                </div>
+                
+                <div class="px-6 py-3 cursor-pointer hover:bg-slate-700 flex items-center justify-between" onclick="toggleSubmenu('monthMenu')">
+                    <span class="flex items-center gap-3"><span>📆</span> Monthly Schedules</span>
+                    <span id="monthMenuArrow">▼</span>
+                </div>
+                <div id="monthMenu" class="hidden bg-slate-900"></div>
+
+                <div class="px-6 py-3 cursor-pointer hover:bg-slate-700 flex items-center justify-between" onclick="toggleSubmenu('subjectMenu')">
+                    <span class="flex items-center gap-3"><span>📚</span> Subjects</span>
+                    <span id="subjectMenuArrow">▼</span>
+                </div>
+                <div id="subjectMenu" class="hidden bg-slate-900">
+                    <div class="px-8 py-2 text-green-400 cursor-pointer hover:bg-slate-800 text-sm" onclick="createNewSubject()">➕ Add Subject</div>
+                    <div id="subjectMenuList"></div>
+                </div>
+
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="switchTab('tests')">
+                    <span>✅</span> Test Tracker
+                </div>
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="switchTab('analytics')">
+                    <span>📈</span> Analytics
+                </div>
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="openNotesModal()">
+                    <span>📝</span> Global Notes
+                </div>
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="openTimerModal()">
+                    <span>⏱️</span> Session Timer
+                </div>
+                
+                <!-- Admin Menu (visible for admins) -->
+                <div id="adminMenuSection" class="hidden border-t border-slate-700 mt-4 pt-4">
+                    <div class="px-6 py-2 text-xs text-slate-400 uppercase">Admin Panel</div>
+                    <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-yellow-500 transition flex items-center gap-3 text-yellow-400" onclick="switchTab('admin')">
+                        <span>⚙️</span> Manage Blueprints
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="pl-4 md:pl-20 pr-4 py-6 transition-all">
+            <!-- Header -->
+            <header class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6 rounded-xl mb-6 no-print">
+                <h1 class="text-2xl md:text-3xl font-bold">🎯 WBCS Exam Preparation 2026</h1>
+                <p class="text-indigo-100 mt-1">Complete Study Blueprint & Progress Tracker</p>
+            </header>
+
+            <!-- Controls Bar -->
+            <div class="bg-white rounded-xl p-4 mb-6 flex flex-wrap gap-3 items-center shadow-sm no-print">
+                <button onclick="toggleDarkMode()" class="px-4 py-2 bg-gray-600 text-white rounded-lg text-sm font-semibold hover:bg-gray-700 transition">🌙 Theme</button>
+                <button onclick="exportData()" class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition">💾 Backup</button>
+                <button onclick="importData()" class="px-4 py-2 bg-yellow-500 text-gray-800 rounded-lg text-sm font-semibold hover:bg-yellow-600 transition">📥 Restore</button>
+                <button onclick="window.print()" class="px-4 py-2 bg-indigo-500 text-white rounded-lg text-sm font-semibold hover:bg-indigo-600 transition">🖨️ Print</button>
+                <button onclick="syncData()" class="px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600 transition">🔄 Sync</button>
+                <button onclick="handleLogout()" class="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600 transition ml-auto">🔒 Logout</button>
+                <span id="userEmailDisplay" class="font-semibold text-indigo-600"></span>
             </div>
 
-            <h2>📚 Quick Subject Access</h2>
-            <div id="subjectQuickCards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px;"></div>
-        </div>
+            <!-- Tab Contents -->
+            
+            <!-- Overview Tab -->
+            <div id="tab-overview" class="tab-content active">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-indigo-500">
+                        <h3 class="text-xs uppercase text-gray-500 font-semibold">Overall Progress</h3>
+                        <div class="text-3xl font-bold text-indigo-600 mt-2" id="statProgress">0%</div>
+                        <div class="h-2 bg-gray-200 rounded-full mt-3 overflow-hidden">
+                            <div class="progress-bar h-full bg-indigo-500" id="progressBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-green-500">
+                        <h3 class="text-xs uppercase text-gray-500 font-semibold">Study Streak</h3>
+                        <div class="text-3xl font-bold text-green-600 mt-2" id="statStreak">0 days</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-blue-500">
+                        <h3 class="text-xs uppercase text-gray-500 font-semibold">Total Hours</h3>
+                        <div class="text-3xl font-bold text-blue-600 mt-2" id="statHours">0.0h</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-red-500">
+                        <h3 class="text-xs uppercase text-gray-500 font-semibold">Days to Exam</h3>
+                        <div class="text-3xl font-bold text-red-600 mt-2" id="statDays">0</div>
+                    </div>
+                </div>
 
-        <!-- Routines -->
-        <div id="tab-weekday" class="tab-content"><h2>📅 Weekday Routine</h2><table id="weekdayTable"><thead><tr><th>Time</th><th>Activity</th><th>Details</th><th>Duration</th><th>✓</th></tr></thead><tbody id="weekdaySchedule"></tbody></table></div>
-        <div id="tab-weekend" class="tab-content"><h2>🌅 Weekend Routine</h2><h3>Saturday</h3><table id="saturdayTable"><thead><tr><th>Time</th><th>Activity</th><th>Details</th><th>Duration</th><th>✓</th></tr></thead><tbody id="saturdaySchedule"></tbody></table><h3>Sunday</h3><table id="sundayTable"><thead><tr><th>Time</th><th>Activity</th><th>Details</th><th>Duration</th><th>✓</th></tr></thead><tbody id="sundaySchedule"></tbody></table></div>
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-indigo-200 mb-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">📋 Preparation Summary</h3>
+                    <p class="text-gray-600">Target Date: <strong class="text-indigo-600">20 March 2026 (Preliminary)</strong></p>
+                    <p class="text-gray-600">Plan includes comprehensive GS coverage with regular mock tests.</p>
+                </div>
 
-        <!-- Dynamic Month Containers (Jan-Dec) -->
-        <div id="tab-january" class="tab-content"><h2>📆 January 2026</h2><table class="month-table"><thead><tr><th width="15%">Date</th><th width="5%">Day</th><th width="20%">Morning</th><th width="20%">Evening</th><th width="15%">Test/Activity</th><th width="15%">Topic</th><th width="5%">Hrs</th><th width="5%">Note</th><th width="5%">✓</th></tr></thead><tbody id="januarySchedule"></tbody></table></div>
-        <div id="tab-february" class="tab-content"><h2>📆 February 2026</h2><table class="month-table"><thead><tr><th>Date</th><th>Day</th><th>Morning</th><th>Evening</th><th>Test</th><th>Topic</th><th>Hrs</th><th>Note</th><th>✓</th></tr></thead><tbody id="februarySchedule"></tbody></table></div>
-        <div id="tab-march" class="tab-content"><h2>📆 March 2026</h2><table class="month-table"><thead><tr><th>Date</th><th>Day</th><th>Morning</th><th>Evening</th><th>Test</th><th>Topic</th><th>Hrs</th><th>Note</th><th>✓</th></tr></thead><tbody id="marchSchedule"></tbody></table></div>
-        <div id="tab-april" class="tab-content"><h2>📆 April 2026</h2><table class="month-table"><thead><tr><th>Date</th><th>Day</th><th>Morning</th><th>Evening</th><th>Test</th><th>Topic</th><th>Hrs</th><th>Note</th><th>✓</th></tr></thead><tbody id="aprilSchedule"></tbody></table></div>
-        <div id="tab-may" class="tab-content"><h2>📆 May 2026</h2><table class="month-table"><thead><tr><th>Date</th><th>Day</th><th>Morning</th><th>Evening</th><th>Test</th><th>Topic</th><th>Hrs</th><th>Note</th><th>✓</th></tr></thead><tbody id="maySchedule"></tbody></table></div>
-        <div id="tab-june" class="tab-content"><h2>📆 June 2026</h2><table class="month-table"><thead><tr><th>Date</th><th>Day</th><th>Morning</th><th>Evening</th><th>Test</th><th>Topic</th><th>Hrs</th><th>Note</th><th>✓</th></tr></thead><tbody id="juneSchedule"></tbody></table></div>
-        <div id="tab-july" class="tab-content"><h2>📆 July 2026</h2><table class="month-table"><thead><tr><th>Date</th><th>Day</th><th>Morning</th><th>Evening</th><th>Test</th><th>Topic</th><th>Hrs</th><th>Note</th><th>✓</th></tr></thead><tbody id="julySchedule"></tbody></table></div>
-        <div id="tab-august" class="tab-content"><h2>📆 August 2026</h2><table class="month-table"><thead><tr><th>Date</th><th>Day</th><th>Morning</th><th>Evening</th><th>Test</th><th>Topic</th><th>Hrs</th><th>Note</th><th>✓</th></tr></thead><tbody id="augustSchedule"></tbody></table></div>
-        <div id="tab-september" class="tab-content"><h2>📆 September 2026</h2><table class="month-table"><thead><tr><th>Date</th><th>Day</th><th>Morning</th><th>Evening</th><th>Test</th><th>Topic</th><th>Hrs</th><th>Note</th><th>✓</th></tr></thead><tbody id="septemberSchedule"></tbody></table></div>
-        <div id="tab-october" class="tab-content"><h2>📆 October 2026</h2><table class="month-table"><thead><tr><th>Date</th><th>Day</th><th>Morning</th><th>Evening</th><th>Test</th><th>Topic</th><th>Hrs</th><th>Note</th><th>✓</th></tr></thead><tbody id="octoberSchedule"></tbody></table></div>
-        <div id="tab-november" class="tab-content"><h2>📆 November 2026</h2><table class="month-table"><thead><tr><th>Date</th><th>Day</th><th>Morning</th><th>Evening</th><th>Test</th><th>Topic</th><th>Hrs</th><th>Note</th><th>✓</th></tr></thead><tbody id="novemberSchedule"></tbody></table></div>
-        <div id="tab-december" class="tab-content"><h2>📆 December 2026</h2><table class="month-table"><thead><tr><th>Date</th><th>Day</th><th>Morning</th><th>Evening</th><th>Test</th><th>Topic</th><th>Hrs</th><th>Note</th><th>✓</th></tr></thead><tbody id="decemberSchedule"></tbody></table></div>
-
-        <!-- Subject View -->
-        <div id="tab-subject-view" class="tab-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 id="currentSubjectTitle">Subject Detail</h2>
-                <button class="btn btn-danger" onclick="deleteCurrentSubject()">🗑️ Delete Subject</button>
+                <h2 class="text-xl font-bold text-gray-800 mb-4">📚 Quick Subject Access</h2>
+                <div id="subjectCards" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th width="35%">Topic Title</th>
-                        <th width="20%">Scheduled Date</th>
-                        <th width="10%">Day</th>
-                        <th width="15%">Category</th>
-                        <th width="10%">Hrs</th>
-                        <th width="5%">✓</th>
-                        <th width="5%">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="subjectTopicTable"></tbody>
-            </table>
-            <button class="btn btn-success" onclick="addTopicToCurrentSubject()">➕ Add Custom Topic Row</button>
-        </div>
 
-        <div id="tab-tests" class="tab-content"><h2>✅ Test Performance</h2><table><thead><tr><th>Test #</th><th>Date</th><th>Type</th><th>MCQs</th><th>Focus</th><th>Target</th><th>Score</th><th>%</th><th>Status</th></tr></thead><tbody id="testScheduleTable"></tbody></table></div>
-        <div id="tab-analytics" class="tab-content"><h2>📈 Analytics</h2><div class="summary-box"><h3>Performance History</h3><div id="performanceChart" style="height: 300px; display: flex; align-items: flex-end; gap: 5px; padding: 20px; background: #f8f9fa;"></div></div><table id="subjectAnalyticsTable"><thead><tr><th>Subject</th><th>Sessions</th><th>Hours</th><th>Progress</th></tr></thead><tbody></tbody></table></div>
+            <!-- Weekday Tab -->
+            <div id="tab-weekday" class="tab-content">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">📅 Weekday Routine</h2>
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-indigo-500 text-white">
+                            <tr>
+                                <th class="p-3 text-left">Time</th>
+                                <th class="p-3 text-left">Activity</th>
+                                <th class="p-3 text-left">Details</th>
+                                <th class="p-3 text-left">Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="weekdayTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Weekend Tab -->
+            <div id="tab-weekend" class="tab-content">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">🌅 Weekend Routine</h2>
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Saturday</h3>
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+                    <table class="w-full">
+                        <thead class="bg-indigo-500 text-white">
+                            <tr><th class="p-3 text-left">Time</th><th class="p-3 text-left">Activity</th><th class="p-3 text-left">Details</th><th class="p-3 text-left">Duration</th></tr>
+                        </thead>
+                        <tbody id="saturdayTable"></tbody>
+                    </table>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Sunday</h3>
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-indigo-500 text-white">
+                            <tr><th class="p-3 text-left">Time</th><th class="p-3 text-left">Activity</th><th class="p-3 text-left">Details</th><th class="p-3 text-left">Duration</th></tr>
+                        </thead>
+                        <tbody id="sundayTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Monthly Tabs (Dynamic) -->
+            <div id="monthlyTabs"></div>
+
+            <!-- Subject View Tab -->
+            <div id="tab-subject-view" class="tab-content">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800" id="subjectViewTitle">Subject</h2>
+                    <button onclick="deleteCurrentSubject()" class="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600 transition">🗑️ Delete Subject</button>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-indigo-500 text-white">
+                            <tr>
+                                <th class="p-3 text-left">Topic</th>
+                                <th class="p-3 text-left">Date</th>
+                                <th class="p-3 text-left">Day</th>
+                                <th class="p-3 text-left">Hours</th>
+                                <th class="p-3 text-left">Status</th>
+                                <th class="p-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="subjectTopicsTable"></tbody>
+                    </table>
+                </div>
+                <button onclick="addTopicToSubject()" class="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition">➕ Add Topic</button>
+            </div>
+
+            <!-- Tests Tab -->
+            <div id="tab-tests" class="tab-content">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">✅ Test Performance Tracker</h2>
+                <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-indigo-500 text-white">
+                            <tr>
+                                <th class="p-3 text-left">Test #</th>
+                                <th class="p-3 text-left">Date</th>
+                                <th class="p-3 text-left">Type</th>
+                                <th class="p-3 text-left">MCQs</th>
+                                <th class="p-3 text-left">Focus</th>
+                                <th class="p-3 text-left">Score</th>
+                                <th class="p-3 text-left">%</th>
+                                <th class="p-3 text-left">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="testsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="tab-analytics" class="tab-content">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">📈 Progress Analytics</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-xl p-6 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Subject Progress</h3>
+                        <div id="subjectAnalytics"></div>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Weekly Study Hours</h3>
+                        <div id="weeklyChart" class="h-48 flex items-end gap-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Tab -->
+            <div id="tab-admin" class="tab-content">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">⚙️ Admin - Manage Blueprints</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Manage Routines -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">📅 Manage Routines</h3>
+                        <div class="space-y-2">
+                            <button onclick="editRoutine('weekday')" class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-left">Edit Weekday Routine</button>
+                            <button onclick="editRoutine('saturday')" class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-left">Edit Saturday Routine</button>
+                            <button onclick="editRoutine('sunday')" class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-left">Edit Sunday Routine</button>
+                        </div>
+                    </div>
+
+                    <!-- Manage Subjects -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">📚 Manage Subjects</h3>
+                        <div id="adminSubjectList" class="space-y-2 mb-4"></div>
+                        <button onclick="adminAddSubject()" class="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">➕ Add New Subject</button>
+                    </div>
+                </div>
+
+                <!-- Manage Monthly Blueprint -->
+                <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">📆 Manage Monthly Blueprints</h3>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <select id="adminMonthSelect" class="px-4 py-2 border rounded-lg">
+                            <option value="01">January</option>
+                            <option value="02">February</option>
+                            <option value="03">March</option>
+                            <option value="04">April</option>
+                            <option value="05">May</option>
+                            <option value="06">June</option>
+                            <option value="07">July</option>
+                            <option value="08">August</option>
+                            <option value="09">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <button onclick="loadAdminMonthTasks()" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition">Load Tasks</button>
+                        <button onclick="adminAddTask()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">➕ Add Task</button>
+                    </div>
+                    <div id="adminTasksList" class="overflow-x-auto"></div>
+                </div>
+
+                <!-- Manage Tests -->
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">✅ Manage Test Schedule</h3>
+                    <button onclick="adminAddTest()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition mb-4">➕ Add Test</button>
+                    <div id="adminTestsList" class="overflow-x-auto"></div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <!-- Modals -->
-    <div id="inputModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header"><h3 id="modalTitle">Input</h3><span class="close" onclick="closeModal('inputModal')">&times;</span></div>
-            <div class="modal-body" id="modalBody"></div>
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button class="btn btn-secondary" onclick="closeModal('inputModal')">Cancel</button>
-                <button class="btn btn-primary" id="modalSubmit">Submit</button>
+    
+    <!-- Generic Modal -->
+    <div id="genericModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 id="modalTitle" class="text-xl font-bold text-gray-800">Modal</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <div id="modalBody" class="p-6"></div>
+            <div class="p-6 border-t flex justify-end gap-3">
+                <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">Cancel</button>
+                <button id="modalSubmit" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition">Save</button>
             </div>
         </div>
     </div>
 
-    <div id="notesModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header"><h3>📝 Global Study Notes</h3><span class="close" onclick="closeModal('notesModal')">&times;</span></div>
-            <textarea id="userNotes" style="width: 100%; height: 300px; padding: 15px; border-radius: 8px; border: 1px solid #ddd;"></textarea>
-            <button class="btn btn-success" style="width: 100%; margin-top: 15px;" onclick="saveNotes()">💾 Save Global Notes</button>
-        </div>
-    </div>
-
-    <div id="timerModal" class="modal">
-        <div class="modal-content" style="text-align: center;">
-            <div class="modal-header"><h3>⏱️ Study Session Timer</h3><span class="close" onclick="closeModal('timerModal')">&times;</span></div>
-            <div style="font-size: 64px; font-weight: bold; font-family: monospace; margin: 30px 0;" id="timerDisplay">00:00:00</div>
-            <div style="display: flex; gap: 10px; justify-content: center;">
-                <button class="btn btn-success" onclick="startTimer()">Start</button>
-                <button class="btn btn-warning" onclick="pauseTimer()">Pause</button>
-                <button class="btn btn-danger" onclick="resetTimer()">Reset</button>
-                <button class="btn btn-primary" onclick="saveStudySession()">Save Session</button>
+    <!-- Notes Modal -->
+    <div id="notesModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-xl font-bold text-gray-800">📝 Global Study Notes</h3>
+                <button onclick="closeNotesModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <div class="p-6">
+                <textarea id="globalNotes" class="w-full h-64 p-4 border rounded-lg resize-none focus:ring-2 focus:ring-indigo-500" placeholder="Write your study notes here..."></textarea>
+            </div>
+            <div class="p-6 border-t">
+                <button onclick="saveNotes()" class="w-full px-4 py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition">💾 Save Notes</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- Timer Modal -->
+    <div id="timerModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md text-center">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-xl font-bold text-gray-800">⏱️ Study Timer</h3>
+                <button onclick="closeTimerModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <div class="p-8">
+                <div id="timerDisplay" class="text-6xl font-mono font-bold text-indigo-600 mb-8">00:00:00</div>
+                <div class="flex justify-center gap-3">
+                    <button onclick="startTimer()" class="px-6 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition">▶ Start</button>
+                    <button onclick="pauseTimer()" class="px-6 py-2 bg-yellow-500 text-gray-800 rounded-lg font-semibold hover:bg-yellow-600 transition">⏸ Pause</button>
+                    <button onclick="resetTimer()" class="px-6 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition">⏹ Reset</button>
+                </div>
+                <button onclick="saveSession()" class="mt-6 px-6 py-2 bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-600 transition">💾 Save Session</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="importFile" class="hidden" accept=".json" onchange="handleImport(event)">
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAThe1_F61AYEZtXl6ISwNkd6D0XMSgg3k",
-            authDomain: "wbcs-progress-tracker-30fa6.firebaseapp.com",
-            projectId: "wbcs-progress-tracker-30fa6",
-            storageBucket: "wbcs-progress-tracker-30fa6.firebasestorage.app",
-            messagingSenderId: "9259146",
-            appId: "1:9259146:web:7f5a5f23f655ea1bf40573"
-        };
+        // =============================================
+        // API CONFIGURATION - Change this to your server
+        // =============================================
+        const API_BASE = 'http://localhost:5000/api'; // Change to your backend URL
         
-        let firebaseApp, auth, db, currentUser = null;
-        try {
-            firebaseApp = firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            db = firebase.firestore();
-        } catch (e) { console.error("Firebase init failed", e); }
-
-        // Master Blueprint
-        const janBlueprint = [
-            { date: "1 Jan", morning: "Polity: Constitution Basics, Preamble", evening: "Polity MCQs (50)", test: "New Year Holiday", topics: "Polity", hours: 3.75 },
-            { date: "2 Jan", morning: "History: 1857 Revolt - Causes & Course", evening: "1857 MCQs", test: "-", topics: "History", hours: 3.75 },
-            { date: "3 Jan", morning: "Geography: Earth, Solar System", evening: "Geography MCQs", test: "Weekend Study", topics: "Geography", hours: 8.5 },
-            { date: "4 Jan", morning: "Economy: National Income Concepts", evening: "Economy MCQs", test: "TEST 1: 50 MCQs", topics: "Economy", hours: 8 },
-            { date: "5 Jan", morning: "Polity: Fundamental Rights (Art 12-35)", evening: "FR MCQs + Case laws", test: "Rescheduled", topics: "Polity", hours: 3.75 },
-            { date: "6 Jan", morning: "History: Social Reform Movements", evening: "Reformers MCQs", test: "-", topics: "History", hours: 3.75 },
-            { date: "7 Jan", morning: "Geography: Indian Physiography", evening: "Mountain ranges MCQs", test: "-", topics: "Geography", hours: 3.75 },
-            { date: "8 Jan", morning: "Economy: Money, Banking, RBI Functions", evening: "Banking MCQs", test: "Rescheduled", topics: "Economy", hours: 3.75 },
-            { date: "9 Jan", morning: "Science: Physics - Motion, Work, Energy", evening: "Physics MCQs", test: "-", topics: "Science", hours: 3.75 },
-            { date: "10 Jan", morning: "Science: Heat, Light, Sound waves", evening: "Science comp MCQs", test: "Rescheduled", topics: "Science", hours: 8.5 },
-            { date: "11 Jan", morning: "Current Affairs: Dec 2025 Wrap-up", evening: "CA MCQs", test: "Rescheduled", topics: "Current Affairs", hours: 8 },
-            { date: "12 Jan", morning: "Polity: DPSP (Art 36-51) & FD", evening: "Directives MCQs", test: "Rescheduled", topics: "Polity", hours: 3.75 },
-            { date: "13 Jan", morning: "History: INC Formation, Moderate Phase", evening: "Early Congress MCQs", test: "-", topics: "History", hours: 3.75 },
-            { date: "14 Jan", morning: "Geography: Indian Drainage - Rivers", evening: "Rivers Map Marking", test: "Rescheduled", topics: "Geography", hours: 3.75 },
-            { date: "15 Jan", morning: "Economy: Fiscal Policy, Budget", evening: "Budget Terms MCQs", test: "Rescheduled", topics: "Economy", hours: 3.75 },
-            { date: "16 Jan", morning: "Science: Atomic Structure", evening: "Chemistry Elements", test: "Rescheduled", topics: "Science", hours: 3.75 },
-            { date: "17 Jan", morning: "History: National Movement Timeline", evening: "Chronology Practice", test: "Rescheduled", topics: "History", hours: 8.5 },
-            { date: "18 Jan", morning: "Polity: Union Executive", evening: "Executive MCQs", test: "Rescheduled", topics: "Polity", hours: 8 },
-            { date: "19 Jan", morning: "Polity: Parliament Basics", evening: "Legislature MCQs", test: "Rescheduled", topics: "Polity", hours: 3.75 },
-            { date: "20 Jan", morning: "History: Partition of Bengal 1905", evening: "Swadeshi Movement MCQs", test: "Rescheduled", topics: "History", hours: 3.75 },
-            { date: "21 Jan", morning: "Geography: Climate & Monsoon", evening: "Monsoon patterns MCQs", test: "Rescheduled", topics: "Geography", hours: 3.75 },
-            { date: "22 Jan", morning: "Economy: Agriculture Sector", evening: "Green Revolution MCQs", test: "Rescheduled", topics: "Economy", hours: 3.75 },
-            { date: "23 Jan", morning: "Science: Acids, Bases, Salts", evening: "pH scale reactions", test: "Rescheduled", topics: "Science", hours: 3.75 },
-            { date: "24 Jan", morning: "Geography: Indian Map Comprehensive", evening: "Map locations drill", test: "Rescheduled", topics: "Geography", hours: 8.5 },
-            { date: "25 Jan", morning: "Economy: Full Economy Marathon", evening: "Economy comprehensive MCQs", test: "Rescheduled", topics: "Economy", hours: 8 },
-            { date: "26 Jan", morning: "Republic Day: Constitution Deep Study", evening: "Polity 100 MCQs marathon", test: "-", topics: "Polity", hours: 3.75 },
-            { date: "27 Jan", morning: "History: Home Rule, Lucknow Pact", evening: "1916-1919 MCQs", test: "-", topics: "History", hours: 3.75 },
-            { date: "28 Jan", morning: "Geography: Soils & Vegetation", evening: "Forest types MCQs", test: "-", topics: "Geography", hours: 3.75 },
-            { date: "29 Jan", morning: "Economy: Industry & MSMEs", evening: "Manufacturing policies MCQs", test: "-", topics: "Economy", hours: 3.75 },
-            { date: "30 Jan", morning: "Science: Biology - Cell & Tissues", evening: "Cell structures MCQs", test: "-", topics: "Science", hours: 3.75 },
-            { date: "31 Jan", morning: "Polity: Full Revision Marathon", evening: "Polity final drill MCQs", test: "TEST 7: 75 MCQs", topics: "Polity", hours: 8.5 }
-        ];
-
-        const febBlueprint = [
-            { date: "1 Feb", morning: "Environment: Ecology, Biodiversity", evening: "Environment comp MCQs", test: "TEST 8: 75 MCQs", topics: "Environment", hours: 8 },
-            { date: "2 Feb", morning: "Polity: Judiciary - SC & High Courts", evening: "Judicial cases MCQs", test: "-", topics: "Polity", hours: 3.75 },
-            { date: "3 Feb", morning: "History: Non-Cooperation Movement", evening: "Gandhi era drill MCQs", test: "-", topics: "History", hours: 3.75 },
-            { date: "4 Feb", morning: "Geography: Minerals & Energy", evening: "Resource maps MCQs", test: "-", topics: "Geography", hours: 3.75 },
-            { date: "5 Feb", morning: "Economy: Planning & NITI Aayog", evening: "Plan objectives MCQs", test: "-", topics: "Economy", hours: 3.75 },
-            { date: "6 Feb", morning: "Science: Human Body Systems", evening: "Human diseases MCQs", test: "-", topics: "Science", hours: 3.75 },
-            { date: "7 Feb", morning: "History: 1857-1947 Final Chronology", evening: "Timeline marathon drill", test: "TEST 9: 75 MCQs", topics: "History", hours: 8.5 },
-            { date: "8 Feb", morning: "Polity + Geography Integration", evening: "Combined mock MCQs", test: "TEST 10: 75 MCQs", topics: "Polity", hours: 8 },
-            { date: "9 Feb", morning: "Polity: Local Government (73rd/74th)", evening: "Panchayat MCQs", test: "-", topics: "Polity", hours: 3.75 },
-            { date: "10 Feb", morning: "History: Civil Disobedience", evening: "Dandi March MCQs", test: "-", topics: "History", hours: 3.75 },
-            { date: "11 Feb", morning: "Geography WB: Physical Features", evening: "WB district maps MCQs", test: "-", topics: "Geography", hours: 3.75 },
-            { date: "12 Feb", morning: "Economy: Govt Schemes Review", evening: "Central/State welfare MCQs", test: "-", topics: "Economy", hours: 3.75 },
-            { date: "13 Feb", morning: "Science: Environment Pollution", evening: "Climate treaties MCQs", test: "-", topics: "Science", hours: 3.75 },
-            { date: "14 Feb", morning: "Mixed Revision: All Weak Areas", evening: "Problem topic intensive", test: "TEST 11: 75 MCQs", topics: "General", hours: 8.5 },
-            { date: "15 Feb", morning: "Full Science Revision Marathon", evening: "Science comprehensive MCQs", test: "TEST 12: 100 MCQs", topics: "Science", hours: 8 },
-            { date: "16 Feb", morning: "Polity: Emergency Provisions", evening: "Emergency history MCQs", test: "-", topics: "Polity", hours: 3.75 },
-            { date: "17 Feb", morning: "History: Quit India & INA", evening: "Final phase leaders MCQs", test: "-", topics: "History", hours: 3.75 },
-            { date: "18 Feb", morning: "Geography WB: Economy & Industry", evening: "WB agriculture MCQs", test: "-", topics: "Geography", hours: 3.75 },
-            { date: "19 Feb", morning: "Reasoning: Logical Patterns", evening: "Reasoning speed practice", test: "-", topics: "General", hours: 3.75 },
-            { date: "20 Feb", morning: "Quant: Perc, Ratio, Shortcuts", evening: "Speed math MCQs", test: "-", topics: "General", hours: 3.75 },
-            { date: "21 Feb", morning: "Complete GS Syllabus Revision", evening: "Full mock test simulation", test: "TEST 13: 100 MCQs", topics: "General", hours: 8.5 },
-            { date: "22 Feb", morning: "Current Affairs: Jan-Feb 2026", evening: "Recent events mock MCQs", test: "TEST 14: 100 MCQs", topics: "Current Affairs", hours: 8 },
-            { date: "23 Feb", morning: "English Basics & Vocabulary", evening: "English comp MCQs", test: "-", topics: "General", hours: 3 },
-            { date: "24 Feb", morning: "Formulas & Facts Final Look", evening: "Quick recall MCQs", test: "-", topics: "General", hours: 2.5 },
-            { date: "25 Feb", morning: "Timeline & Events Final Review", evening: "Chronology final check", test: "-", topics: "History", hours: 2.5 },
-            { date: "26 Feb", morning: "Maps & Diagrams Final Review", evening: "Visual memory drill", test: "-", topics: "Geography", hours: 2.5 },
-            { date: "27 Feb", morning: "Error Log Final Revision", evening: "Mistake pattern analysis", test: "-", topics: "General", hours: 2 },
-            { date: "28 Feb", morning: "Rest & Mental Relaxation", evening: "Final simulation mock", test: "FULL MOCK: 200 MCQs", topics: "General", hours: 3 }
-        ];
-
-        const marBlueprint = [
-            { date: "1 Mar", morning: "Makeup: Fundamental Rights (Missed Jan 5)", evening: "FR Case Laws", test: "Makeup Session", topics: "Polity", hours: 4 },
-            { date: "2 Mar", morning: "Makeup: Money & Banking (Missed Jan 8)", evening: "RBI MCQs", test: "Makeup Session", topics: "Economy", hours: 4 },
-            { date: "3 Mar", morning: "Makeup: Heat, Light, Sound (Missed Jan 10)", evening: "Waves MCQs", test: "Makeup Session", topics: "Science", hours: 4 },
-            { date: "4 Mar", morning: "Makeup: Indian Drainage (Missed Jan 14)", evening: "River Maps", test: "Makeup Session", topics: "Geography", hours: 4 },
-            { date: "5 Mar", morning: "Makeup: Fiscal Policy & Budget (Missed Jan 15)", evening: "Taxation MCQs", test: "Makeup Session", topics: "Economy", hours: 4 },
-            { date: "6 Mar", morning: "Makeup: Atomic Structure (Missed Jan 16)", evening: "Chem MCQs", test: "Makeup Session", topics: "Science", hours: 4 },
-            { date: "7 Mar", morning: "Makeup: National Movement Timeline (Missed Jan 17)", evening: "Chronology Drills", test: "Makeup Session", topics: "History", hours: 4 },
-            { date: "8 Mar", morning: "Makeup: Union Executive (Missed Jan 18)", evening: "President/PM MCQs", test: "Makeup Session", topics: "Polity", hours: 4 },
-            { date: "9 Mar", morning: "Makeup: Parliament (Missed Jan 19)", evening: "Bills/Procedures", test: "Makeup Session", topics: "Polity", hours: 4 },
-            { date: "10 Mar", morning: "Makeup: Partition of Bengal (Missed Jan 20)", evening: "Swadeshi MCQs", test: "Makeup Session", topics: "History", hours: 4 },
-            { date: "11 Mar", morning: "Makeup: Climate & Monsoon (Missed Jan 21)", evening: "Weather Maps", test: "Makeup Session", topics: "Geography", hours: 4 },
-            { date: "12 Mar", morning: "Makeup: Agriculture (Missed Jan 22)", evening: "Agri Schemes", test: "Makeup Session", topics: "Economy", hours: 4 },
-            { date: "13 Mar", morning: "Makeup: Acids, Bases, Salts (Missed Jan 23)", evening: "Chem Practice", test: "Makeup Session", topics: "Science", hours: 4 },
-            { date: "14 Mar", morning: "Makeup: Map Comprehensive (Missed Jan 24)", evening: "Location Drills", test: "Makeup Session", topics: "Geography", hours: 4 },
-            { date: "15 Mar", morning: "Makeup: Economy Marathon (Missed Jan 25)", evening: "Economy Final MCQs", test: "Makeup Session", topics: "Economy", hours: 6 },
-            { date: "16 Mar", morning: "Current Affairs: 1-15 March 2026", evening: "CA MCQs", test: "-", topics: "Current Affairs", hours: 4 },
-            { date: "17 Mar", morning: "Full Revision: Weak Areas", evening: "Rapid Fire MCQs", test: "-", topics: "General", hours: 6 },
-            { date: "18 Mar", morning: "Final Simulation Mock", evening: "Mistake Log Review", test: "TEST 15: FINAL SIM", topics: "General", hours: 8 },
-            { date: "19 Mar", morning: "Mental Prep & Exam Instructions", evening: "Rest", test: "Relaxation Day", topics: "General", hours: 2 },
-            { date: "20 Mar", morning: "WBCS PRELIMINARY EXAM 2026", evening: "Self Reflection", test: "D-DAY", topics: "General", hours: 10 }
-        ];
-
-        let appState = {
-            completedTasks: {}, testScores: {}, studyHours: {}, customDates: {}, dailyNotes: {},
-            modifiedTasks: {}, // Track edits to blueprint tasks
-            deletedTasks: [],  // Track deleted blueprint IDs
-            subjects: ["Polity", "History", "Geography", "Economy", "Science", "Environment", "Current Affairs"],
-            customTasks: [], 
-            darkMode: false, 
-            notes: "", 
-            activeSubject: null
+        // =============================================
+        // APP STATE
+        // =============================================
+        let currentUser = null;
+        let appData = {
+            subjects: [],
+            tasks: [],
+            tests: [],
+            routines: { weekday: [], saturday: [], sunday: [] },
+            userProgress: {
+                completedTasks: {},
+                testScores: {},
+                customDates: {},
+                dailyNotes: {},
+                studySessions: [],
+                notes: '',
+                darkMode: false
+            }
         };
+        let activeSubject = null;
+        let timerInterval = null;
+        let timerSeconds = 0;
 
-        function toggleSidebar() { 
-            document.getElementById('sidebar').classList.toggle('active');
-            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        // =============================================
+        // API FUNCTIONS
+        // =============================================
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            const token = localStorage.getItem('wbcs_token');
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token && { 'Authorization': `Bearer ${token}` })
+                }
+            };
+            if (data) options.body = JSON.stringify(data);
+            
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, options);
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'API Error');
+                return result;
+            } catch (error) {
+                console.error('API Error:', error);
+                // Fallback to localStorage if API fails
+                return null;
+            }
         }
-        function toggleSubmenu(id) { document.getElementById(id).classList.toggle('active'); }
 
-        function showModal(id) { document.getElementById(id).style.display = 'block'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        // =============================================
+        // AUTHENTICATION
+        // =============================================
+        function showAuthTab(tab) {
+            document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+            document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+            document.getElementById('loginTab').classList.toggle('bg-indigo-500', tab === 'login');
+            document.getElementById('loginTab').classList.toggle('text-white', tab === 'login');
+            document.getElementById('loginTab').classList.toggle('text-gray-600', tab !== 'login');
+            document.getElementById('registerTab').classList.toggle('bg-indigo-500', tab === 'register');
+            document.getElementById('registerTab').classList.toggle('text-white', tab === 'register');
+            document.getElementById('registerTab').classList.toggle('text-gray-600', tab !== 'register');
+        }
 
-        function openInputModal(title, callback, fields) {
-            const modal = document.getElementById('inputModal');
-            document.getElementById('modalTitle').textContent = title;
-            const body = document.getElementById('modalBody');
-            body.innerHTML = fields.map(f => `
-                <label style="display:block;margin-bottom:5px;font-weight:600;">${f.label}</label>
-                ${f.type==='textarea' ? `<textarea id="inp-${f.id}" placeholder="${f.placeholder}"></textarea>` : `<input type="${f.type}" id="inp-${f.id}" placeholder="${f.placeholder}" value="${f.value||''}">`}
-            `).join('');
-            showModal('inputModal');
-            document.getElementById('modalSubmit').onclick = () => {
-                const values = {};
-                fields.forEach(f => values[f.id] = document.getElementById(`inp-${f.id}`).value);
-                callback(values);
-                closeModal('inputModal');
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showAuthError('Please fill in all fields');
+                return;
+            }
+
+            document.getElementById('authLoader').classList.remove('hidden');
+            
+            const result = await apiCall('/auth/login', 'POST', { email, password });
+            
+            document.getElementById('authLoader').classList.add('hidden');
+            
+            if (result && result.token) {
+                localStorage.setItem('wbcs_token', result.token);
+                currentUser = result.user;
+                await initializeApp();
+            } else {
+                // Fallback: demo mode with localStorage
+                currentUser = { email, name: email.split('@')[0], isAdmin: email.includes('admin') };
+                localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
+                await initializeApp();
+            }
+        }
+
+        async function handleRegister() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            
+            if (!name || !email || !password) {
+                showAuthError('Please fill in all fields');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showAuthError('Password must be at least 6 characters');
+                return;
+            }
+
+            document.getElementById('authLoader').classList.remove('hidden');
+            
+            const result = await apiCall('/auth/register', 'POST', { name, email, password });
+            
+            document.getElementById('authLoader').classList.add('hidden');
+            
+            if (result && result.token) {
+                localStorage.setItem('wbcs_token', result.token);
+                currentUser = result.user;
+                await initializeApp();
+            } else {
+                // Fallback: demo mode
+                currentUser = { email, name, isAdmin: false };
+                localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
+                showToast('Account created (Demo Mode)', 'success');
+                await initializeApp();
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('wbcs_token');
+            localStorage.removeItem('wbcs_user');
+            currentUser = null;
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+        }
+
+        function showAuthError(msg) {
+            const el = document.getElementById('authError');
+            el.textContent = msg;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 3000);
+        }
+
+        // =============================================
+        // DATA LOADING & SAVING
+        // =============================================
+        async function loadAppData() {
+            // Try to load from API
+            const serverData = await apiCall('/data');
+            
+            if (serverData) {
+                appData = serverData;
+            } else {
+                // Fallback: Load from localStorage or use defaults
+                const localData = localStorage.getItem('wbcs_appData');
+                if (localData) {
+                    appData = JSON.parse(localData);
+                } else {
+                    // Initialize with default data
+                    appData = getDefaultAppData();
+                }
+            }
+            
+            // Load user-specific progress
+            const userProgress = await apiCall('/progress');
+            if (userProgress) {
+                appData.userProgress = userProgress;
+            } else {
+                const localProgress = localStorage.getItem('wbcs_progress_' + currentUser.email);
+                if (localProgress) {
+                    appData.userProgress = JSON.parse(localProgress);
+                }
+            }
+        }
+
+        async function saveProgress() {
+            // Save to API
+            await apiCall('/progress', 'PUT', appData.userProgress);
+            
+            // Also save to localStorage as backup
+            localStorage.setItem('wbcs_progress_' + currentUser.email, JSON.stringify(appData.userProgress));
+            localStorage.setItem('wbcs_appData', JSON.stringify(appData));
+        }
+
+        async function saveAppData() {
+            // Admin only - save blueprint data
+            if (!currentUser.isAdmin) return;
+            
+            await apiCall('/data', 'PUT', {
+                subjects: appData.subjects,
+                tasks: appData.tasks,
+                tests: appData.tests,
+                routines: appData.routines
+            });
+            
+            localStorage.setItem('wbcs_appData', JSON.stringify(appData));
+        }
+
+        function getDefaultAppData() {
+            return {
+                subjects: ['Polity', 'History', 'Geography', 'Economy', 'Science', 'Environment', 'Current Affairs'],
+                tasks: getDefaultTasks(),
+                tests: getDefaultTests(),
+                routines: getDefaultRoutines(),
+                userProgress: {
+                    completedTasks: {},
+                    testScores: {},
+                    customDates: {},
+                    dailyNotes: {},
+                    studySessions: [],
+                    notes: '',
+                    darkMode: false
+                }
             };
         }
 
-        // European Date Helper
-        function formatEuro(dateStr) { if(!dateStr) return ""; const [y,m,d] = dateStr.split('-'); return `${d}/${m}/${y}`; }
-        function getDayOfWeek(dateStr) { const d = new Date(dateStr); return d.toLocaleDateString('en-US', {weekday:'short'}); }
-
-        function getMasterSchedule() {
-            let master = [];
-            
-            // 1. Process Blueprint
-            const rawBlueprint = [
-                ...janBlueprint.map((t, i) => ({...t, id: `jan-${i}`})),
-                ...febBlueprint.map((t, i) => ({...t, id: `feb-${i}`})),
-                ...marBlueprint.map((t, i) => ({...t, id: `mar-${i}`}))
+        function getDefaultTasks() {
+            const tasks = [];
+            // January Blueprint
+            const janData = [
+                { date: '2026-01-01', morning: 'Polity: Constitution Basics, Preamble', evening: 'Polity MCQs (50)', test: 'New Year Holiday', subject: 'Polity', hours: 3.75 },
+                { date: '2026-01-02', morning: 'History: 1857 Revolt - Causes & Course', evening: '1857 MCQs', test: '-', subject: 'History', hours: 3.75 },
+                { date: '2026-01-03', morning: 'Geography: Earth, Solar System', evening: 'Geography MCQs', test: 'Weekend Study', subject: 'Geography', hours: 8.5 },
+                { date: '2026-01-04', morning: 'Economy: National Income Concepts', evening: 'Economy MCQs', test: 'TEST 1: 50 MCQs', subject: 'Economy', hours: 8 },
+                { date: '2026-01-05', morning: 'Polity: Fundamental Rights (Art 12-35)', evening: 'FR MCQs + Case laws', test: '-', subject: 'Polity', hours: 3.75 },
+                { date: '2026-01-06', morning: 'History: Social Reform Movements', evening: 'Reformers MCQs', test: '-', subject: 'History', hours: 3.75 },
+                { date: '2026-01-07', morning: 'Geography: Indian Physiography', evening: 'Mountain ranges MCQs', test: '-', subject: 'Geography', hours: 3.75 },
+                { date: '2026-01-08', morning: 'Economy: Money, Banking, RBI Functions', evening: 'Banking MCQs', test: '-', subject: 'Economy', hours: 3.75 },
+                { date: '2026-01-09', morning: 'Science: Physics - Motion, Work, Energy', evening: 'Physics MCQs', test: '-', subject: 'Science', hours: 3.75 },
+                { date: '2026-01-10', morning: 'Science: Heat, Light, Sound waves', evening: 'Science comp MCQs', test: 'Weekend Study', subject: 'Science', hours: 8.5 },
+                { date: '2026-01-11', morning: 'Current Affairs: Dec 2025 Wrap-up', evening: 'CA MCQs', test: 'TEST 2: 50 MCQs', subject: 'Current Affairs', hours: 8 },
+                { date: '2026-01-12', morning: 'Polity: DPSP (Art 36-51) & FD', evening: 'Directives MCQs', test: '-', subject: 'Polity', hours: 3.75 },
+                { date: '2026-01-13', morning: 'History: INC Formation, Moderate Phase', evening: 'Early Congress MCQs', test: '-', subject: 'History', hours: 3.75 },
+                { date: '2026-01-14', morning: 'Geography: Indian Drainage - Rivers', evening: 'Rivers Map Marking', test: '-', subject: 'Geography', hours: 3.75 },
+                { date: '2026-01-15', morning: 'Economy: Fiscal Policy, Budget', evening: 'Budget Terms MCQs', test: '-', subject: 'Economy', hours: 3.75 },
+                { date: '2026-01-16', morning: 'Science: Atomic Structure', evening: 'Chemistry Elements', test: '-', subject: 'Science', hours: 3.75 },
+                { date: '2026-01-17', morning: 'History: National Movement Timeline', evening: 'Chronology Practice', test: 'Weekend Study', subject: 'History', hours: 8.5 },
+                { date: '2026-01-18', morning: 'Polity: Union Executive', evening: 'Executive MCQs', test: 'TEST 3: 75 MCQs', subject: 'Polity', hours: 8 },
+                { date: '2026-01-19', morning: 'Polity: Parliament Basics', evening: 'Legislature MCQs', test: '-', subject: 'Polity', hours: 3.75 },
+                { date: '2026-01-20', morning: 'History: Partition of Bengal 1905', evening: 'Swadeshi Movement MCQs', test: '-', subject: 'History', hours: 3.75 },
+                { date: '2026-01-21', morning: 'Geography: Climate & Monsoon', evening: 'Monsoon patterns MCQs', test: '-', subject: 'Geography', hours: 3.75 },
+                { date: '2026-01-22', morning: 'Economy: Agriculture Sector', evening: 'Green Revolution MCQs', test: '-', subject: 'Economy', hours: 3.75 },
+                { date: '2026-01-23', morning: 'Science: Acids, Bases, Salts', evening: 'pH scale reactions', test: '-', subject: 'Science', hours: 3.75 },
+                { date: '2026-01-24', morning: 'Geography: Indian Map Comprehensive', evening: 'Map locations drill', test: 'Weekend Study', subject: 'Geography', hours: 8.5 },
+                { date: '2026-01-25', morning: 'Economy: Full Economy Marathon', evening: 'Economy comprehensive MCQs', test: 'TEST 4: 75 MCQs', subject: 'Economy', hours: 8 },
+                { date: '2026-01-26', morning: 'Republic Day: Constitution Deep Study', evening: 'Polity 100 MCQs marathon', test: 'Holiday', subject: 'Polity', hours: 6 },
+                { date: '2026-01-27', morning: 'History: Home Rule, Lucknow Pact', evening: '1916-1919 MCQs', test: '-', subject: 'History', hours: 3.75 },
+                { date: '2026-01-28', morning: 'Geography: Soils & Vegetation', evening: 'Forest types MCQs', test: '-', subject: 'Geography', hours: 3.75 },
+                { date: '2026-01-29', morning: 'Economy: Industry & MSMEs', evening: 'Manufacturing policies MCQs', test: '-', subject: 'Economy', hours: 3.75 },
+                { date: '2026-01-30', morning: 'Science: Biology - Cell & Tissues', evening: 'Cell structures MCQs', test: '-', subject: 'Science', hours: 3.75 },
+                { date: '2026-01-31', morning: 'Polity: Full Revision Marathon', evening: 'Polity final drill MCQs', test: 'TEST 5: 75 MCQs', subject: 'Polity', hours: 8.5 }
             ];
 
-            rawBlueprint.forEach(t => {
-                // Skip if deleted
-                if (appState.deletedTasks.includes(t.id)) return;
-                
-                // Apply modifications
-                let task = {...t, origin: 'blueprint'};
-                if (appState.modifiedTasks[t.id]) {
-                    task = {...task, ...appState.modifiedTasks[t.id]};
-                }
-                master.push(task);
+            // February Blueprint
+            const febData = [
+                { date: '2026-02-01', morning: 'Environment: Ecology, Biodiversity', evening: 'Environment comp MCQs', test: 'TEST 6: 75 MCQs', subject: 'Environment', hours: 8 },
+                { date: '2026-02-02', morning: 'Polity: Judiciary - SC & High Courts', evening: 'Judicial cases MCQs', test: '-', subject: 'Polity', hours: 3.75 },
+                { date: '2026-02-03', morning: 'History: Non-Cooperation Movement', evening: 'Gandhi era drill MCQs', test: '-', subject: 'History', hours: 3.75 },
+                { date: '2026-02-04', morning: 'Geography: Minerals & Energy', evening: 'Resource maps MCQs', test: '-', subject: 'Geography', hours: 3.75 },
+                { date: '2026-02-05', morning: 'Economy: Planning & NITI Aayog', evening: 'Plan objectives MCQs', test: '-', subject: 'Economy', hours: 3.75 },
+                { date: '2026-02-06', morning: 'Science: Human Body Systems', evening: 'Human diseases MCQs', test: '-', subject: 'Science', hours: 3.75 },
+                { date: '2026-02-07', morning: 'History: 1857-1947 Final Chronology', evening: 'Timeline marathon drill', test: 'TEST 7: 75 MCQs', subject: 'History', hours: 8.5 },
+                { date: '2026-02-08', morning: 'Polity + Geography Integration', evening: 'Combined mock MCQs', test: 'TEST 8: 75 MCQs', subject: 'Polity', hours: 8 },
+                { date: '2026-02-09', morning: 'Polity: Local Government (73rd/74th)', evening: 'Panchayat MCQs', test: '-', subject: 'Polity', hours: 3.75 },
+                { date: '2026-02-10', morning: 'History: Civil Disobedience', evening: 'Dandi March MCQs', test: '-', subject: 'History', hours: 3.75 },
+                { date: '2026-02-11', morning: 'Geography WB: Physical Features', evening: 'WB district maps MCQs', test: '-', subject: 'Geography', hours: 3.75 },
+                { date: '2026-02-12', morning: 'Economy: Govt Schemes Review', evening: 'Central/State welfare MCQs', test: '-', subject: 'Economy', hours: 3.75 },
+                { date: '2026-02-13', morning: 'Science: Environment Pollution', evening: 'Climate treaties MCQs', test: '-', subject: 'Science', hours: 3.75 },
+                { date: '2026-02-14', morning: 'Mixed Revision: All Weak Areas', evening: 'Problem topic intensive', test: 'TEST 9: 75 MCQs', subject: 'General', hours: 8.5 },
+                { date: '2026-02-15', morning: 'Full Science Revision Marathon', evening: 'Science comprehensive MCQs', test: 'TEST 10: 100 MCQs', subject: 'Science', hours: 8 },
+                { date: '2026-02-16', morning: 'Polity: Emergency Provisions', evening: 'Emergency history MCQs', test: '-', subject: 'Polity', hours: 3.75 },
+                { date: '2026-02-17', morning: 'History: Quit India & INA', evening: 'Final phase leaders MCQs', test: '-', subject: 'History', hours: 3.75 },
+                { date: '2026-02-18', morning: 'Geography WB: Economy & Industry', evening: 'WB agriculture MCQs', test: '-', subject: 'Geography', hours: 3.75 },
+                { date: '2026-02-19', morning: 'Reasoning: Logical Patterns', evening: 'Reasoning speed practice', test: '-', subject: 'General', hours: 3.75 },
+                { date: '2026-02-20', morning: 'Quant: Perc, Ratio, Shortcuts', evening: 'Speed math MCQs', test: '-', subject: 'General', hours: 3.75 },
+                { date: '2026-02-21', morning: 'Complete GS Syllabus Revision', evening: 'Full mock test simulation', test: 'TEST 11: 100 MCQs', subject: 'General', hours: 8.5 },
+                { date: '2026-02-22', morning: 'Current Affairs: Jan-Feb 2026', evening: 'Recent events mock MCQs', test: 'TEST 12: 100 MCQs', subject: 'Current Affairs', hours: 8 },
+                { date: '2026-02-23', morning: 'English Basics & Vocabulary', evening: 'English comp MCQs', test: '-', subject: 'General', hours: 3 },
+                { date: '2026-02-24', morning: 'Formulas & Facts Final Look', evening: 'Quick recall MCQs', test: '-', subject: 'General', hours: 2.5 },
+                { date: '2026-02-25', morning: 'Timeline & Events Final Review', evening: 'Chronology final check', test: '-', subject: 'History', hours: 2.5 },
+                { date: '2026-02-26', morning: 'Maps & Diagrams Final Review', evening: 'Visual memory drill', test: '-', subject: 'Geography', hours: 2.5 },
+                { date: '2026-02-27', morning: 'Error Log Final Revision', evening: 'Mistake pattern analysis', test: '-', subject: 'General', hours: 2 },
+                { date: '2026-02-28', morning: 'Rest & Mental Relaxation', evening: 'Final simulation mock', test: 'FULL MOCK: 200 MCQs', subject: 'General', hours: 3 }
+            ];
+
+            // March Blueprint
+            const marData = [
+                { date: '2026-03-01', morning: 'Full Revision: Polity Weak Areas', evening: 'Polity Marathon', test: '-', subject: 'Polity', hours: 6 },
+                { date: '2026-03-02', morning: 'Full Revision: History Weak Areas', evening: 'History Marathon', test: '-', subject: 'History', hours: 6 },
+                { date: '2026-03-03', morning: 'Full Revision: Geography Weak Areas', evening: 'Geography Marathon', test: '-', subject: 'Geography', hours: 6 },
+                { date: '2026-03-04', morning: 'Full Revision: Economy Weak Areas', evening: 'Economy Marathon', test: '-', subject: 'Economy', hours: 6 },
+                { date: '2026-03-05', morning: 'Full Revision: Science Weak Areas', evening: 'Science Marathon', test: '-', subject: 'Science', hours: 6 },
+                { date: '2026-03-06', morning: 'Current Affairs: Complete Review', evening: 'CA Final Drill', test: '-', subject: 'Current Affairs', hours: 6 },
+                { date: '2026-03-07', morning: 'Mock Test Simulation', evening: 'Error Analysis', test: 'TEST 13: FULL MOCK', subject: 'General', hours: 8 },
+                { date: '2026-03-08', morning: 'Mock Test Simulation', evening: 'Error Analysis', test: 'TEST 14: FULL MOCK', subject: 'General', hours: 8 },
+                { date: '2026-03-09', morning: 'Rapid Revision: All Subjects', evening: 'Quick Facts Review', test: '-', subject: 'General', hours: 6 },
+                { date: '2026-03-10', morning: 'Rapid Revision: All Subjects', evening: 'Quick Facts Review', test: '-', subject: 'General', hours: 6 },
+                { date: '2026-03-11', morning: 'Focus: Constitution & Amendments', evening: 'Polity Final MCQs', test: '-', subject: 'Polity', hours: 5 },
+                { date: '2026-03-12', morning: 'Focus: Freedom Movement Timeline', evening: 'History Final MCQs', test: '-', subject: 'History', hours: 5 },
+                { date: '2026-03-13', morning: 'Focus: Maps & Current Affairs', evening: 'Geography + CA MCQs', test: '-', subject: 'Geography', hours: 5 },
+                { date: '2026-03-14', morning: 'Final Mock Test', evening: 'Complete Review', test: 'TEST 15: FINAL MOCK', subject: 'General', hours: 8 },
+                { date: '2026-03-15', morning: 'Light Revision Only', evening: 'Rest', test: '-', subject: 'General', hours: 3 },
+                { date: '2026-03-16', morning: 'Formula Sheet Review', evening: 'Quick Facts', test: '-', subject: 'General', hours: 3 },
+                { date: '2026-03-17', morning: 'Current Affairs: Last Week', evening: 'Light Reading', test: '-', subject: 'Current Affairs', hours: 3 },
+                { date: '2026-03-18', morning: 'Exam Prep: Admit Card, Center', evening: 'Mental Relaxation', test: 'Preparation Day', subject: 'General', hours: 2 },
+                { date: '2026-03-19', morning: 'Complete Rest', evening: 'Early Sleep', test: 'Rest Day', subject: 'General', hours: 1 },
+                { date: '2026-03-20', morning: 'WBCS PRELIMINARY EXAM 2026', evening: 'Self Reflection', test: 'D-DAY', subject: 'General', hours: 10 }
+            ];
+
+            [...janData, ...febData, ...marData].forEach((t, i) => {
+                tasks.push({ ...t, id: `task-${i}` });
             });
 
-            // 2. Add Custom Tasks
-            appState.customTasks.forEach(t => master.push({...t, origin: 'custom'}));
-
-            // 3. Normalize dates and sort
-            return master.map(t => {
-                let d = appState.customDates[t.id] || t.date;
-                // Convert "1 Jan" to "2026-01-01" if needed
-                if(!d.includes('-')) {
-                    const parts = d.split(' ');
-                    const monthMap = {Jan:'01', Feb:'02', Mar:'03'};
-                    const day = parts[0].padStart(2, '0');
-                    const month = monthMap[parts[1]] || '01';
-                    d = `2026-${month}-${day}`;
-                }
-                return {...t, currentFullDate: d};
-            }).sort((a, b) => a.currentFullDate.localeCompare(b.currentFullDate));
+            return tasks;
         }
 
-        function addTask(monthHint) {
-            const defaultDate = `2026-${monthHint}-01`;
-            openInputModal("Add New Task", (v) => {
-                const newTask = {
-                    id: 'task-' + Date.now(),
-                    morning: v.morning,
-                    evening: v.evening,
-                    test: v.test,
-                    topics: v.topics,
-                    hours: parseFloat(v.hours) || 2,
-                    date: v.date
-                };
-                appState.customTasks.push(newTask);
-                saveState();
-                renderAll();
-            }, [
-                {id:'morning', label:'Morning/Theory', type:'text', placeholder:'Topic name...'},
-                {id:'evening', label:'Evening/Practice', type:'text', placeholder:'Practice details...'},
-                {id:'test', label:'Test/Activity', type:'text', placeholder:'e.g. Test 1'},
-                {id:'topics', label:'Subject (Categorization)', type:'text', placeholder:'e.g. History'},
-                {id:'hours', label:'Hours', type:'number', value: 3.75},
-                {id:'date', label:'Date', type:'date', value: defaultDate}
-            ]);
+        function getDefaultTests() {
+            return [
+                { id: 'test-1', number: 1, date: '2026-01-04', type: 'Subject', mcqs: 50, focus: 'Polity + History', target: 40 },
+                { id: 'test-2', number: 2, date: '2026-01-11', type: 'Subject', mcqs: 50, focus: 'Geography + Economy', target: 40 },
+                { id: 'test-3', number: 3, date: '2026-01-18', type: 'Mixed', mcqs: 75, focus: 'GS Comprehensive', target: 60 },
+                { id: 'test-4', number: 4, date: '2026-01-25', type: 'Mixed', mcqs: 75, focus: 'All Subjects', target: 60 },
+                { id: 'test-5', number: 5, date: '2026-01-31', type: 'Mixed', mcqs: 75, focus: 'Polity Heavy', target: 60 },
+                { id: 'test-6', number: 6, date: '2026-02-01', type: 'Subject', mcqs: 75, focus: 'Environment', target: 60 },
+                { id: 'test-7', number: 7, date: '2026-02-07', type: 'Mixed', mcqs: 75, focus: 'History Focus', target: 60 },
+                { id: 'test-8', number: 8, date: '2026-02-08', type: 'Mixed', mcqs: 75, focus: 'Polity + Geo', target: 60 },
+                { id: 'test-9', number: 9, date: '2026-02-14', type: 'Mixed', mcqs: 75, focus: 'Weak Areas', target: 60 },
+                { id: 'test-10', number: 10, date: '2026-02-15', type: 'Full', mcqs: 100, focus: 'Science Focus', target: 80 },
+                { id: 'test-11', number: 11, date: '2026-02-21', type: 'Full', mcqs: 100, focus: 'Complete GS', target: 80 },
+                { id: 'test-12', number: 12, date: '2026-02-22', type: 'Full', mcqs: 100, focus: 'Current Affairs', target: 80 },
+                { id: 'test-13', number: 13, date: '2026-03-07', type: 'Full Mock', mcqs: 200, focus: 'Exam Simulation', target: 160 },
+                { id: 'test-14', number: 14, date: '2026-03-08', type: 'Full Mock', mcqs: 200, focus: 'Exam Simulation', target: 160 },
+                { id: 'test-15', number: 15, date: '2026-03-14', type: 'Final Mock', mcqs: 200, focus: 'Final Simulation', target: 170 }
+            ];
         }
 
-        function editTask(id) {
-            const master = getMasterSchedule();
-            const task = master.find(t => t.id === id);
-            if (!task) return;
-
-            openInputModal("Edit Task", (v) => {
-                const updates = {
-                    morning: v.morning,
-                    evening: v.evening,
-                    test: v.test,
-                    topics: v.topics,
-                    hours: parseFloat(v.hours) || 0
-                };
-                
-                if (task.origin === 'blueprint') {
-                    appState.modifiedTasks[id] = updates;
-                } else {
-                    const idx = appState.customTasks.findIndex(t => t.id === id);
-                    appState.customTasks[idx] = {...appState.customTasks[idx], ...updates};
-                }
-                
-                appState.customDates[id] = v.date;
-                saveState();
-                renderAll();
-                if (appState.activeSubject) viewSubject(appState.activeSubject);
-            }, [
-                {id:'morning', label:'Morning/Theory', type:'text', value: task.morning},
-                {id:'evening', label:'Evening/Practice', type:'text', value: task.evening},
-                {id:'test', label:'Test/Activity', type:'text', value: task.test},
-                {id:'topics', label:'Subject', type:'text', value: task.topics},
-                {id:'hours', label:'Hours', type:'number', value: task.hours},
-                {id:'date', label:'Date', type:'date', value: task.currentFullDate}
-            ]);
+        function getDefaultRoutines() {
+            return {
+                weekday: [
+                    { time: '05:30 - 06:00', activity: 'Wake Up & Freshen', details: 'Morning routine, light exercise', duration: '30 min' },
+                    { time: '06:00 - 08:00', activity: 'Morning Study Block', details: 'Theory reading - Primary subject', duration: '2 hrs' },
+                    { time: '08:00 - 09:00', activity: 'Breakfast & Break', details: 'News reading, current affairs', duration: '1 hr' },
+                    { time: '09:00 - 18:00', activity: 'Office/Work', details: 'Professional commitments', duration: '9 hrs' },
+                    { time: '18:00 - 19:00', activity: 'Evening Break', details: 'Rest, snacks, light walk', duration: '1 hr' },
+                    { time: '19:00 - 21:00', activity: 'Evening Study Block', details: 'MCQ practice, revision', duration: '2 hrs' },
+                    { time: '21:00 - 22:00', activity: 'Dinner & Relaxation', details: 'Light reading, family time', duration: '1 hr' },
+                    { time: '22:00 - 22:30', activity: 'Quick Revision', details: 'Day recap, next day planning', duration: '30 min' }
+                ],
+                saturday: [
+                    { time: '06:00 - 08:00', activity: 'Morning Theory', details: 'Subject deep dive', duration: '2 hrs' },
+                    { time: '08:00 - 09:00', activity: 'Breakfast', details: 'Current affairs reading', duration: '1 hr' },
+                    { time: '09:00 - 12:00', activity: 'Intensive Study', details: 'Primary subject completion', duration: '3 hrs' },
+                    { time: '12:00 - 14:00', activity: 'Lunch & Break', details: 'Rest and refresh', duration: '2 hrs' },
+                    { time: '14:00 - 17:00', activity: 'MCQ Practice', details: 'Subject-wise practice', duration: '3 hrs' },
+                    { time: '17:00 - 19:00', activity: 'Revision', details: 'Week summary revision', duration: '2 hrs' },
+                    { time: '19:00 onwards', activity: 'Free Time', details: 'Relaxation, light study', duration: '~' }
+                ],
+                sunday: [
+                    { time: '07:00 - 09:00', activity: 'Light Morning Study', details: 'Weak area focus', duration: '2 hrs' },
+                    { time: '09:00 - 11:00', activity: 'Mock Test', details: 'Weekly assessment', duration: '2 hrs' },
+                    { time: '11:00 - 13:00', activity: 'Test Analysis', details: 'Error log, learning', duration: '2 hrs' },
+                    { time: '13:00 - 16:00', activity: 'Break & Lunch', details: 'Complete rest', duration: '3 hrs' },
+                    { time: '16:00 - 18:00', activity: 'Next Week Planning', details: 'Schedule preparation', duration: '2 hrs' },
+                    { time: '18:00 onwards', activity: 'Family/Recreation', details: 'Mental refresh', duration: '~' }
+                ]
+            };
         }
 
-        function deleteTask(id) {
-            if (!confirm("Are you sure you want to remove this task?")) return;
+        // =============================================
+        // APP INITIALIZATION
+        // =============================================
+        async function initializeApp() {
+            await loadAppData();
             
-            const task = getMasterSchedule().find(t => t.id === id);
-            if (task.origin === 'blueprint') {
-                appState.deletedTasks.push(id);
-            } else {
-                appState.customTasks = appState.customTasks.filter(t => t.id !== id);
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            
+            document.getElementById('userEmailDisplay').textContent = '👤 ' + currentUser.email;
+            document.getElementById('sidebarUserEmail').textContent = currentUser.email;
+            
+            // Show admin menu if admin
+            if (currentUser.isAdmin) {
+                document.getElementById('adminMenuSection').classList.remove('hidden');
             }
             
-            saveState();
+            // Apply dark mode
+            if (appData.userProgress.darkMode) {
+                document.body.classList.add('dark-mode');
+            }
+            
+            // Load notes
+            document.getElementById('globalNotes').value = appData.userProgress.notes || '';
+            
             renderAll();
-            if (appState.activeSubject) viewSubject(appState.activeSubject);
+            showToast('Welcome back, ' + currentUser.name + '!', 'success');
         }
 
+        // =============================================
+        // RENDERING FUNCTIONS
+        // =============================================
         function renderAll() {
-            const master = getMasterSchedule();
-            const months = ["january","february","march","april","may","june","july","august","september","october","november","december"];
-            const menu = document.getElementById('monthSubmenu'); menu.innerHTML = '';
+            renderDashboard();
+            renderRoutines();
+            renderMonthlySchedules();
+            renderSubjects();
+            renderTests();
+            renderAnalytics();
+            if (currentUser.isAdmin) renderAdminPanel();
+        }
+
+        function renderDashboard() {
+            const tasks = appData.tasks;
+            const completed = Object.keys(appData.userProgress.completedTasks).filter(k => appData.userProgress.completedTasks[k]).length;
+            const progress = tasks.length ? Math.round((completed / tasks.length) * 100) : 0;
             
-            months.forEach((m, idx) => {
-                const mNum = String(idx + 1).padStart(2,'0');
-                const filtered = master.filter(t => t.currentFullDate.split('-')[1] === mNum);
-                const container = document.getElementById(`${m}Schedule`);
-                if(container) {
-                    if(filtered.length > 0) {
-                        menu.innerHTML += `<div class="submenu-item" onclick="switchTab('${m}')">${m.charAt(0).toUpperCase()+m.slice(1)} 2026</div>`;
-                        container.innerHTML = filtered.map(t => `
-                            <tr class="${appState.completedTasks[t.id]?'completed-row':''}">
-                                <td><div style="font-size:10px;color:var(--primary);">${formatEuro(t.currentFullDate)}</div><input type="date" class="date-edit-input" value="${t.currentFullDate}" onchange="updateDate('${t.id}', this.value)"></td>
-                                <td>${getDayOfWeek(t.currentFullDate)}</td>
-                                <td onclick="editTask('${t.id}')" style="cursor:pointer">${t.morning || '-'}</td>
-                                <td onclick="editTask('${t.id}')" style="cursor:pointer">${t.evening || '-'}</td>
-                                <td onclick="editTask('${t.id}')" style="cursor:pointer">${t.test || '-'}</td>
-                                <td onclick="editTask('${t.id}')" style="cursor:pointer">${t.topics}</td>
-                                <td>${t.hours || 0}</td>
-                                <td style="display:flex;gap:5px;">
-                                    <button class="btn btn-info" style="padding:4px 8px" onclick="openDailyNote('${t.id}')">✏️</button>
-                                    <button class="btn btn-danger" style="padding:4px 8px" onclick="deleteTask('${t.id}')">🗑️</button>
-                                </td>
-                                <td><input type="checkbox" class="task-checkbox" ${appState.completedTasks[t.id]?'checked':''} onchange="toggleTask('${t.id}', this.checked)"></td>
-                            </tr>
-                        `).join('') + `<tr><td colspan="9"><button class="btn btn-success" style="width:100%" onclick="addTask('${mNum}')">➕ Add Topic to ${m.charAt(0).toUpperCase()+m.slice(1)}</button></td></tr>`;
-                    } else { container.innerHTML = '<tr><td colspan="9" style="text-align:center;opacity:0.5;">No tasks scheduled for this month.</td></tr>'; }
-                }
-            });
-            updateSubjectSidebar();
-            updateDashboard();
-            updateAnalytics();
-        }
-
-        function updateDate(id, val) { appState.customDates[id] = val; saveState(); renderAll(); }
-        function toggleTask(id, val) { appState.completedTasks[id] = val; saveState(); renderAll(); }
-
-        function updateSubjectSidebar() {
-            const list = document.getElementById('subjectList');
-            const quick = document.getElementById('subjectQuickCards');
-            list.innerHTML = appState.subjects.map(s => `<div class="submenu-item" onclick="viewSubject('${s}')">📚 ${s}</div>`).join('');
-            quick.innerHTML = appState.subjects.map(s => `<div class="stats-card" style="cursor:pointer;" onclick="viewSubject('${s}')"><h3>${s}</h3><div class="value" style="font-size:14px;">View Topics →</div></div>`).join('');
-        }
-
-        function createNewSubject() {
-            openInputModal("Create New Subject", (v) => {
-                if(v.name && !appState.subjects.includes(v.name)) {
-                    appState.subjects.push(v.name); saveState(); renderAll(); viewSubject(v.name);
-                }
-            }, [{id:'name', label:'Subject Name', type:'text', placeholder:'e.g. Physics'}]);
-        }
-
-        function viewSubject(name) {
-            appState.activeSubject = name;
-            document.getElementById('currentSubjectTitle').textContent = `📚 Subject: ${name}`;
-            const master = getMasterSchedule();
-            const topics = master.filter(t => t.topics.toLowerCase().includes(name.toLowerCase()));
-            const tbody = document.getElementById('subjectTopicTable');
-            tbody.innerHTML = topics.map(t => `
-                <tr class="${appState.completedTasks[t.id]?'completed-row':''}">
-                    <td onclick="editTask('${t.id}')" style="cursor:pointer"><strong>${t.morning || t.title || 'Untitled'}</strong><br><small style="opacity:0.6">${t.evening || ''}</small></td>
-                    <td><input type="date" class="date-edit-input" value="${t.currentFullDate}" onchange="updateDate('${t.id}', this.value)"></td>
-                    <td>${getDayOfWeek(t.currentFullDate)}</td>
-                    <td>${t.origin === 'blueprint' ? 'System' : 'User'}</td>
-                    <td>${t.hours || 0}</td>
-                    <td><input type="checkbox" class="task-checkbox" ${appState.completedTasks[t.id]?'checked':''} onchange="toggleTask('${t.id}', this.checked)"></td>
-                    <td>
-                        <button class="btn btn-danger" style="padding:4px 8px" onclick="deleteTask('${t.id}')">🗑️</button>
-                    </td>
-                </tr>
-            `).join('');
-            switchTab('subject-view');
-        }
-
-        function addTopicToCurrentSubject() {
-            openInputModal("Add Topic to " + appState.activeSubject, (v) => {
-                appState.customTasks.push({
-                    id: 'task-' + Date.now(),
-                    morning: v.title,
-                    evening: v.evening || '',
-                    test: v.test || '-',
-                    topics: appState.activeSubject,
-                    hours: parseFloat(v.hours) || 2,
-                    date: v.date
-                });
-                saveState(); 
-                viewSubject(appState.activeSubject); 
-                renderAll();
-            }, [
-                {id:'title', label:'Topic Title (Morning)', type:'text', placeholder:'Enter topic name...'},
-                {id:'evening', label:'Practice (Evening)', type:'text', placeholder:'Practice details...'},
-                {id:'test', label:'Test/Activity', type:'text', placeholder:'-'},
-                {id:'date', label:'Target Date', type:'date', value: new Date().toISOString().split('T')[0]},
-                {id:'hours', label:'Study Hours', type:'number', value: 2}
-            ]);
-        }
-
-        function deleteCustom(id) { if(confirm("Delete this custom topic?")) { appState.customTasks = appState.customTasks.filter(t => t.id !== id); saveState(); viewSubject(appState.activeSubject); renderAll(); } }
-        function deleteCurrentSubject() { if(confirm(`Delete entire subject "${appState.activeSubject}"?`)) { appState.subjects = appState.subjects.filter(s => s !== appState.activeSubject); saveState(); switchTab('overview'); renderAll(); } }
-
-        function switchTab(id) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.menu-item, .submenu-item').forEach(m => m.classList.remove('active'));
-            const target = document.getElementById(`tab-${id}`);
-            if(target) target.classList.add('active');
-            toggleSidebar();
-        }
-
-        function updateDashboard() {
-            const master = getMasterSchedule();
-            const done = Object.keys(appState.completedTasks).filter(k => appState.completedTasks[k]).length;
-            const perc = master.length ? Math.round((done / master.length)*100) : 0;
+            document.getElementById('statProgress').textContent = progress + '%';
+            document.getElementById('progressBar').style.width = progress + '%';
             
-            const overallP = document.getElementById('overallProgress');
-            if (overallP) overallP.textContent = perc + '%';
-            
-            const overallBar = document.getElementById('overallProgressBar');
-            if (overallBar) overallBar.style.width = perc + '%';
-            
-            // Exam is March 20, 2026
-            const exam = new Date('2026-03-20');
+            // Days to exam
+            const examDate = new Date('2026-03-20');
             const today = new Date();
-            const diff = Math.ceil((exam - today) / (1000 * 60 * 60 * 24));
-            const daysRem = document.getElementById('daysRemaining');
-            if (daysRem) daysRem.textContent = diff > 0 ? diff : 0;
-
-            let hrs = 0;
-            master.forEach(t => { 
-                if(appState.completedTasks[t.id]) hrs += (t.hours || 0); 
-            });
-            const totalH = document.getElementById('totalHours');
-            if (totalH) totalH.textContent = hrs.toFixed(1) + 'h';
+            const daysLeft = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+            document.getElementById('statDays').textContent = Math.max(0, daysLeft);
             
-            // Streak calculation
-            const streakVal = document.getElementById('studyStreak');
-            if (streakVal) streakVal.textContent = calculateStreak();
+            // Total hours
+            let totalHours = 0;
+            tasks.forEach(t => {
+                if (appData.userProgress.completedTasks[t.id]) {
+                    totalHours += t.hours || 0;
+                }
+            });
+            document.getElementById('statHours').textContent = totalHours.toFixed(1) + 'h';
+            
+            // Streak
+            document.getElementById('statStreak').textContent = calculateStreak() + ' days';
+            
+            // Subject cards
+            const cardsHtml = appData.subjects.map(s => {
+                const subjectTasks = tasks.filter(t => t.subject === s);
+                const subjectCompleted = subjectTasks.filter(t => appData.userProgress.completedTasks[t.id]).length;
+                const subjectProgress = subjectTasks.length ? Math.round((subjectCompleted / subjectTasks.length) * 100) : 0;
+                return `
+                    <div onclick="viewSubject('${s}')" class="bg-white rounded-xl p-4 shadow-sm cursor-pointer hover:shadow-md transition border-l-4 border-indigo-500">
+                        <h4 class="font-bold text-gray-800">${s}</h4>
+                        <div class="text-sm text-gray-500">${subjectCompleted}/${subjectTasks.length} topics</div>
+                        <div class="h-2 bg-gray-200 rounded-full mt-2 overflow-hidden">
+                            <div class="h-full bg-indigo-500" style="width: ${subjectProgress}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('subjectCards').innerHTML = cardsHtml;
         }
 
         function calculateStreak() {
-            const master = getMasterSchedule();
             const completedDates = new Set();
-            master.forEach(t => {
-                if (appState.completedTasks[t.id]) {
-                    completedDates.add(t.currentFullDate);
+            appData.tasks.forEach(t => {
+                if (appData.userProgress.completedTasks[t.id]) {
+                    completedDates.add(t.date);
                 }
             });
-
+            
             let streak = 0;
             let checkDate = new Date();
-            checkDate.setHours(0,0,0,0);
-
-            // Start from today or yesterday if today isn't done yet
-            const todayStr = checkDate.toISOString().split('T')[0];
-            if (!completedDates.has(todayStr)) {
-                checkDate.setDate(checkDate.getDate() - 1);
-            }
-
+            checkDate.setHours(0, 0, 0, 0);
+            
             while (true) {
                 const dateStr = checkDate.toISOString().split('T')[0];
                 if (completedDates.has(dateStr)) {
                     streak++;
                     checkDate.setDate(checkDate.getDate() - 1);
+                } else if (streak === 0) {
+                    checkDate.setDate(checkDate.getDate() - 1);
+                    if (!completedDates.has(checkDate.toISOString().split('T')[0])) break;
                 } else {
                     break;
                 }
-                if (streak > 365) break; // safety
+                if (streak > 365) break;
             }
             return streak;
         }
 
-        function updateAnalytics() {
-            const tbody = document.querySelector('#subjectAnalyticsTable tbody');
-            const master = getMasterSchedule();
-            tbody.innerHTML = appState.subjects.map(s => {
-                const subTasks = master.filter(t => t.topics.toLowerCase().includes(s.toLowerCase()));
-                const done = subTasks.filter(t => appState.completedTasks[t.id]).length;
-                const perc = subTasks.length ? Math.round((done/subTasks.length)*100) : 0;
-                return `<tr><td>${s}</td><td>${done}/${subTasks.length}</td><td>-</td><td>${perc}%</td></tr>`;
-            }).join('');
-        }
-
-        function openDailyNote(id) {
-            const old = appState.dailyNotes[id] || "";
-            openInputModal("Day Note", (v) => { appState.dailyNotes[id] = v.note; saveState(); }, [{id:'note', label:'Note', type:'textarea', value:old}]);
-        }
-
-        function saveNotes() { appState.notes = document.getElementById('userNotes').value; saveState(); alert("Global notes saved!"); }
-        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); appState.darkMode = document.body.classList.contains('dark-mode'); saveState(); }
-        
-        function saveState() {
-            localStorage.setItem('wbcsTrackerState', JSON.stringify(appState));
-            if(currentUser && db) db.collection('users').doc(currentUser.uid).set({appState}, {merge:true});
-        }
-
-        function secureReset() { if(confirm("Reset all data?")) { localStorage.removeItem('wbcsTrackerState'); location.reload(); } }
-        function logoutUser() { auth.signOut().then(() => location.reload()); }
-
-        window.onload = () => {
-            const saved = localStorage.getItem('wbcsTrackerState');
-            if(saved) appState = {...appState, ...JSON.parse(saved)};
-            if(appState.darkMode) document.body.classList.add('dark-mode');
-            document.getElementById('userNotes').value = appState.notes || "";
+        function renderRoutines() {
+            const renderTable = (data, tableId) => {
+                document.getElementById(tableId).innerHTML = data.map(r => `
+                    <tr class="border-b">
+                        <td class="p-3 font-semibold">${r.time}</td>
+                        <td class="p-3">${r.activity}</td>
+                        <td class="p-3 text-gray-600">${r.details}</td>
+                        <td class="p-3">${r.duration}</td>
+                    </tr>
+                `).join('');
+            };
             
-            auth.onAuthStateChanged(user => {
-                if(user) {
-                    currentUser = user; document.getElementById('userEmailDisplay').textContent = "👤 " + user.email;
-                    db.collection('users').doc(user.uid).get().then(doc => { if(doc.exists) { appState = {...appState, ...doc.data().appState}; renderAll(); } });
-                } else { renderAll(); }
+            renderTable(appData.routines.weekday, 'weekdayTable');
+            renderTable(appData.routines.saturday, 'saturdayTable');
+            renderTable(appData.routines.sunday, 'sundayTable');
+        }
+
+        function renderMonthlySchedules() {
+            const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            let menuHtml = '';
+            let tabsHtml = '';
+            
+            months.forEach((month, idx) => {
+                const monthNum = String(idx + 1).padStart(2, '0');
+                const monthTasks = appData.tasks.filter(t => t.date.split('-')[1] === monthNum);
+                
+                if (monthTasks.length > 0) {
+                    menuHtml += `<div class="px-8 py-2 text-slate-300 cursor-pointer hover:bg-slate-800 text-sm" onclick="switchTab('${month}')">${monthNames[idx]} 2026</div>`;
+                    
+                    tabsHtml += `
+                        <div id="tab-${month}" class="tab-content">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">📆 ${monthNames[idx]} 2026</h2>
+                            <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-indigo-500 text-white">
+                                        <tr>
+                                            <th class="p-3 text-left">Date</th>
+                                            <th class="p-3 text-left">Day</th>
+                                            <th class="p-3 text-left">Morning</th>
+                                            <th class="p-3 text-left">Evening</th>
+                                            <th class="p-3 text-left">Test</th>
+                                            <th class="p-3 text-left">Subject</th>
+                                            <th class="p-3 text-left">Hrs</th>
+                                            <th class="p-3 text-left">✓</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${monthTasks.map(t => {
+                                            const isCompleted = appData.userProgress.completedTasks[t.id];
+                                            const dayName = new Date(t.date).toLocaleDateString('en-US', { weekday: 'short' });
+                                            const displayDate = formatDate(t.date);
+                                            return `
+                                                <tr class="${isCompleted ? 'completed-row' : ''} border-b hover:bg-gray-50">
+                                                    <td class="p-3">${displayDate}</td>
+                                                    <td class="p-3">${dayName}</td>
+                                                    <td class="p-3">${t.morning}</td>
+                                                    <td class="p-3">${t.evening}</td>
+                                                    <td class="p-3">${t.test}</td>
+                                                    <td class="p-3"><span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs">${t.subject}</span></td>
+                                                    <td class="p-3">${t.hours}</td>
+                                                    <td class="p-3">
+                                                        <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleTask('${t.id}')" class="w-5 h-5 accent-indigo-500 cursor-pointer">
+                                                    </td>
+                                                </tr>
+                                            `;
+                                        }).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                }
             });
+            
+            document.getElementById('monthMenu').innerHTML = menuHtml;
+            document.getElementById('monthlyTabs').innerHTML = tabsHtml;
+        }
+
+        function renderSubjects() {
+            const menuHtml = appData.subjects.map(s => `
+                <div class="px-8 py-2 text-slate-300 cursor-pointer hover:bg-slate-800 text-sm" onclick="viewSubject('${s}')">📚 ${s}</div>
+            `).join('');
+            document.getElementById('subjectMenuList').innerHTML = menuHtml;
+        }
+
+        function renderTests() {
+            const html = appData.tests.map(t => {
+                const score = appData.userProgress.testScores[t.id];
+                const percentage = score ? Math.round((score / t.mcqs) * 100) : '-';
+                const status = score ? (percentage >= 80 ? '✅ Excellent' : percentage >= 60 ? '👍 Good' : '⚠️ Improve') : '⏳ Pending';
+                return `
+                    <tr class="border-b">
+                        <td class="p-3 font-bold">Test ${t.number}</td>
+                        <td class="p-3">${formatDate(t.date)}</td>
+                        <td class="p-3">${t.type}</td>
+                        <td class="p-3">${t.mcqs}</td>
+                        <td class="p-3">${t.focus}</td>
+                        <td class="p-3">
+                            <input type="number" value="${score || ''}" placeholder="Score" 
+                                onchange="updateTestScore('${t.id}', this.value)"
+                                class="w-20 px-2 py-1 border rounded text-center">
+                        </td>
+                        <td class="p-3 font-bold ${score ? (percentage >= 80 ? 'text-green-600' : percentage >= 60 ? 'text-yellow-600' : 'text-red-600') : ''}">${percentage}%</td>
+                        <td class="p-3">${status}</td>
+                    </tr>
+                `;
+            }).join('');
+            document.getElementById('testsTable').innerHTML = html;
+        }
+
+        function renderAnalytics() {
+            // Subject analytics
+            const analyticsHtml = appData.subjects.map(s => {
+                const subjectTasks = appData.tasks.filter(t => t.subject === s);
+                const completed = subjectTasks.filter(t => appData.userProgress.completedTasks[t.id]).length;
+                const progress = subjectTasks.length ? Math.round((completed / subjectTasks.length) * 100) : 0;
+                const hours = subjectTasks.filter(t => appData.userProgress.completedTasks[t.id]).reduce((sum, t) => sum + (t.hours || 0), 0);
+                return `
+                    <div class="flex items-center justify-between py-3 border-b">
+                        <div>
+                            <div class="font-semibold">${s}</div>
+                            <div class="text-sm text-gray-500">${completed}/${subjectTasks.length} topics • ${hours.toFixed(1)}h</div>
+                        </div>
+                        <div class="w-32">
+                            <div class="text-right text-sm font-bold text-indigo-600 mb-1">${progress}%</div>
+                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-indigo-500" style="width: ${progress}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('subjectAnalytics').innerHTML = analyticsHtml;
+            
+            // Weekly chart (simple bar representation)
+            const weeklyData = [4, 6, 3, 5, 8, 7, 2]; // Sample data
+            const weeklyHtml = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => `
+                <div class="flex-1 flex flex-col items-center">
+                    <div class="bg-indigo-500 rounded-t w-full" style="height: ${weeklyData[i] * 15}px"></div>
+                    <div class="text-xs text-gray-500 mt-2">${day}</div>
+                </div>
+            `).join('');
+            document.getElementById('weeklyChart').innerHTML = weeklyHtml;
+        }
+
+        function renderAdminPanel() {
+            // Admin subject list
+            const subjectListHtml = appData.subjects.map(s => `
+                <div class="flex items-center justify-between bg-gray-100 px-3 py-2 rounded">
+                    <span>${s}</span>
+                    <button onclick="adminDeleteSubject('${s}')" class="text-red-500 hover:text-red-700">🗑️</button>
+                </div>
+            `).join('');
+            document.getElementById('adminSubjectList').innerHTML = subjectListHtml;
+        }
+
+        // =============================================
+        // UI INTERACTIONS
+        // =============================================
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.overlay').classList.toggle('active');
+        }
+
+        function toggleSubmenu(id) {
+            const menu = document.getElementById(id);
+            const arrow = document.getElementById(id + 'Arrow');
+            menu.classList.toggle('hidden');
+            arrow.textContent = menu.classList.contains('hidden') ? '▼' : '▲';
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            const target = document.getElementById('tab-' + tabId);
+            if (target) target.classList.add('active');
+            toggleSidebar();
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            appData.userProgress.darkMode = document.body.classList.contains('dark-mode');
+            saveProgress();
+        }
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+        }
+
+        // =============================================
+        // TASK OPERATIONS
+        // =============================================
+        function toggleTask(taskId) {
+            appData.userProgress.completedTasks[taskId] = !appData.userProgress.completedTasks[taskId];
+            saveProgress();
+            renderAll();
+        }
+
+        function updateTestScore(testId, score) {
+            appData.userProgress.testScores[testId] = parseInt(score) || null;
+            saveProgress();
+            renderTests();
+        }
+
+        // =============================================
+        // SUBJECT OPERATIONS
+        // =============================================
+        function viewSubject(name) {
+            activeSubject = name;
+            document.getElementById('subjectViewTitle').textContent = '📚 ' + name;
+            
+            const subjectTasks = appData.tasks.filter(t => t.subject === name);
+            const html = subjectTasks.map(t => {
+                const isCompleted = appData.userProgress.completedTasks[t.id];
+                const dayName = new Date(t.date).toLocaleDateString('en-US', { weekday: 'short' });
+                return `
+                    <tr class="${isCompleted ? 'completed-row' : ''} border-b">
+                        <td class="p-3">
+                            <div class="font-semibold">${t.morning}</div>
+                            <div class="text-sm text-gray-500">${t.evening}</div>
+                        </td>
+                        <td class="p-3">${formatDate(t.date)}</td>
+                        <td class="p-3">${dayName}</td>
+                        <td class="p-3">${t.hours}h</td>
+                        <td class="p-3">
+                            <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleTask('${t.id}')" class="w-5 h-5 accent-indigo-500 cursor-pointer">
+                        </td>
+                        <td class="p-3">
+                            <button onclick="editTask('${t.id}')" class="text-blue-500 hover:text-blue-700 mr-2">✏️</button>
+                            <button onclick="deleteTask('${t.id}')" class="text-red-500 hover:text-red-700">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            document.getElementById('subjectTopicsTable').innerHTML = html;
+            switchTab('subject-view');
+        }
+
+        function createNewSubject() {
+            openModal('Add New Subject', `
+                <div class="mb-4">
+                    <label class="block font-semibold mb-2">Subject Name</label>
+                    <input type="text" id="newSubjectName" class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., Physics">
+                </div>
+            `, () => {
+                const name = document.getElementById('newSubjectName').value.trim();
+                if (name && !appData.subjects.includes(name)) {
+                    appData.subjects.push(name);
+                    saveAppData();
+                    saveProgress();
+                    renderAll();
+                    showToast('Subject added!', 'success');
+                }
+            });
+        }
+
+        function deleteCurrentSubject() {
+            if (confirm(`Delete subject "${activeSubject}"? This won't delete tasks.`)) {
+                appData.subjects = appData.subjects.filter(s => s !== activeSubject);
+                saveAppData();
+                renderAll();
+                switchTab('overview');
+                showToast('Subject deleted', 'info');
+            }
+        }
+
+        function addTopicToSubject() {
+            openModal('Add Topic to ' + activeSubject, `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block font-semibold mb-2">Morning Topic</label>
+                        <input type="text" id="topicMorning" class="w-full px-4 py-2 border rounded-lg" placeholder="Theory topic...">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Evening Practice</label>
+                        <input type="text" id="topicEvening" class="w-full px-4 py-2 border rounded-lg" placeholder="MCQs, practice...">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Date</label>
+                        <input type="date" id="topicDate" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Hours</label>
+                        <input type="number" id="topicHours" class="w-full px-4 py-2 border rounded-lg" value="3" step="0.5">
+                    </div>
+                </div>
+            `, () => {
+                const newTask = {
+                    id: 'task-' + Date.now(),
+                    morning: document.getElementById('topicMorning').value,
+                    evening: document.getElementById('topicEvening').value,
+                    date: document.getElementById('topicDate').value,
+                    hours: parseFloat(document.getElementById('topicHours').value) || 3,
+                    subject: activeSubject,
+                    test: '-'
+                };
+                appData.tasks.push(newTask);
+                saveAppData();
+                renderAll();
+                viewSubject(activeSubject);
+                showToast('Topic added!', 'success');
+            });
+        }
+
+        // =============================================
+        // ADMIN FUNCTIONS
+        // =============================================
+        function adminAddSubject() {
+            createNewSubject();
+        }
+
+        function adminDeleteSubject(name) {
+            if (confirm(`Delete subject "${name}"?`)) {
+                appData.subjects = appData.subjects.filter(s => s !== name);
+                saveAppData();
+                renderAdminPanel();
+                renderAll();
+                showToast('Subject deleted', 'info');
+            }
+        }
+
+        function loadAdminMonthTasks() {
+            const month = document.getElementById('adminMonthSelect').value;
+            const monthTasks = appData.tasks.filter(t => t.date.split('-')[1] === month);
+            
+            const html = monthTasks.length ? `
+                <table class="w-full">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="p-2 text-left">Date</th>
+                            <th class="p-2 text-left">Morning</th>
+                            <th class="p-2 text-left">Evening</th>
+                            <th class="p-2 text-left">Subject</th>
+                            <th class="p-2 text-left">Hours</th>
+                            <th class="p-2 text-left">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${monthTasks.map(t => `
+                            <tr class="border-b">
+                                <td class="p-2">${formatDate(t.date)}</td>
+                                <td class="p-2">${t.morning}</td>
+                                <td class="p-2">${t.evening}</td>
+                                <td class="p-2">${t.subject}</td>
+                                <td class="p-2">${t.hours}</td>
+                                <td class="p-2">
+                                    <button onclick="editTask('${t.id}')" class="text-blue-500 mr-2">✏️</button>
+                                    <button onclick="deleteTask('${t.id}')" class="text-red-500">🗑️</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            ` : '<p class="text-gray-500 text-center py-8">No tasks for this month.</p>';
+            
+            document.getElementById('adminTasksList').innerHTML = html;
+        }
+
+        function adminAddTask() {
+            const month = document.getElementById('adminMonthSelect').value;
+            openModal('Add New Task', `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block font-semibold mb-2">Date</label>
+                        <input type="date" id="taskDate" class="w-full px-4 py-2 border rounded-lg" value="2026-${month}-01">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Morning Topic</label>
+                        <input type="text" id="taskMorning" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Evening Practice</label>
+                        <input type="text" id="taskEvening" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Test/Activity</label>
+                        <input type="text" id="taskTest" class="w-full px-4 py-2 border rounded-lg" value="-">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Subject</label>
+                        <select id="taskSubject" class="w-full px-4 py-2 border rounded-lg">
+                            ${appData.subjects.map(s => `<option value="${s}">${s}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Hours</label>
+                        <input type="number" id="taskHours" class="w-full px-4 py-2 border rounded-lg" value="3.75" step="0.25">
+                    </div>
+                </div>
+            `, () => {
+                const newTask = {
+                    id: 'task-' + Date.now(),
+                    date: document.getElementById('taskDate').value,
+                    morning: document.getElementById('taskMorning').value,
+                    evening: document.getElementById('taskEvening').value,
+                    test: document.getElementById('taskTest').value,
+                    subject: document.getElementById('taskSubject').value,
+                    hours: parseFloat(document.getElementById('taskHours').value)
+                };
+                appData.tasks.push(newTask);
+                saveAppData();
+                loadAdminMonthTasks();
+                renderAll();
+                showToast('Task added!', 'success');
+            });
+        }
+
+        function editTask(taskId) {
+            const task = appData.tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            openModal('Edit Task', `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block font-semibold mb-2">Date</label>
+                        <input type="date" id="editDate" class="w-full px-4 py-2 border rounded-lg" value="${task.date}">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Morning Topic</label>
+                        <input type="text" id="editMorning" class="w-full px-4 py-2 border rounded-lg" value="${task.morning}">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Evening Practice</label>
+                        <input type="text" id="editEvening" class="w-full px-4 py-2 border rounded-lg" value="${task.evening}">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Test/Activity</label>
+                        <input type="text" id="editTest" class="w-full px-4 py-2 border rounded-lg" value="${task.test}">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Subject</label>
+                        <select id="editSubject" class="w-full px-4 py-2 border rounded-lg">
+                            ${appData.subjects.map(s => `<option value="${s}" ${s === task.subject ? 'selected' : ''}>${s}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Hours</label>
+                        <input type="number" id="editHours" class="w-full px-4 py-2 border rounded-lg" value="${task.hours}" step="0.25">
+                    </div>
+                </div>
+            `, () => {
+                task.date = document.getElementById('editDate').value;
+                task.morning = document.getElementById('editMorning').value;
+                task.evening = document.getElementById('editEvening').value;
+                task.test = document.getElementById('editTest').value;
+                task.subject = document.getElementById('editSubject').value;
+                task.hours = parseFloat(document.getElementById('editHours').value);
+                saveAppData();
+                renderAll();
+                if (activeSubject) viewSubject(activeSubject);
+                showToast('Task updated!', 'success');
+            });
+        }
+
+        function deleteTask(taskId) {
+            if (confirm('Delete this task?')) {
+                appData.tasks = appData.tasks.filter(t => t.id !== taskId);
+                saveAppData();
+                renderAll();
+                if (activeSubject) viewSubject(activeSubject);
+                showToast('Task deleted', 'info');
+            }
+        }
+
+        function adminAddTest() {
+            const nextNum = appData.tests.length + 1;
+            openModal('Add New Test', `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block font-semibold mb-2">Test Number</label>
+                        <input type="number" id="testNumber" class="w-full px-4 py-2 border rounded-lg" value="${nextNum}">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Date</label>
+                        <input type="date" id="testDate" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Type</label>
+                        <select id="testType" class="w-full px-4 py-2 border rounded-lg">
+                            <option>Subject</option>
+                            <option>Mixed</option>
+                            <option>Full</option>
+                            <option>Full Mock</option>
+                            <option>Final Mock</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">MCQs</label>
+                        <input type="number" id="testMcqs" class="w-full px-4 py-2 border rounded-lg" value="75">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Focus Area</label>
+                        <input type="text" id="testFocus" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">Target Score</label>
+                        <input type="number" id="testTarget" class="w-full px-4 py-2 border rounded-lg" value="60">
+                    </div>
+                </div>
+            `, () => {
+                const newTest = {
+                    id: 'test-' + Date.now(),
+                    number: parseInt(document.getElementById('testNumber').value),
+                    date: document.getElementById('testDate').value,
+                    type: document.getElementById('testType').value,
+                    mcqs: parseInt(document.getElementById('testMcqs').value),
+                    focus: document.getElementById('testFocus').value,
+                    target: parseInt(document.getElementById('testTarget').value)
+                };
+                appData.tests.push(newTest);
+                appData.tests.sort((a, b) => a.number - b.number);
+                saveAppData();
+                renderTests();
+                showToast('Test added!', 'success');
+            });
+        }
+
+        function editRoutine(type) {
+            const routine = appData.routines[type];
+            const html = routine.map((r, i) => `
+                <div class="border rounded p-3 mb-2">
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                        <input type="text" value="${r.time}" placeholder="Time" class="routine-time px-2 py-1 border rounded" data-index="${i}">
+                        <input type="text" value="${r.duration}" placeholder="Duration" class="routine-duration px-2 py-1 border rounded" data-index="${i}">
+                    </div>
+                    <input type="text" value="${r.activity}" placeholder="Activity" class="routine-activity w-full px-2 py-1 border rounded mb-2" data-index="${i}">
+                    <input type="text" value="${r.details}" placeholder="Details" class="routine-details w-full px-2 py-1 border rounded" data-index="${i}">
+                </div>
+            `).join('');
+            
+            openModal('Edit ' + type.charAt(0).toUpperCase() + type.slice(1) + ' Routine', html, () => {
+                routine.forEach((r, i) => {
+                    r.time = document.querySelector(`.routine-time[data-index="${i}"]`).value;
+                    r.activity = document.querySelector(`.routine-activity[data-index="${i}"]`).value;
+                    r.details = document.querySelector(`.routine-details[data-index="${i}"]`).value;
+                    r.duration = document.querySelector(`.routine-duration[data-index="${i}"]`).value;
+                });
+                saveAppData();
+                renderRoutines();
+                showToast('Routine updated!', 'success');
+            });
+        }
+
+        // =============================================
+        // MODAL FUNCTIONS
+        // =============================================
+        function openModal(title, bodyHtml, onSubmit) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = bodyHtml;
+            document.getElementById('modalSubmit').onclick = () => {
+                onSubmit();
+                closeModal();
+            };
+            document.getElementById('genericModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('genericModal').classList.add('hidden');
+        }
+
+        function openNotesModal() {
+            document.getElementById('notesModal').classList.remove('hidden');
+        }
+
+        function closeNotesModal() {
+            document.getElementById('notesModal').classList.add('hidden');
+        }
+
+        function saveNotes() {
+            appData.userProgress.notes = document.getElementById('globalNotes').value;
+            saveProgress();
+            showToast('Notes saved!', 'success');
+        }
+
+        // =============================================
+        // TIMER FUNCTIONS
+        // =============================================
+        function openTimerModal() {
+            document.getElementById('timerModal').classList.remove('hidden');
+        }
+
+        function closeTimerModal() {
+            document.getElementById('timerModal').classList.add('hidden');
+        }
+
+        function startTimer() {
+            if (timerInterval) return;
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timerSeconds = 0;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const hrs = Math.floor(timerSeconds / 3600);
+            const mins = Math.floor((timerSeconds % 3600) / 60);
+            const secs = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function saveSession() {
+            const hours = timerSeconds / 3600;
+            appData.userProgress.studySessions.push({
+                date: new Date().toISOString(),
+                duration: hours
+            });
+            saveProgress();
+            resetTimer();
+            showToast(`Session saved: ${hours.toFixed(2)} hours`, 'success');
+        }
+
+        // =============================================
+        // DATA IMPORT/EXPORT
+        // =============================================
+        function exportData() {
+            const data = {
+                appData,
+                exportDate: new Date().toISOString(),
+                user: currentUser.email
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `wbcs-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Backup downloaded!', 'success');
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (imported.appData) {
+                        appData = imported.appData;
+                        saveAppData();
+                        saveProgress();
+                        renderAll();
+                        showToast('Data restored successfully!', 'success');
+                    }
+                } catch (err) {
+                    showToast('Invalid backup file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        async function syncData() {
+            showToast('Syncing with server...', 'info');
+            await saveProgress();
+            await loadAppData();
+            renderAll();
+            showToast('Data synced!', 'success');
+        }
+
+        // =============================================
+        // TOAST NOTIFICATIONS
+        // =============================================
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // =============================================
+        // INITIALIZATION
+        // =============================================
+        window.onload = () => {
+            // Check for existing session
+            const token = localStorage.getItem('wbcs_token');
+            const savedUser = localStorage.getItem('wbcs_user');
+            
+            if (token || savedUser) {
+                currentUser = savedUser ? JSON.parse(savedUser) : { email: 'user@demo.com', name: 'User', isAdmin: false };
+                initializeApp();
+            }
         };
     </script>
 </body>
