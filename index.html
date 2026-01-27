@@ -8,23 +8,78 @@
     <style>
         :root {
             --primary: #667eea;
-            --primary-dark: #764ba2;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --dark-bg: #1a1a2e;
-            --dark-card: #16213e;
+            --primary-2: #8b5cf6;
+            --primary-dark: #4c1d95;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+
+            --dark-bg: #070a16;
+            --dark-card: rgba(22, 33, 62, 0.72);
+
+            --card: rgba(255, 255, 255, 0.82);
+            --card-border: rgba(255, 255, 255, 0.55);
+            --shadow: 0 18px 45px rgba(2, 6, 23, 0.18);
+            --shadow-strong: 0 25px 80px rgba(2, 6, 23, 0.38);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
+        html, body { height: 100%; }
+
+        body {
+            background:
+                radial-gradient(1000px 600px at 10% 10%, rgba(102,126,234,0.35), transparent 60%),
+                radial-gradient(1000px 700px at 90% 20%, rgba(139,92,246,0.35), transparent 55%),
+                radial-gradient(900px 700px at 40% 95%, rgba(34,197,94,0.18), transparent 55%),
+                linear-gradient(180deg, #f8fafc, #eef2ff);
+            color: #0f172a;
+        }
+
+        /* Smooth scroll + better selection */
+        ::selection { background: rgba(102,126,234,0.25); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.35); border-radius: 999px; border: 2px solid rgba(255,255,255,0.6); }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.35); }
+
+        .glass {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .glass-strong {
+            background: rgba(255,255,255,0.78);
+            border: 1px solid rgba(255,255,255,0.6);
+            box-shadow: var(--shadow-strong);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary), var(--primary-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .soft-ring {
+            box-shadow:
+                0 0 0 1px rgba(99,102,241,0.18),
+                0 12px 38px rgba(2, 6, 23, 0.14);
+        }
+
         .loader {
-            border: 4px solid #f3f3f3;
+            border: 4px solid rgba(255,255,255,0.55);
             border-top: 4px solid var(--primary);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
+            width: 44px;
+            height: 44px;
+            animation: spin 0.9s linear infinite;
             margin: 20px auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -33,23 +88,44 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 15px 25px;
-            border-radius: 8px;
+            padding: 12px 16px;
+            border-radius: 14px;
             color: white;
-            font-weight: 600;
+            font-weight: 700;
             z-index: 9999;
-            animation: slideIn 0.3s ease;
+            animation: toastIn 0.25s ease;
+            box-shadow: 0 18px 40px rgba(2, 6, 23, 0.25);
+            border: 1px solid rgba(255,255,255,0.25);
+            backdrop-filter: blur(10px);
         }
-        .toast.success { background: var(--success); }
-        .toast.error { background: var(--danger); }
-        .toast.info { background: var(--primary); }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast.success { background: linear-gradient(135deg, rgba(34,197,94,0.95), rgba(16,185,129,0.95)); }
+        .toast.error { background: linear-gradient(135deg, rgba(239,68,68,0.95), rgba(244,63,94,0.95)); }
+        .toast.info { background: linear-gradient(135deg, rgba(99,102,241,0.95), rgba(139,92,246,0.95)); }
+        @keyframes toastIn { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        .dark-mode { background: var(--dark-bg) !important; color: #eee !important; }
-        .dark-mode .bg-white { background: var(--dark-card) !important; }
-        .dark-mode input, .dark-mode textarea, .dark-mode select { background: #0a2647 !important; color: white !important; border-color: #333 !important; }
-        .dark-mode table { background: var(--dark-card) !important; }
-        .dark-mode td { border-color: rgba(255,255,255,0.1) !important; }
+        .dark-mode {
+            background:
+                radial-gradient(1000px 600px at 10% 10%, rgba(102,126,234,0.20), transparent 60%),
+                radial-gradient(1000px 700px at 90% 20%, rgba(139,92,246,0.20), transparent 55%),
+                radial-gradient(900px 700px at 40% 95%, rgba(34,197,94,0.10), transparent 55%),
+                linear-gradient(180deg, #060815, #0b1227) !important;
+            color: #e5e7eb !important;
+        }
+
+        .dark-mode .glass, .dark-mode .glass-strong {
+            background: rgba(17, 24, 39, 0.60) !important;
+            border-color: rgba(255,255,255,0.10) !important;
+            box-shadow: 0 22px 70px rgba(0,0,0,0.45) !important;
+        }
+
+        .dark-mode .bg-white { background: rgba(17, 24, 39, 0.58) !important; }
+        .dark-mode input, .dark-mode textarea, .dark-mode select {
+            background: rgba(2, 6, 23, 0.45) !important;
+            color: white !important;
+            border-color: rgba(255,255,255,0.15) !important;
+        }
+        .dark-mode table { background: rgba(17, 24, 39, 0.55) !important; }
+        .dark-mode td { border-color: rgba(255,255,255,0.08) !important; }
 
         .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
         .sidebar.active { transform: translateX(0); }
@@ -57,66 +133,115 @@
         .overlay.active { display: block; }
 
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .tab-content.active { display: block; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-        .completed-row { background: #d4edda !important; }
-        .dark-mode .completed-row { background: #1a4d2e !important; }
-        .completed-row td { text-decoration: line-through; opacity: 0.7; }
+        .completed-row { background: rgba(34, 197, 94, 0.16) !important; }
+        .dark-mode .completed-row { background: rgba(34, 197, 94, 0.18) !important; }
+        .completed-row td { text-decoration: line-through; opacity: 0.75; }
 
         .progress-bar { transition: width 0.5s ease; }
 
+        .table-row-hover:hover { background: rgba(99, 102, 241, 0.06); }
+
+        .date-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 12px;
+            background: rgba(99,102,241,0.10);
+            border: 1px solid rgba(99,102,241,0.18);
+            color: rgb(79, 70, 229);
+            font-weight: 700;
+            font-size: 12px;
+        }
+        .dark-mode .date-chip {
+            background: rgba(99,102,241,0.14);
+            border-color: rgba(99,102,241,0.22);
+            color: rgba(199, 210, 254, 0.95);
+        }
+
+        .input-mini {
+            width: 9.8rem;
+            padding: 6px 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(15, 23, 42, 0.10);
+            font-size: 12px;
+        }
+
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-glow::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(400px 120px at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.35), transparent 60%);
+            opacity: 0;
+            transition: opacity 200ms ease;
+        }
+        .btn-glow:hover::before { opacity: 1; }
+
         @media print {
             .no-print { display: none !important; }
-            body { font-size: 10pt !important; }
+            body { font-size: 10pt !important; background: #fff !important; }
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="min-h-screen antialiased">
     <!-- Auth Screen -->
-    <div id="authScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+    <div id="authScreen" class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+        <!-- Decorative blobs -->
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-500/35 blur-3xl rounded-full"></div>
+        <div class="absolute -bottom-28 -right-24 w-[28rem] h-[28rem] bg-fuchsia-500/30 blur-3xl rounded-full"></div>
+        <div class="absolute top-1/3 left-1/2 -translate-x-1/2 w-[38rem] h-[14rem] bg-emerald-400/15 blur-3xl rounded-full"></div>
+
+        <div class="w-full max-w-md glass-strong rounded-3xl p-8 sm:p-10 relative soft-ring">
             <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-gray-800">🎯 WBCS 2026</h1>
-                <p class="text-gray-500 mt-2">Interactive Study Portal</p>
+                <div class="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white flex items-center justify-center text-2xl shadow-lg">🎯</div>
+                <h1 class="text-3xl font-extrabold mt-4 tracking-tight"><span class="gradient-text">WBCS 2026</span></h1>
+                <p class="text-slate-600 dark:text-slate-300 mt-2">Interactive Study Portal • MongoDB Powered</p>
             </div>
 
-            <div id="authTabs" class="flex mb-6 bg-gray-100 rounded-lg p-1">
-                <button onclick="showAuthTab('login')" id="loginTab" class="flex-1 py-2 px-4 rounded-lg bg-indigo-500 text-white font-semibold transition">Login</button>
-                <button onclick="showAuthTab('register')" id="registerTab" class="flex-1 py-2 px-4 rounded-lg text-gray-600 font-semibold transition">Register</button>
+            <div id="authTabs" class="grid grid-cols-2 bg-white/50 rounded-2xl p-1 border border-white/60 shadow-sm">
+                <button onclick="showAuthTab('login')" id="loginTab" class="py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white font-bold transition btn-glow">Login</button>
+                <button onclick="showAuthTab('register')" id="registerTab" class="py-2.5 rounded-xl text-slate-700 font-bold transition">Register</button>
             </div>
 
             <!-- Login Form -->
-            <div id="loginForm">
+            <div id="loginForm" class="mt-6">
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-semibold mb-2">Email</label>
-                    <input type="email" id="loginEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="your@email.com">
+                    <label class="block text-slate-700 font-bold mb-2">Email</label>
+                    <input type="email" id="loginEmail" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="you@email.com">
                 </div>
                 <div class="mb-6">
-                    <label class="block text-gray-700 font-semibold mb-2">Password</label>
-                    <input type="password" id="loginPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="••••••••">
+                    <label class="block text-slate-700 font-bold mb-2">Password</label>
+                    <input type="password" id="loginPassword" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="••••••••">
                 </div>
-                <button onclick="handleLogin()" class="w-full bg-indigo-500 text-white py-3 rounded-lg font-semibold hover:bg-indigo-600 transition">Sign In</button>
+                <button onclick="handleLogin()" class="w-full py-3 rounded-2xl font-extrabold text-white bg-gradient-to-r from-indigo-500 to-fuchsia-500 hover:brightness-110 transition shadow-lg btn-glow">Sign In</button>
+                <p class="text-xs text-slate-500 mt-4 text-center">Tip: use <span class="font-semibold">admin@wbcs.com</span> to access admin panel (if server seeded).</p>
             </div>
 
             <!-- Register Form -->
-            <div id="registerForm" class="hidden">
+            <div id="registerForm" class="hidden mt-6">
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-semibold mb-2">Full Name</label>
-                    <input type="text" id="regName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="John Doe">
+                    <label class="block text-slate-700 font-bold mb-2">Full Name</label>
+                    <input type="text" id="regName" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="Your Name">
                 </div>
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-semibold mb-2">Email</label>
-                    <input type="email" id="regEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="your@email.com">
+                    <label class="block text-slate-700 font-bold mb-2">Email</label>
+                    <input type="email" id="regEmail" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="you@email.com">
                 </div>
                 <div class="mb-6">
-                    <label class="block text-gray-700 font-semibold mb-2">Password</label>
-                    <input type="password" id="regPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Min 6 characters">
+                    <label class="block text-slate-700 font-bold mb-2">Password</label>
+                    <input type="password" id="regPassword" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="Min 6 characters">
                 </div>
-                <button onclick="handleRegister()" class="w-full bg-indigo-500 text-white py-3 rounded-lg font-semibold hover:bg-indigo-600 transition">Create Account</button>
+                <button onclick="handleRegister()" class="w-full py-3 rounded-2xl font-extrabold text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:brightness-110 transition shadow-lg btn-glow">Create Account</button>
             </div>
 
-            <div id="authError" class="mt-4 text-red-500 text-center hidden"></div>
+            <div id="authError" class="mt-4 text-rose-600 text-center hidden font-semibold"></div>
             <div id="authLoader" class="hidden"><div class="loader"></div></div>
         </div>
     </div>
@@ -124,62 +249,71 @@
     <!-- Main App (Hidden until login) -->
     <div id="mainApp" class="hidden">
         <!-- Sidebar Toggle -->
-        <button onclick="toggleSidebar()" class="fixed left-4 top-4 z-50 bg-indigo-500 text-white w-12 h-12 rounded-lg shadow-lg flex items-center justify-center text-xl no-print hover:bg-indigo-600 transition">☰</button>
+        <button onclick="toggleSidebar()" class="fixed left-4 top-4 z-50 text-white w-12 h-12 rounded-2xl shadow-lg flex items-center justify-center text-xl no-print transition btn-glow"
+                style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
+            ☰
+        </button>
 
         <!-- Overlay -->
         <div class="overlay fixed inset-0 bg-black/50 z-40" onclick="toggleSidebar()"></div>
 
         <!-- Sidebar -->
-        <aside class="sidebar fixed left-0 top-0 w-72 h-full bg-slate-800 text-white z-50 overflow-y-auto no-print">
-            <div class="p-6 border-b border-slate-700">
-                <h2 class="text-xl font-bold text-indigo-400">🎯 WBCS 2026</h2>
-                <p class="text-xs text-slate-400 mt-1">Interactive Study Portal</p>
-                <p class="text-xs text-indigo-300 mt-2" id="sidebarUserEmail"></p>
+        <aside class="sidebar fixed left-0 top-0 w-72 h-full z-50 overflow-y-auto no-print glass"
+               style="background: rgba(2, 6, 23, 0.62); border-right: 1px solid rgba(255,255,255,0.10); color: rgba(226, 232, 240, 0.92);">
+            <div class="p-6 border-b" style="border-color: rgba(255,255,255,0.10);">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center shadow">🎯</div>
+                    <div>
+                        <h2 class="text-lg font-extrabold text-indigo-200">WBCS 2026</h2>
+                        <p class="text-xs text-slate-300/70">Interactive Study Portal</p>
+                    </div>
+                </div>
+                <p class="text-xs text-indigo-200/90 mt-3" id="sidebarUserEmail"></p>
             </div>
 
             <nav class="py-4">
-                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="switchTab('overview')">
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" onclick="switchTab('overview')">
                     <span>📊</span> Dashboard
                 </div>
-                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="switchTab('weekday')">
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" onclick="switchTab('weekday')">
                     <span>📅</span> Weekday Routine
                 </div>
-                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="switchTab('weekend')">
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" onclick="switchTab('weekend')">
                     <span>🌅</span> Weekend Routine
                 </div>
 
-                <div class="px-6 py-3 cursor-pointer hover:bg-slate-700 flex items-center justify-between" onclick="toggleSubmenu('monthMenu')">
+                <div class="px-6 py-3 cursor-pointer hover:bg-white/10 flex items-center justify-between" onclick="toggleSubmenu('monthMenu')">
                     <span class="flex items-center gap-3"><span>📆</span> Monthly Schedules</span>
                     <span id="monthMenuArrow">▼</span>
                 </div>
-                <div id="monthMenu" class="hidden bg-slate-900"></div>
+                <div id="monthMenu" class="hidden" style="background: rgba(2, 6, 23, 0.40);"></div>
 
-                <div class="px-6 py-3 cursor-pointer hover:bg-slate-700 flex items-center justify-between" onclick="toggleSubmenu('subjectMenu')">
+                <div class="px-6 py-3 cursor-pointer hover:bg-white/10 flex items-center justify-between" onclick="toggleSubmenu('subjectMenu')">
                     <span class="flex items-center gap-3"><span>📚</span> Subjects</span>
                     <span id="subjectMenuArrow">▼</span>
                 </div>
-                <div id="subjectMenu" class="hidden bg-slate-900">
-                    <div class="px-8 py-2 text-green-400 cursor-pointer hover:bg-slate-800 text-sm" onclick="createNewSubject()">➕ Add Subject</div>
+                <div id="subjectMenu" class="hidden" style="background: rgba(2, 6, 23, 0.40);">
+                    <div class="px-8 py-2 text-emerald-300 cursor-pointer hover:bg-white/10 text-sm" onclick="createNewSubject()">➕ Add Subject</div>
                     <div id="subjectMenuList"></div>
                 </div>
 
-                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="switchTab('tests')">
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" onclick="switchTab('tests')">
                     <span>✅</span> Test Tracker
                 </div>
-                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="switchTab('analytics')">
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" onclick="switchTab('analytics')">
                     <span>📈</span> Analytics
                 </div>
-                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="openNotesModal()">
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" onclick="openNotesModal()">
                     <span>📝</span> Global Notes
                 </div>
-                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="openTimerModal()">
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" onclick="openTimerModal()">
                     <span>⏱️</span> Session Timer
                 </div>
 
                 <!-- Admin Menu (visible for admins) -->
-                <div id="adminMenuSection" class="hidden border-t border-slate-700 mt-4 pt-4">
-                    <div class="px-6 py-2 text-xs text-slate-400 uppercase">Admin Panel</div>
-                    <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-yellow-500 transition flex items-center gap-3 text-yellow-400" onclick="switchTab('admin')">
+                <div id="adminMenuSection" class="hidden border-t mt-4 pt-4" style="border-color: rgba(255,255,255,0.10);">
+                    <div class="px-6 py-2 text-xs text-slate-300/70 uppercase">Admin Panel</div>
+                    <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-yellow-400 transition flex items-center gap-3 text-yellow-300" onclick="switchTab('admin')">
                         <span>⚙️</span> Manage Blueprints
                     </div>
                 </div>
@@ -189,64 +323,68 @@
         <!-- Main Content -->
         <main class="pl-4 md:pl-20 pr-4 py-6 transition-all">
             <!-- Header -->
-            <header class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6 rounded-xl mb-6 no-print">
-                <h1 class="text-2xl md:text-3xl font-bold">🎯 WBCS Exam Preparation 2026</h1>
-                <p class="text-indigo-100 mt-1">Complete Study Blueprint & Progress Tracker</p>
+            <header class="relative overflow-hidden rounded-3xl mb-6 no-print glass">
+                <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(99,102,241,0.92), rgba(217,70,239,0.78));"></div>
+                <div class="absolute -top-20 -right-20 w-72 h-72 bg-white/15 blur-2xl rounded-full"></div>
+                <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-white/15 blur-2xl rounded-full"></div>
+                <div class="relative p-7 text-white">
+                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">🎯 WBCS Exam Preparation 2026</h1>
+                    <p class="text-white/90 mt-1">A beautiful blueprint + progress system with per-user rescheduling</p>
+                </div>
             </header>
 
             <!-- Controls Bar -->
-            <div class="bg-white rounded-xl p-4 mb-6 flex flex-wrap gap-3 items-center shadow-sm no-print">
-                <button onclick="toggleDarkMode()" class="px-4 py-2 bg-gray-600 text-white rounded-lg text-sm font-semibold hover:bg-gray-700 transition">🌙 Theme</button>
-                <button onclick="exportData()" class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition">💾 Backup</button>
-                <button onclick="importData()" class="px-4 py-2 bg-yellow-500 text-gray-800 rounded-lg text-sm font-semibold hover:bg-yellow-600 transition">📥 Restore</button>
-                <button onclick="window.print()" class="px-4 py-2 bg-indigo-500 text-white rounded-lg text-sm font-semibold hover:bg-indigo-600 transition">🖨️ Print</button>
-                <button onclick="syncData()" class="px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600 transition">🔄 Sync</button>
-                <button onclick="handleLogout()" class="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600 transition ml-auto">🔒 Logout</button>
-                <span id="userEmailDisplay" class="font-semibold text-indigo-600"></span>
+            <div class="glass rounded-3xl p-4 mb-6 flex flex-wrap gap-3 items-center no-print">
+                <button onclick="toggleDarkMode()" class="px-4 py-2 rounded-2xl text-sm font-bold text-white btn-glow" style="background: linear-gradient(135deg, #334155, #475569);">🌙 Theme</button>
+                <button onclick="exportData()" class="px-4 py-2 rounded-2xl text-sm font-bold text-white btn-glow" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">💾 Backup</button>
+                <button onclick="importData()" class="px-4 py-2 rounded-2xl text-sm font-bold text-slate-900 btn-glow" style="background: linear-gradient(135deg, #fde047, #f59e0b);">📥 Restore</button>
+                <button onclick="window.print()" class="px-4 py-2 rounded-2xl text-sm font-bold text-white btn-glow" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">🖨️ Print</button>
+                <button onclick="syncData()" class="px-4 py-2 rounded-2xl text-sm font-bold text-white btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">🔄 Sync</button>
+                <button onclick="handleLogout()" class="px-4 py-2 rounded-2xl text-sm font-bold text-white btn-glow ml-auto" style="background: linear-gradient(135deg, #ef4444, #f43f5e);">🔒 Logout</button>
+                <span id="userEmailDisplay" class="font-bold text-indigo-700"></span>
             </div>
 
             <!-- Tab Contents -->
-
             <!-- Overview Tab -->
             <div id="tab-overview" class="tab-content active">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-indigo-500">
-                        <h3 class="text-xs uppercase text-gray-500 font-semibold">Overall Progress</h3>
-                        <div class="text-3xl font-bold text-indigo-600 mt-2" id="statProgress">0%</div>
-                        <div class="h-2 bg-gray-200 rounded-full mt-3 overflow-hidden">
-                            <div class="progress-bar h-full bg-indigo-500" id="progressBar" style="width: 0%"></div>
+                    <div class="glass rounded-3xl p-5 border-l-4 border-indigo-500">
+                        <h3 class="text-xs uppercase text-slate-500 font-bold tracking-wider">Overall Progress</h3>
+                        <div class="text-3xl font-extrabold text-indigo-600 mt-2" id="statProgress">0%</div>
+                        <div class="h-2 bg-white/70 rounded-full mt-3 overflow-hidden">
+                            <div class="progress-bar h-full" id="progressBar" style="width: 0%; background: linear-gradient(90deg, var(--primary), var(--primary-2));"></div>
                         </div>
                     </div>
-                    <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-green-500">
-                        <h3 class="text-xs uppercase text-gray-500 font-semibold">Study Streak</h3>
-                        <div class="text-3xl font-bold text-green-600 mt-2" id="statStreak">0 days</div>
+                    <div class="glass rounded-3xl p-5 border-l-4 border-emerald-500">
+                        <h3 class="text-xs uppercase text-slate-500 font-bold tracking-wider">Study Streak</h3>
+                        <div class="text-3xl font-extrabold text-emerald-600 mt-2" id="statStreak">0 days</div>
                     </div>
-                    <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-blue-500">
-                        <h3 class="text-xs uppercase text-gray-500 font-semibold">Total Hours</h3>
-                        <div class="text-3xl font-bold text-blue-600 mt-2" id="statHours">0.0h</div>
+                    <div class="glass rounded-3xl p-5 border-l-4 border-sky-500">
+                        <h3 class="text-xs uppercase text-slate-500 font-bold tracking-wider">Total Hours</h3>
+                        <div class="text-3xl font-extrabold text-sky-600 mt-2" id="statHours">0.0h</div>
                     </div>
-                    <div class="bg-white rounded-xl p-5 shadow-sm border-l-4 border-red-500">
-                        <h3 class="text-xs uppercase text-gray-500 font-semibold">Days to Exam</h3>
-                        <div class="text-3xl font-bold text-red-600 mt-2" id="statDays">0</div>
+                    <div class="glass rounded-3xl p-5 border-l-4 border-rose-500">
+                        <h3 class="text-xs uppercase text-slate-500 font-bold tracking-wider">Days to Exam</h3>
+                        <div class="text-3xl font-extrabold text-rose-600 mt-2" id="statDays">0</div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-indigo-200 mb-6">
-                    <h3 class="text-lg font-bold text-gray-800 mb-2">📋 Preparation Summary</h3>
-                    <p class="text-gray-600">Target Date: <strong class="text-indigo-600">20 March 2026 (Preliminary)</strong></p>
-                    <p class="text-gray-600">Plan includes comprehensive GS coverage with regular mock tests.</p>
+                <div class="glass rounded-3xl p-6 mb-6">
+                    <h3 class="text-lg font-extrabold text-slate-800 mb-2">📋 Preparation Summary</h3>
+                    <p class="text-slate-700">Target Date: <strong class="text-indigo-700">20 March 2026 (Preliminary)</strong></p>
+                    <p class="text-slate-600 mt-1">Your plan includes comprehensive GS coverage with regular mock tests and rescheduling support per user.</p>
                 </div>
 
-                <h2 class="text-xl font-bold text-gray-800 mb-4">📚 Quick Subject Access</h2>
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">📚 Quick Subject Access</h2>
                 <div id="subjectCards" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
             </div>
 
             <!-- Weekday Tab -->
             <div id="tab-weekday" class="tab-content">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">📅 Weekday Routine</h2>
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <h2 class="text-2xl font-extrabold text-slate-800 mb-4">📅 Weekday Routine</h2>
+                <div class="glass rounded-3xl overflow-hidden">
                     <table class="w-full">
-                        <thead class="bg-indigo-500 text-white">
+                        <thead class="text-white" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
                             <tr>
                                 <th class="p-3 text-left">Time</th>
                                 <th class="p-3 text-left">Activity</th>
@@ -261,20 +399,20 @@
 
             <!-- Weekend Tab -->
             <div id="tab-weekend" class="tab-content">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">🌅 Weekend Routine</h2>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">Saturday</h3>
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+                <h2 class="text-2xl font-extrabold text-slate-800 mb-4">🌅 Weekend Routine</h2>
+                <h3 class="text-lg font-bold text-slate-700 mb-2">Saturday</h3>
+                <div class="glass rounded-3xl overflow-hidden mb-6">
                     <table class="w-full">
-                        <thead class="bg-indigo-500 text-white">
+                        <thead class="text-white" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
                             <tr><th class="p-3 text-left">Time</th><th class="p-3 text-left">Activity</th><th class="p-3 text-left">Details</th><th class="p-3 text-left">Duration</th></tr>
                         </thead>
                         <tbody id="saturdayTable"></tbody>
                     </table>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">Sunday</h3>
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <h3 class="text-lg font-bold text-slate-700 mb-2">Sunday</h3>
+                <div class="glass rounded-3xl overflow-hidden">
                     <table class="w-full">
-                        <thead class="bg-indigo-500 text-white">
+                        <thead class="text-white" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
                             <tr><th class="p-3 text-left">Time</th><th class="p-3 text-left">Activity</th><th class="p-3 text-left">Details</th><th class="p-3 text-left">Duration</th></tr>
                         </thead>
                         <tbody id="sundayTable"></tbody>
@@ -287,13 +425,13 @@
 
             <!-- Subject View Tab -->
             <div id="tab-subject-view" class="tab-content">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-bold text-gray-800" id="subjectViewTitle">Subject</h2>
-                    <button onclick="deleteCurrentSubject()" class="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600 transition">🗑️ Delete Subject</button>
+                <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+                    <h2 class="text-2xl font-extrabold text-slate-800" id="subjectViewTitle">Subject</h2>
+                    <button onclick="deleteCurrentSubject()" class="px-4 py-2 rounded-2xl text-sm font-extrabold text-white btn-glow" style="background: linear-gradient(135deg, #ef4444, #f43f5e);">🗑️ Delete Subject</button>
                 </div>
-                <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
+                <div class="glass rounded-3xl overflow-x-auto">
                     <table class="w-full">
-                        <thead class="bg-indigo-500 text-white">
+                        <thead class="text-white" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
                             <tr>
                                 <th class="p-3 text-left">Topic</th>
                                 <th class="p-3 text-left">Date (editable)</th>
@@ -306,25 +444,35 @@
                         <tbody id="subjectTopicsTable"></tbody>
                     </table>
                 </div>
-                <button onclick="addTopicToSubject()" class="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition">➕ Add Topic</button>
+                <button onclick="addTopicToSubject()" class="mt-4 px-4 py-2 rounded-2xl font-extrabold text-white btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">➕ Add Topic</button>
             </div>
 
             <!-- Tests Tab -->
             <div id="tab-tests" class="tab-content">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">✅ Test Performance Tracker</h2>
-                <p class="text-gray-500 mb-3">You can reschedule test dates for your account (does not change the global/admin blueprint).</p>
-                <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
+                <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-slate-800">✅ Test Tracker</h2>
+                        <p class="text-slate-600 mt-1">Reschedule blueprint tests per-user, or add your own subject/mixed/full mock tests (stored in your MongoDB progress).</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="openAddPersonalTestModal()" class="px-4 py-2 rounded-2xl text-sm font-extrabold text-white btn-glow" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">➕ Add Personal Test</button>
+                    </div>
+                </div>
+
+                <div class="glass rounded-3xl overflow-x-auto">
                     <table class="w-full">
-                        <thead class="bg-indigo-500 text-white">
+                        <thead class="text-white" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
                             <tr>
-                                <th class="p-3 text-left">Test #</th>
+                                <th class="p-3 text-left">Test</th>
                                 <th class="p-3 text-left">Date (editable)</th>
                                 <th class="p-3 text-left">Type</th>
                                 <th class="p-3 text-left">MCQs</th>
                                 <th class="p-3 text-left">Focus</th>
+                                <th class="p-3 text-left">Target</th>
                                 <th class="p-3 text-left">Score</th>
                                 <th class="p-3 text-left">%</th>
                                 <th class="p-3 text-left">Status</th>
+                                <th class="p-3 text-left">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="testsTable"></tbody>
@@ -334,14 +482,14 @@
 
             <!-- Analytics Tab -->
             <div id="tab-analytics" class="tab-content">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">📈 Progress Analytics</h2>
+                <h2 class="text-2xl font-extrabold text-slate-800 mb-4">📈 Progress Analytics</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-white rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">Subject Progress</h3>
+                    <div class="glass rounded-3xl p-6">
+                        <h3 class="text-lg font-extrabold text-slate-800 mb-4">Subject Progress</h3>
                         <div id="subjectAnalytics"></div>
                     </div>
-                    <div class="bg-white rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">Weekly Study Hours</h3>
+                    <div class="glass rounded-3xl p-6">
+                        <h3 class="text-lg font-extrabold text-slate-800 mb-4">Weekly Study Hours</h3>
                         <div id="weeklyChart" class="h-48 flex items-end gap-2"></div>
                     </div>
                 </div>
@@ -349,32 +497,32 @@
 
             <!-- Admin Tab -->
             <div id="tab-admin" class="tab-content">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">⚙️ Admin - Manage Blueprints</h2>
+                <h2 class="text-2xl font-extrabold text-slate-800 mb-4">⚙️ Admin - Manage Blueprints</h2>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     <!-- Manage Routines -->
-                    <div class="bg-white rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">📅 Manage Routines</h3>
+                    <div class="glass rounded-3xl p-6">
+                        <h3 class="text-lg font-extrabold text-slate-800 mb-4">📅 Manage Routines</h3>
                         <div class="space-y-2">
-                            <button onclick="editRoutine('weekday')" class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-left">Edit Weekday Routine</button>
-                            <button onclick="editRoutine('saturday')" class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-left">Edit Saturday Routine</button>
-                            <button onclick="editRoutine('sunday')" class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-left">Edit Sunday Routine</button>
+                            <button onclick="editRoutine('weekday')" class="w-full px-4 py-2 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">Edit Weekday Routine</button>
+                            <button onclick="editRoutine('saturday')" class="w-full px-4 py-2 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">Edit Saturday Routine</button>
+                            <button onclick="editRoutine('sunday')" class="w-full px-4 py-2 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">Edit Sunday Routine</button>
                         </div>
                     </div>
 
                     <!-- Manage Subjects -->
-                    <div class="bg-white rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">📚 Manage Subjects</h3>
+                    <div class="glass rounded-3xl p-6">
+                        <h3 class="text-lg font-extrabold text-slate-800 mb-4">📚 Manage Subjects</h3>
                         <div id="adminSubjectList" class="space-y-2 mb-4"></div>
-                        <button onclick="adminAddSubject()" class="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">➕ Add New Subject</button>
+                        <button onclick="adminAddSubject()" class="w-full px-4 py-2 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">➕ Add New Subject</button>
                     </div>
                 </div>
 
                 <!-- Manage Monthly Blueprint -->
-                <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">📆 Manage Monthly Blueprints</h3>
+                <div class="glass rounded-3xl p-6 mb-6">
+                    <h3 class="text-lg font-extrabold text-slate-800 mb-4">📆 Manage Monthly Blueprints</h3>
                     <div class="flex flex-wrap gap-2 mb-4">
-                        <select id="adminMonthSelect" class="px-4 py-2 border rounded-lg">
+                        <select id="adminMonthSelect" class="px-4 py-2 border rounded-2xl bg-white/70">
                             <option value="01">January</option>
                             <option value="02">February</option>
                             <option value="03">March</option>
@@ -388,18 +536,18 @@
                             <option value="11">November</option>
                             <option value="12">December</option>
                         </select>
-                        <button onclick="loadAdminMonthTasks()" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition">Load Tasks</button>
-                        <button onclick="adminAddTask()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">➕ Add Task</button>
+                        <button onclick="loadAdminMonthTasks()" class="px-4 py-2 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">Load Tasks</button>
+                        <button onclick="adminAddTask()" class="px-4 py-2 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">➕ Add Task</button>
                     </div>
-                    <div class="text-xs text-gray-500 mb-3">Tip: You can edit task dates inline (admin blueprint update).</div>
+                    <div class="text-xs text-slate-500 mb-3">Tip: You can edit task dates inline (admin blueprint update).</div>
                     <div id="adminTasksList" class="overflow-x-auto"></div>
                 </div>
 
                 <!-- Manage Tests -->
-                <div class="bg-white rounded-xl p-6 shadow-sm">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">✅ Manage Test Schedule</h3>
-                    <button onclick="adminAddTest()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition mb-4">➕ Add Test</button>
-                    <div class="text-xs text-gray-500 mb-3">Tip: You can edit test dates inline (admin blueprint update).</div>
+                <div class="glass rounded-3xl p-6">
+                    <h3 class="text-lg font-extrabold text-slate-800 mb-4">✅ Manage Test Schedule</h3>
+                    <button onclick="adminAddTest()" class="px-4 py-2 rounded-2xl text-white font-extrabold btn-glow mb-4" style="background: linear-gradient(135deg, #22c55e, #10b981);">➕ Add Test</button>
+                    <div class="text-xs text-slate-500 mb-3">Tip: You can edit test dates inline (admin blueprint update).</div>
                     <div id="adminTestsList" class="overflow-x-auto"></div>
                 </div>
             </div>
@@ -407,53 +555,52 @@
     </div>
 
     <!-- Modals -->
-
     <!-- Generic Modal -->
     <div id="genericModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div class="p-6 border-b flex justify-between items-center">
-                <h3 id="modalTitle" class="text-xl font-bold text-gray-800">Modal</h3>
-                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+        <div class="glass-strong rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-white/50 flex justify-between items-center">
+                <h3 id="modalTitle" class="text-xl font-extrabold text-slate-800">Modal</h3>
+                <button onclick="closeModal()" class="text-slate-500 hover:text-slate-800 text-2xl">&times;</button>
             </div>
             <div id="modalBody" class="p-6"></div>
-            <div class="p-6 border-t flex justify-end gap-3">
-                <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">Cancel</button>
-                <button id="modalSubmit" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition">Save</button>
+            <div class="p-6 border-t border-white/50 flex justify-end gap-3">
+                <button onclick="closeModal()" class="px-4 py-2 rounded-2xl bg-slate-200 text-slate-800 font-bold hover:bg-slate-300 transition">Cancel</button>
+                <button id="modalSubmit" class="px-4 py-2 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">Save</button>
             </div>
         </div>
     </div>
 
     <!-- Notes Modal -->
     <div id="notesModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl">
-            <div class="p-6 border-b flex justify-between items-center">
-                <h3 class="text-xl font-bold text-gray-800">📝 Global Study Notes</h3>
-                <button onclick="closeNotesModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+        <div class="glass-strong rounded-3xl shadow-2xl w-full max-w-2xl">
+            <div class="p-6 border-b border-white/50 flex justify-between items-center">
+                <h3 class="text-xl font-extrabold text-slate-800">📝 Global Study Notes</h3>
+                <button onclick="closeNotesModal()" class="text-slate-500 hover:text-slate-800 text-2xl">&times;</button>
             </div>
             <div class="p-6">
-                <textarea id="globalNotes" class="w-full h-64 p-4 border rounded-lg resize-none focus:ring-2 focus:ring-indigo-500" placeholder="Write your study notes here..."></textarea>
+                <textarea id="globalNotes" class="w-full h-64 p-4 border border-slate-200 rounded-2xl resize-none focus:ring-2 focus:ring-indigo-500 bg-white/70" placeholder="Write your study notes here..."></textarea>
             </div>
-            <div class="p-6 border-t">
-                <button onclick="saveNotes()" class="w-full px-4 py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition">💾 Save Notes</button>
+            <div class="p-6 border-t border-white/50">
+                <button onclick="saveNotes()" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">💾 Save Notes</button>
             </div>
         </div>
     </div>
 
     <!-- Timer Modal -->
     <div id="timerModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md text-center">
-            <div class="p-6 border-b flex justify-between items-center">
-                <h3 class="text-xl font-bold text-gray-800">⏱️ Study Timer</h3>
-                <button onclick="closeTimerModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+        <div class="glass-strong rounded-3xl shadow-2xl w-full max-w-md text-center">
+            <div class="p-6 border-b border-white/50 flex justify-between items-center">
+                <h3 class="text-xl font-extrabold text-slate-800">⏱️ Study Timer</h3>
+                <button onclick="closeTimerModal()" class="text-slate-500 hover:text-slate-800 text-2xl">&times;</button>
             </div>
             <div class="p-8">
-                <div id="timerDisplay" class="text-6xl font-mono font-bold text-indigo-600 mb-8">00:00:00</div>
+                <div id="timerDisplay" class="text-6xl font-mono font-extrabold text-indigo-600 mb-8">00:00:00</div>
                 <div class="flex justify-center gap-3">
-                    <button onclick="startTimer()" class="px-6 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition">▶ Start</button>
-                    <button onclick="pauseTimer()" class="px-6 py-2 bg-yellow-500 text-gray-800 rounded-lg font-semibold hover:bg-yellow-600 transition">⏸ Pause</button>
-                    <button onclick="resetTimer()" class="px-6 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition">⏹ Reset</button>
+                    <button onclick="startTimer()" class="px-6 py-2 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">▶ Start</button>
+                    <button onclick="pauseTimer()" class="px-6 py-2 rounded-2xl text-slate-900 font-extrabold btn-glow" style="background: linear-gradient(135deg, #fde047, #f59e0b);">⏸ Pause</button>
+                    <button onclick="resetTimer()" class="px-6 py-2 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #ef4444, #f43f5e);">⏹ Reset</button>
                 </div>
-                <button onclick="saveSession()" class="mt-6 px-6 py-2 bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-600 transition">💾 Save Session</button>
+                <button onclick="saveSession()" class="mt-6 px-6 py-2 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">💾 Save Session</button>
             </div>
         </div>
     </div>
@@ -482,6 +629,7 @@
                 testScores: {},
                 customDates: {},
                 customTestDates: {},
+                customTests: [],
                 dailyNotes: {},
                 studySessions: [],
                 notes: '',
@@ -497,7 +645,6 @@
         // =============================================
         function parseISODate(dateStr) {
             if (!dateStr) return null;
-            // Force local midnight
             return new Date(dateStr + 'T00:00:00');
         }
 
@@ -528,6 +675,8 @@
         }
 
         function getEffectiveTestDate(test) {
+            // Personal tests store their date directly on the test object
+            if (test?.origin === 'personal') return test.date;
             return appData.userProgress?.customTestDates?.[test.id] || test.date;
         }
 
@@ -548,8 +697,21 @@
 
         function updateTestDate(testId, newDate) {
             if (!newDate) return;
-            appData.userProgress.customTestDates ||= {};
 
+            // If it's a personal test, update the test object directly
+            const personal = (appData.userProgress.customTests || []).find(t => t.id === testId);
+            if (personal) {
+                personal.date = newDate;
+                // If an override existed, clear it
+                if (appData.userProgress.customTestDates) delete appData.userProgress.customTestDates[testId];
+                saveProgress();
+                renderAll();
+                showToast('Personal test date updated', 'success');
+                return;
+            }
+
+            // Otherwise, per-user override for blueprint tests
+            appData.userProgress.customTestDates ||= {};
             const test = appData.tests.find(t => t.id === testId);
             if (test && test.date === newDate) {
                 delete appData.userProgress.customTestDates[testId];
@@ -615,12 +777,17 @@
         function showAuthTab(tab) {
             document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
             document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
-            document.getElementById('loginTab').classList.toggle('bg-indigo-500', tab === 'login');
-            document.getElementById('loginTab').classList.toggle('text-white', tab === 'login');
-            document.getElementById('loginTab').classList.toggle('text-gray-600', tab !== 'login');
-            document.getElementById('registerTab').classList.toggle('bg-indigo-500', tab === 'register');
-            document.getElementById('registerTab').classList.toggle('text-white', tab === 'register');
-            document.getElementById('registerTab').classList.toggle('text-gray-600', tab !== 'register');
+
+            const loginBtn = document.getElementById('loginTab');
+            const regBtn = document.getElementById('registerTab');
+
+            if (tab === 'login') {
+                loginBtn.className = "py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white font-bold transition btn-glow";
+                regBtn.className = "py-2.5 rounded-xl text-slate-700 font-bold transition";
+            } else {
+                regBtn.className = "py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold transition btn-glow";
+                loginBtn.className = "py-2.5 rounded-xl text-slate-700 font-bold transition";
+            }
         }
 
         async function handleLogin() {
@@ -633,14 +800,13 @@
             }
 
             document.getElementById('authLoader').classList.remove('hidden');
-
             const result = await apiCall('/auth/login', 'POST', { email, password });
-
             document.getElementById('authLoader').classList.add('hidden');
 
             if (result && result.token) {
                 localStorage.setItem('wbcs_token', result.token);
                 currentUser = result.user;
+                localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
                 await initializeApp();
             } else {
                 // Fallback: demo mode with localStorage
@@ -666,14 +832,13 @@
             }
 
             document.getElementById('authLoader').classList.remove('hidden');
-
             const result = await apiCall('/auth/register', 'POST', { name, email, password });
-
             document.getElementById('authLoader').classList.add('hidden');
 
             if (result && result.token) {
                 localStorage.setItem('wbcs_token', result.token);
                 currentUser = result.user;
+                localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
                 await initializeApp();
             } else {
                 // Fallback: demo mode
@@ -696,7 +861,7 @@
             const el = document.getElementById('authError');
             el.textContent = msg;
             el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 3000);
+            setTimeout(() => el.classList.add('hidden'), 3500);
         }
 
         // =============================================
@@ -708,6 +873,7 @@
             appData.userProgress.testScores ||= {};
             appData.userProgress.customDates ||= {};
             appData.userProgress.customTestDates ||= {};
+            appData.userProgress.customTests ||= [];
             appData.userProgress.dailyNotes ||= {};
             appData.userProgress.studySessions ||= [];
             appData.userProgress.notes ||= '';
@@ -721,12 +887,10 @@
             if (serverData) {
                 appData = { ...appData, ...serverData };
             } else {
-                // Fallback: Load from localStorage or use defaults
                 const localData = localStorage.getItem('wbcs_appData');
                 if (localData) {
                     appData = JSON.parse(localData);
                 } else {
-                    // Initialize with default data
                     appData = getDefaultAppData();
                 }
             }
@@ -748,16 +912,12 @@
         async function saveProgress() {
             normalizeUserProgress();
 
-            // Save to API
             await apiCall('/progress', 'PUT', appData.userProgress);
-
-            // Also save to localStorage as backup
             localStorage.setItem('wbcs_progress_' + currentUser.email, JSON.stringify(appData.userProgress));
             localStorage.setItem('wbcs_appData', JSON.stringify(appData));
         }
 
         async function saveAppData() {
-            // Admin only - save blueprint data
             if (!currentUser.isAdmin) return;
 
             await apiCall('/data', 'PUT', {
@@ -781,6 +941,7 @@
                     testScores: {},
                     customDates: {},
                     customTestDates: {},
+                    customTests: [],
                     dailyNotes: {},
                     studySessions: [],
                     notes: '',
@@ -791,7 +952,6 @@
 
         function getDefaultTasks() {
             const tasks = [];
-            // January Blueprint
             const janData = [
                 { date: '2026-01-01', morning: 'Polity: Constitution Basics, Preamble', evening: 'Polity MCQs (50)', test: 'New Year Holiday', subject: 'Polity', hours: 3.75 },
                 { date: '2026-01-02', morning: 'History: 1857 Revolt - Causes & Course', evening: '1857 MCQs', test: '-', subject: 'History', hours: 3.75 },
@@ -826,7 +986,6 @@
                 { date: '2026-01-31', morning: 'Polity: Full Revision Marathon', evening: 'Polity final drill MCQs', test: 'TEST 5: 75 MCQs', subject: 'Polity', hours: 8.5 }
             ];
 
-            // February Blueprint
             const febData = [
                 { date: '2026-02-01', morning: 'Environment: Ecology, Biodiversity', evening: 'Environment comp MCQs', test: 'TEST 6: 75 MCQs', subject: 'Environment', hours: 8 },
                 { date: '2026-02-02', morning: 'Polity: Judiciary - SC & High Courts', evening: 'Judicial cases MCQs', test: '-', subject: 'Polity', hours: 3.75 },
@@ -858,7 +1017,6 @@
                 { date: '2026-02-28', morning: 'Rest & Mental Relaxation', evening: 'Final simulation mock', test: 'FULL MOCK: 200 MCQs', subject: 'General', hours: 3 }
             ];
 
-            // March Blueprint
             const marData = [
                 { date: '2026-03-01', morning: 'Full Revision: Polity Weak Areas', evening: 'Polity Marathon', test: '-', subject: 'Polity', hours: 6 },
                 { date: '2026-03-02', morning: 'Full Revision: History Weak Areas', evening: 'History Marathon', test: '-', subject: 'History', hours: 6 },
@@ -953,21 +1111,18 @@
             document.getElementById('userEmailDisplay').textContent = '👤 ' + currentUser.email;
             document.getElementById('sidebarUserEmail').textContent = currentUser.email;
 
-            // Show admin menu if admin
             if (currentUser.isAdmin) {
                 document.getElementById('adminMenuSection').classList.remove('hidden');
             }
 
-            // Apply dark mode
             if (appData.userProgress.darkMode) {
                 document.body.classList.add('dark-mode');
             }
 
-            // Load notes
             document.getElementById('globalNotes').value = appData.userProgress.notes || '';
 
             renderAll();
-            showToast('Welcome back, ' + currentUser.name + '!', 'success');
+            showToast('Welcome back, ' + (currentUser.name || 'Friend') + '!', 'success');
         }
 
         // =============================================
@@ -982,8 +1137,6 @@
             renderAnalytics();
             if (activeSubject) renderSubjectViewTable();
             if (currentUser.isAdmin) renderAdminPanel();
-
-            // Restore the currently open tab after re-rendering dynamic content
             setActiveTab(activeTabId, true);
         }
 
@@ -995,35 +1148,29 @@
             document.getElementById('statProgress').textContent = progress + '%';
             document.getElementById('progressBar').style.width = progress + '%';
 
-            // Days to exam
             const examDate = new Date('2026-03-20T00:00:00');
             const today = new Date();
             const daysLeft = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
             document.getElementById('statDays').textContent = Math.max(0, daysLeft);
 
-            // Total hours
             let totalHours = 0;
             tasks.forEach(t => {
-                if (appData.userProgress.completedTasks[t.id]) {
-                    totalHours += t.hours || 0;
-                }
+                if (appData.userProgress.completedTasks[t.id]) totalHours += t.hours || 0;
             });
             document.getElementById('statHours').textContent = totalHours.toFixed(1) + 'h';
 
-            // Streak
             document.getElementById('statStreak').textContent = calculateStreak() + ' days';
 
-            // Subject cards
             const cardsHtml = appData.subjects.map(s => {
                 const subjectTasks = tasks.filter(t => t.subject === s);
                 const subjectCompleted = subjectTasks.filter(t => appData.userProgress.completedTasks[t.id]).length;
                 const subjectProgress = subjectTasks.length ? Math.round((subjectCompleted / subjectTasks.length) * 100) : 0;
                 return `
-                    <div onclick="viewSubject('${s}')" class="bg-white rounded-xl p-4 shadow-sm cursor-pointer hover:shadow-md transition border-l-4 border-indigo-500">
-                        <h4 class="font-bold text-gray-800">${s}</h4>
-                        <div class="text-sm text-gray-500">${subjectCompleted}/${subjectTasks.length} topics</div>
-                        <div class="h-2 bg-gray-200 rounded-full mt-2 overflow-hidden">
-                            <div class="h-full bg-indigo-500" style="width: ${subjectProgress}%"></div>
+                    <div onclick="viewSubject('${s}')" class="glass rounded-3xl p-4 cursor-pointer hover:shadow-lg transition border-l-4 border-indigo-500">
+                        <h4 class="font-extrabold text-slate-800">${s}</h4>
+                        <div class="text-sm text-slate-600">${subjectCompleted}/${subjectTasks.length} topics</div>
+                        <div class="h-2 bg-white/70 rounded-full mt-3 overflow-hidden">
+                            <div class="h-full" style="width: ${subjectProgress}%; background: linear-gradient(90deg, var(--primary), var(--primary-2));"></div>
                         </div>
                     </div>
                 `;
@@ -1034,29 +1181,22 @@
         function calculateStreak() {
             const completedDates = new Set();
             appData.tasks.forEach(t => {
-                if (appData.userProgress.completedTasks[t.id]) {
-                    completedDates.add(getEffectiveTaskDate(t));
-                }
+                if (appData.userProgress.completedTasks[t.id]) completedDates.add(getEffectiveTaskDate(t));
             });
 
             let streak = 0;
             let checkDate = new Date();
             checkDate.setHours(0, 0, 0, 0);
 
-            // Start from today, otherwise from yesterday
             let dateStr = toLocalISODate(checkDate);
-            if (!completedDates.has(dateStr)) {
-                checkDate.setDate(checkDate.getDate() - 1);
-            }
+            if (!completedDates.has(dateStr)) checkDate.setDate(checkDate.getDate() - 1);
 
             while (true) {
                 dateStr = toLocalISODate(checkDate);
                 if (completedDates.has(dateStr)) {
                     streak++;
                     checkDate.setDate(checkDate.getDate() - 1);
-                } else {
-                    break;
-                }
+                } else break;
                 if (streak > 365) break;
             }
             return streak;
@@ -1065,10 +1205,10 @@
         function renderRoutines() {
             const renderTable = (data, tableId) => {
                 document.getElementById(tableId).innerHTML = data.map(r => `
-                    <tr class="border-b">
-                        <td class="p-3 font-semibold">${r.time}</td>
+                    <tr class="border-b border-black/5 table-row-hover">
+                        <td class="p-3 font-bold">${r.time}</td>
                         <td class="p-3">${r.activity}</td>
-                        <td class="p-3 text-gray-600">${r.details}</td>
+                        <td class="p-3 text-slate-600">${r.details}</td>
                         <td class="p-3">${r.duration}</td>
                     </tr>
                 `).join('');
@@ -1094,17 +1234,17 @@
                     .sort((a, b) => getEffectiveTaskDate(a).localeCompare(getEffectiveTaskDate(b)));
 
                 if (monthTasks.length > 0) {
-                    menuHtml += `<div class="px-8 py-2 text-slate-300 cursor-pointer hover:bg-slate-800 text-sm" onclick="switchTab('${month}')">${monthNames[idx]} 2026</div>`;
+                    menuHtml += `<div class="px-8 py-2 text-slate-200/90 cursor-pointer hover:bg-white/10 text-sm" onclick="switchTab('${month}')">${monthNames[idx]} 2026</div>`;
 
                     tabsHtml += `
                         <div id="tab-${month}" class="tab-content">
                             <div class="flex items-center justify-between gap-3 mb-4">
-                                <h2 class="text-2xl font-bold text-gray-800">📆 ${monthNames[idx]} 2026</h2>
-                                <div class="text-xs text-gray-500">Edit dates to reschedule tasks (saved per-user)</div>
+                                <h2 class="text-2xl font-extrabold text-slate-800">📆 ${monthNames[idx]} 2026</h2>
+                                <div class="text-xs text-slate-500">Edit dates to reschedule tasks (saved per-user)</div>
                             </div>
-                            <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
+                            <div class="glass rounded-3xl overflow-x-auto">
                                 <table class="w-full">
-                                    <thead class="bg-indigo-500 text-white">
+                                    <thead class="text-white" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
                                         <tr>
                                             <th class="p-3 text-left">Date</th>
                                             <th class="p-3 text-left">Day</th>
@@ -1123,17 +1263,19 @@
                                             const displayDate = formatDate(effDate);
                                             const dayName = getDayName(effDate);
                                             return `
-                                                <tr class="${isCompleted ? 'completed-row' : ''} border-b hover:bg-gray-50">
+                                                <tr class="${isCompleted ? 'completed-row' : ''} border-b border-black/5 table-row-hover">
                                                     <td class="p-3">
-                                                        <div class="font-semibold">${displayDate}</div>
-                                                        <input type="date" value="${effDate}" onchange="updateTaskDate('${t.id}', this.value)" class="mt-1 w-36 px-2 py-1 border rounded text-xs">
+                                                        <div class="date-chip">${displayDate} • ${dayName}</div>
+                                                        <div class="mt-2">
+                                                            <input type="date" value="${effDate}" onchange="updateTaskDate('${t.id}', this.value)" class="input-mini bg-white/70">
+                                                        </div>
                                                     </td>
-                                                    <td class="p-3">${dayName}</td>
+                                                    <td class="p-3 font-bold">${dayName}</td>
                                                     <td class="p-3">${t.morning}</td>
                                                     <td class="p-3">${t.evening}</td>
                                                     <td class="p-3">${t.test}</td>
-                                                    <td class="p-3"><span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs">${t.subject}</span></td>
-                                                    <td class="p-3">${t.hours}</td>
+                                                    <td class="p-3"><span class="px-2 py-1 rounded-xl text-xs font-bold" style="background: rgba(99,102,241,0.12); color: rgb(79,70,229); border: 1px solid rgba(99,102,241,0.18);">${t.subject}</span></td>
+                                                    <td class="p-3 font-bold">${t.hours}</td>
                                                     <td class="p-3">
                                                         <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleTask('${t.id}')" class="w-5 h-5 accent-indigo-500 cursor-pointer">
                                                     </td>
@@ -1154,45 +1296,72 @@
 
         function renderSubjects() {
             const menuHtml = appData.subjects.map(s => `
-                <div class="px-8 py-2 text-slate-300 cursor-pointer hover:bg-slate-800 text-sm" onclick="viewSubject('${s}')">📚 ${s}</div>
+                <div class="px-8 py-2 text-slate-200/90 cursor-pointer hover:bg-white/10 text-sm" onclick="viewSubject('${s}')">📚 ${s}</div>
             `).join('');
             document.getElementById('subjectMenuList').innerHTML = menuHtml;
         }
 
+        function getAllTestsMerged() {
+            const blueprint = (appData.tests || []).map(t => ({ ...t, origin: 'blueprint' }));
+            const personal = (appData.userProgress.customTests || []).map(t => ({ ...t, origin: 'personal' }));
+            return [...blueprint, ...personal];
+        }
+
         function renderTests() {
-            const html = appData.tests
+            const tests = getAllTestsMerged()
                 .slice()
-                .sort((a, b) => (getEffectiveTestDate(a) || '').localeCompare(getEffectiveTestDate(b) || '') || (a.number - b.number))
-                .map(t => {
-                    const score = appData.userProgress.testScores[t.id];
-                    const percentage = score ? Math.round((score / t.mcqs) * 100) : '-';
-                    const status = score ? (percentage >= 80 ? '✅ Excellent' : percentage >= 60 ? '👍 Good' : '⚠️ Improve') : '⏳ Pending';
-                    const effDate = getEffectiveTestDate(t);
-                    return `
-                        <tr class="border-b">
-                            <td class="p-3 font-bold">Test ${t.number}</td>
-                            <td class="p-3">
-                                <div class="font-semibold">${formatDate(effDate)}</div>
-                                <input type="date" value="${effDate}" onchange="updateTestDate('${t.id}', this.value)" class="mt-1 w-36 px-2 py-1 border rounded text-xs">
-                            </td>
-                            <td class="p-3">${t.type}</td>
-                            <td class="p-3">${t.mcqs}</td>
-                            <td class="p-3">${t.focus}</td>
-                            <td class="p-3">
-                                <input type="number" value="${score ?? ''}" placeholder="Score" 
-                                    onchange="updateTestScore('${t.id}', this.value)"
-                                    class="w-20 px-2 py-1 border rounded text-center">
-                            </td>
-                            <td class="p-3 font-bold ${score ? (percentage >= 80 ? 'text-green-600' : percentage >= 60 ? 'text-yellow-600' : 'text-red-600') : ''}">${percentage}%</td>
-                            <td class="p-3">${status}</td>
-                        </tr>
-                    `;
-                }).join('');
-            document.getElementById('testsTable').innerHTML = html;
+                .sort((a, b) => (getEffectiveTestDate(a) || '').localeCompare(getEffectiveTestDate(b) || '') || ((a.number || 0) - (b.number || 0)));
+
+            const html = tests.map(t => {
+                const score = appData.userProgress.testScores[t.id];
+                const percentage = (score !== undefined && score !== null && Number.isFinite(Number(score))) ? Math.round((Number(score) / t.mcqs) * 100) : null;
+                const status = (percentage === null)
+                    ? '⏳ Pending'
+                    : (percentage >= 80 ? '✅ Excellent' : percentage >= 60 ? '👍 Good' : '⚠️ Improve');
+
+                const effDate = getEffectiveTestDate(t);
+                const badge = t.origin === 'personal'
+                    ? `<span class="ml-2 px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: rgba(34,197,94,0.14); border: 1px solid rgba(34,197,94,0.18); color: rgb(21,128,61);">Personal</span>`
+                    : `<span class="ml-2 px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.18); color: rgb(79,70,229);">Blueprint</span>`;
+
+                const pctText = percentage === null ? '-' : `${percentage}%`;
+                const pctClass = percentage === null ? '' : (percentage >= 80 ? 'text-emerald-600' : percentage >= 60 ? 'text-amber-600' : 'text-rose-600');
+
+                const actions = t.origin === 'personal'
+                    ? `<button onclick="deletePersonalTest('${t.id}')" class="px-3 py-1.5 rounded-2xl text-white font-extrabold text-xs btn-glow" style="background: linear-gradient(135deg, #ef4444, #f43f5e);">🗑️ Delete</button>`
+                    : `<span class="text-xs text-slate-500">—</span>`;
+
+                return `
+                    <tr class="border-b border-black/5 table-row-hover">
+                        <td class="p-3 font-extrabold">Test ${t.number || ''} ${badge}</td>
+                        <td class="p-3">
+                            <div class="date-chip">${formatDate(effDate)}</div>
+                            <div class="mt-2">
+                                <input type="date" value="${effDate || ''}" onchange="updateTestDate('${t.id}', this.value)" class="input-mini bg-white/70">
+                            </div>
+                        </td>
+                        <td class="p-3 font-bold">${t.type}</td>
+                        <td class="p-3">${t.mcqs}</td>
+                        <td class="p-3">${t.focus || '-'}</td>
+                        <td class="p-3 font-bold">${t.target ?? '-'}</td>
+                        <td class="p-3">
+                            <input type="number" value="${score ?? ''}" placeholder="Score" min="0" max="${t.mcqs}" 
+                                onchange="updateTestScore('${t.id}', this.value)"
+                                class="w-24 px-3 py-2 border rounded-2xl text-center bg-white/70">
+                        </td>
+                        <td class="p-3 font-extrabold ${pctClass}">${pctText}</td>
+                        <td class="p-3">${status}</td>
+                        <td class="p-3">${actions}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('testsTable').innerHTML = html || `
+                <tr><td class="p-4 text-slate-500" colspan="10">No tests found. Click “Add Personal Test”.</td></tr>
+            `;
         }
 
         function renderAnalytics() {
-            // Subject analytics
             const analyticsHtml = appData.subjects.map(s => {
                 const subjectTasks = appData.tasks.filter(t => t.subject === s);
                 const completed = subjectTasks.filter(t => appData.userProgress.completedTasks[t.id]).length;
@@ -1201,15 +1370,15 @@
                     .filter(t => appData.userProgress.completedTasks[t.id])
                     .reduce((sum, t) => sum + (t.hours || 0), 0);
                 return `
-                    <div class="flex items-center justify-between py-3 border-b">
+                    <div class="flex items-center justify-between py-3 border-b border-black/5">
                         <div>
-                            <div class="font-semibold">${s}</div>
-                            <div class="text-sm text-gray-500">${completed}/${subjectTasks.length} topics • ${hours.toFixed(1)}h</div>
+                            <div class="font-extrabold">${s}</div>
+                            <div class="text-sm text-slate-600">${completed}/${subjectTasks.length} topics • ${hours.toFixed(1)}h</div>
                         </div>
                         <div class="w-32">
-                            <div class="text-right text-sm font-bold text-indigo-600 mb-1">${progress}%</div>
-                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                                <div class="h-full bg-indigo-500" style="width: ${progress}%"></div>
+                            <div class="text-right text-sm font-extrabold text-indigo-600 mb-1">${progress}%</div>
+                            <div class="h-2 bg-white/70 rounded-full overflow-hidden">
+                                <div class="h-full" style="width: ${progress}%; background: linear-gradient(90deg, var(--primary), var(--primary-2));"></div>
                             </div>
                         </div>
                     </div>
@@ -1217,31 +1386,28 @@
             }).join('');
             document.getElementById('subjectAnalytics').innerHTML = analyticsHtml;
 
-            // Weekly chart (simple bar representation)
-            const weeklyData = [4, 6, 3, 5, 8, 7, 2]; // Sample data
+            const weeklyData = [4, 6, 3, 5, 8, 7, 2];
             const weeklyHtml = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => `
                 <div class="flex-1 flex flex-col items-center">
-                    <div class="bg-indigo-500 rounded-t w-full" style="height: ${weeklyData[i] * 15}px"></div>
-                    <div class="text-xs text-gray-500 mt-2">${day}</div>
+                    <div class="rounded-t-2xl w-full" style="height: ${weeklyData[i] * 15}px; background: linear-gradient(180deg, var(--primary), var(--primary-2));"></div>
+                    <div class="text-xs text-slate-500 mt-2 font-bold">${day}</div>
                 </div>
             `).join('');
             document.getElementById('weeklyChart').innerHTML = weeklyHtml;
         }
 
         function renderAdminPanel() {
-            // Admin subject list
             const subjectListHtml = appData.subjects.map(s => `
-                <div class="flex items-center justify-between bg-gray-100 px-3 py-2 rounded">
-                    <span>${s}</span>
-                    <button onclick="adminDeleteSubject('${s}')" class="text-red-500 hover:text-red-700">🗑️</button>
+                <div class="flex items-center justify-between bg-white/50 px-3 py-2 rounded-2xl border border-white/60">
+                    <span class="font-bold">${s}</span>
+                    <button onclick="adminDeleteSubject('${s}')" class="text-rose-500 hover:text-rose-700">🗑️</button>
                 </div>
             `).join('');
             document.getElementById('adminSubjectList').innerHTML = subjectListHtml;
 
-            // Admin tests list (inline date edit)
             const testsHtml = appData.tests.length ? `
                 <table class="w-full">
-                    <thead class="bg-gray-100">
+                    <thead class="bg-white/60">
                         <tr>
                             <th class="p-2 text-left">#</th>
                             <th class="p-2 text-left">Date</th>
@@ -1256,11 +1422,11 @@
                             .slice()
                             .sort((a, b) => a.number - b.number)
                             .map(t => `
-                            <tr class="border-b">
-                                <td class="p-2 font-semibold">${t.number}</td>
+                            <tr class="border-b border-black/5 table-row-hover">
+                                <td class="p-2 font-extrabold">${t.number}</td>
                                 <td class="p-2">
-                                    <input type="date" class="px-2 py-1 border rounded text-xs w-36" value="${t.date}" onchange="adminUpdateTestDate('${t.id}', this.value)">
-                                    <div class="text-xs text-gray-500 mt-1">${formatDate(t.date)}</div>
+                                    <input type="date" class="px-3 py-2 border rounded-2xl text-xs w-40 bg-white/70" value="${t.date}" onchange="adminUpdateTestDate('${t.id}', this.value)">
+                                    <div class="text-xs text-slate-500 mt-1">${formatDate(t.date)}</div>
                                 </td>
                                 <td class="p-2">${t.type}</td>
                                 <td class="p-2">${t.mcqs}</td>
@@ -1270,7 +1436,7 @@
                         `).join('')}
                     </tbody>
                 </table>
-            ` : '<p class="text-gray-500 text-center py-8">No tests configured.</p>';
+            ` : '<p class="text-slate-500 text-center py-8">No tests configured.</p>';
 
             const adminTestsListEl = document.getElementById('adminTestsList');
             if (adminTestsListEl) adminTestsListEl.innerHTML = testsHtml;
@@ -1293,30 +1459,32 @@
                 const effDate = getEffectiveTaskDate(t);
                 const dayName = getDayName(effDate);
                 return `
-                    <tr class="${isCompleted ? 'completed-row' : ''} border-b">
+                    <tr class="${isCompleted ? 'completed-row' : ''} border-b border-black/5 table-row-hover">
                         <td class="p-3">
-                            <div class="font-semibold">${t.morning}</div>
-                            <div class="text-sm text-gray-500">${t.evening}</div>
+                            <div class="font-extrabold">${t.morning}</div>
+                            <div class="text-sm text-slate-600">${t.evening}</div>
                         </td>
                         <td class="p-3">
-                            <div class="font-semibold">${formatDate(effDate)}</div>
-                            <input type="date" value="${effDate}" onchange="updateTaskDate('${t.id}', this.value)" class="mt-1 w-36 px-2 py-1 border rounded text-xs">
+                            <div class="date-chip">${formatDate(effDate)} • ${dayName}</div>
+                            <div class="mt-2">
+                                <input type="date" value="${effDate}" onchange="updateTaskDate('${t.id}', this.value)" class="input-mini bg-white/70">
+                            </div>
                         </td>
-                        <td class="p-3">${dayName}</td>
-                        <td class="p-3">${t.hours}h</td>
+                        <td class="p-3 font-bold">${dayName}</td>
+                        <td class="p-3 font-bold">${t.hours}h</td>
                         <td class="p-3">
                             <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleTask('${t.id}')" class="w-5 h-5 accent-indigo-500 cursor-pointer">
                         </td>
                         <td class="p-3">
-                            <button onclick="editTask('${t.id}')" class="text-blue-500 hover:text-blue-700 mr-2">✏️</button>
-                            <button onclick="deleteTask('${t.id}')" class="text-red-500 hover:text-red-700">🗑️</button>
+                            <button onclick="editTask('${t.id}')" class="text-indigo-600 hover:text-indigo-800 font-bold mr-2">✏️</button>
+                            <button onclick="deleteTask('${t.id}')" class="text-rose-500 hover:text-rose-700 font-bold">🗑️</button>
                         </td>
                     </tr>
                 `;
             }).join('');
 
             document.getElementById('subjectTopicsTable').innerHTML = html || `
-                <tr><td class="p-3 text-gray-500" colspan="6">No tasks found for ${activeSubject}. Add a topic to start tracking.</td></tr>
+                <tr><td class="p-3 text-slate-500" colspan="6">No tasks found for ${activeSubject}. Add a topic to start tracking.</td></tr>
             `;
         }
 
@@ -1372,9 +1540,154 @@
         }
 
         function updateTestScore(testId, score) {
-            appData.userProgress.testScores[testId] = Number.isFinite(parseInt(score)) ? parseInt(score) : null;
+            const n = parseInt(score);
+            appData.userProgress.testScores[testId] = Number.isFinite(n) ? n : null;
             saveProgress();
             renderAll();
+        }
+
+        // =============================================
+        // PERSONAL TESTS (per-user)
+        // =============================================
+        function getNextTestNumber() {
+            const all = getAllTestsMerged();
+            const maxN = all.reduce((m, t) => Math.max(m, Number(t.number) || 0), 0);
+            return maxN + 1;
+        }
+
+        function updatePersonalTestTypeUI() {
+            const typeEl = document.getElementById('personalTestType');
+            const subjectWrap = document.getElementById('personalSubjectWrap');
+            const subjectEl = document.getElementById('personalSubject');
+            const focusEl = document.getElementById('personalFocus');
+            const mcqsEl = document.getElementById('personalTestMcqs');
+            const targetEl = document.getElementById('personalTestTarget');
+
+            if (!typeEl || !subjectWrap || !subjectEl || !focusEl || !mcqsEl || !targetEl) return;
+
+            const type = typeEl.value;
+            const isSubject = type === 'Subject';
+            subjectWrap.classList.toggle('hidden', !isSubject);
+
+            // Smart defaults (only if user hasn't already typed custom values)
+            const mcqsWasEmpty = !mcqsEl.dataset.userEdited;
+            const targetWasEmpty = !targetEl.dataset.userEdited;
+
+            const defaults = {
+                'Subject': { mcqs: 75, target: 60 },
+                'Mixed': { mcqs: 75, target: 60 },
+                'Full': { mcqs: 100, target: 80 },
+                'Full Mock': { mcqs: 200, target: 160 },
+                'Final Mock': { mcqs: 200, target: 170 }
+            };
+
+            const d = defaults[type] || defaults['Mixed'];
+            if (mcqsWasEmpty) mcqsEl.value = d.mcqs;
+            if (targetWasEmpty) targetEl.value = d.target;
+
+            if (isSubject) {
+                const subj = subjectEl.value;
+                if (!focusEl.value) focusEl.value = `${subj} - Subject Test`;
+            }
+        }
+
+        function openAddPersonalTestModal() {
+            const nextNum = getNextTestNumber();
+            const todayISO = toLocalISODate(new Date());
+
+            openModal('➕ Add Personal Test', `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-extrabold mb-2 text-slate-700">Test Number</label>
+                            <input type="number" id="personalTestNumber" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="${nextNum}">
+                        </div>
+                        <div>
+                            <label class="block font-extrabold mb-2 text-slate-700">Date</label>
+                            <input type="date" id="personalTestDate" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="${todayISO}">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-extrabold mb-2 text-slate-700">Type</label>
+                        <select id="personalTestType" class="w-full px-4 py-3 border rounded-2xl bg-white/70" onchange="updatePersonalTestTypeUI()">
+                            <option>Subject</option>
+                            <option>Mixed</option>
+                            <option>Full</option>
+                            <option>Full Mock</option>
+                            <option>Final Mock</option>
+                        </select>
+                    </div>
+
+                    <div id="personalSubjectWrap">
+                        <label class="block font-extrabold mb-2 text-slate-700">Subject</label>
+                        <select id="personalSubject" class="w-full px-4 py-3 border rounded-2xl bg-white/70" onchange="updatePersonalTestTypeUI()">
+                            ${(appData.subjects || []).map(s => `<option value="${s}">${s}</option>`).join('')}
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-extrabold mb-2 text-slate-700">MCQs</label>
+                            <input type="number" id="personalTestMcqs" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="75" min="1" oninput="this.dataset.userEdited='1'">
+                        </div>
+                        <div>
+                            <label class="block font-extrabold mb-2 text-slate-700">Target Score</label>
+                            <input type="number" id="personalTestTarget" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="60" min="0" oninput="this.dataset.userEdited='1'">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-extrabold mb-2 text-slate-700">Focus / Notes</label>
+                        <input type="text" id="personalFocus" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="e.g., Polity (FR + DPSP) + 50 MCQs">
+                    </div>
+
+                    <div class="text-xs text-slate-500">
+                        Personal tests are saved only for your account and synced to MongoDB under <code>userProgress.customTests</code>.
+                    </div>
+                </div>
+            `, () => {
+                const id = 'ptest-' + Date.now();
+                const number = parseInt(document.getElementById('personalTestNumber').value) || getNextTestNumber();
+                const date = document.getElementById('personalTestDate').value;
+                const type = document.getElementById('personalTestType').value;
+                const mcqs = parseInt(document.getElementById('personalTestMcqs').value) || 75;
+                const target = parseInt(document.getElementById('personalTestTarget').value) || 0;
+                const focus = (document.getElementById('personalFocus').value || '').trim();
+
+                let finalFocus = focus;
+                if (!finalFocus && type === 'Subject') {
+                    const subj = document.getElementById('personalSubject').value;
+                    finalFocus = `${subj} - Subject Test`;
+                }
+
+                appData.userProgress.customTests ||= [];
+                appData.userProgress.customTests.push({
+                    id,
+                    number,
+                    date,
+                    type,
+                    mcqs,
+                    focus: finalFocus,
+                    target
+                });
+
+                saveProgress();
+                renderAll();
+                showToast('Personal test added!', 'success');
+            });
+
+            setTimeout(updatePersonalTestTypeUI, 0);
+        }
+
+        function deletePersonalTest(testId) {
+            if (!confirm('Delete this personal test?')) return;
+            appData.userProgress.customTests = (appData.userProgress.customTests || []).filter(t => t.id !== testId);
+            if (appData.userProgress.testScores) delete appData.userProgress.testScores[testId];
+            if (appData.userProgress.customTestDates) delete appData.userProgress.customTestDates[testId];
+            saveProgress();
+            renderAll();
+            showToast('Personal test removed', 'info');
         }
 
         // =============================================
@@ -1388,9 +1701,9 @@
 
         function createNewSubject() {
             openModal('Add New Subject', `
-                <div class="mb-4">
-                    <label class="block font-semibold mb-2">Subject Name</label>
-                    <input type="text" id="newSubjectName" class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., Physics">
+                <div class="mb-2">
+                    <label class="block font-extrabold mb-2 text-slate-700">Subject Name</label>
+                    <input type="text" id="newSubjectName" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="e.g., Physics">
                 </div>
             `, () => {
                 const name = document.getElementById('newSubjectName').value.trim();
@@ -1421,20 +1734,22 @@
             openModal('Add Topic to ' + activeSubject, `
                 <div class="space-y-4">
                     <div>
-                        <label class="block font-semibold mb-2">Morning Topic</label>
-                        <input type="text" id="topicMorning" class="w-full px-4 py-2 border rounded-lg" placeholder="Theory topic...">
+                        <label class="block font-extrabold mb-2 text-slate-700">Morning Topic</label>
+                        <input type="text" id="topicMorning" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="Theory topic...">
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">Evening Practice</label>
-                        <input type="text" id="topicEvening" class="w-full px-4 py-2 border rounded-lg" placeholder="MCQs, practice...">
+                        <label class="block font-extrabold mb-2 text-slate-700">Evening Practice</label>
+                        <input type="text" id="topicEvening" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="MCQs, practice...">
                     </div>
-                    <div>
-                        <label class="block font-semibold mb-2">Date</label>
-                        <input type="date" id="topicDate" class="w-full px-4 py-2 border rounded-lg" value="${toLocalISODate(new Date())}">
-                    </div>
-                    <div>
-                        <label class="block font-semibold mb-2">Hours</label>
-                        <input type="number" id="topicHours" class="w-full px-4 py-2 border rounded-lg" value="3" step="0.5">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-extrabold mb-2 text-slate-700">Date</label>
+                            <input type="date" id="topicDate" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="${toLocalISODate(new Date())}">
+                        </div>
+                        <div>
+                            <label class="block font-extrabold mb-2 text-slate-700">Hours</label>
+                            <input type="number" id="topicHours" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="3" step="0.5">
+                        </div>
                     </div>
                 </div>
             `, () => {
@@ -1458,9 +1773,7 @@
         // =============================================
         // ADMIN FUNCTIONS
         // =============================================
-        function adminAddSubject() {
-            createNewSubject();
-        }
+        function adminAddSubject() { createNewSubject(); }
 
         function adminDeleteSubject(name) {
             if (confirm(`Delete subject "${name}"?`)) {
@@ -1480,7 +1793,7 @@
 
             const html = monthTasks.length ? `
                 <table class="w-full">
-                    <thead class="bg-gray-100">
+                    <thead class="bg-white/60">
                         <tr>
                             <th class="p-2 text-left">Date</th>
                             <th class="p-2 text-left">Morning</th>
@@ -1492,24 +1805,24 @@
                     </thead>
                     <tbody>
                         ${monthTasks.map(t => `
-                            <tr class="border-b">
+                            <tr class="border-b border-black/5 table-row-hover">
                                 <td class="p-2">
-                                    <input type="date" value="${t.date}" onchange="adminUpdateTaskDate('${t.id}', this.value)" class="px-2 py-1 border rounded text-xs w-36">
-                                    <div class="text-xs text-gray-500 mt-1">${formatDate(t.date)}</div>
+                                    <input type="date" value="${t.date}" onchange="adminUpdateTaskDate('${t.id}', this.value)" class="px-3 py-2 border rounded-2xl text-xs w-40 bg-white/70">
+                                    <div class="text-xs text-slate-500 mt-1">${formatDate(t.date)}</div>
                                 </td>
                                 <td class="p-2">${t.morning}</td>
                                 <td class="p-2">${t.evening}</td>
                                 <td class="p-2">${t.subject}</td>
                                 <td class="p-2">${t.hours}</td>
                                 <td class="p-2">
-                                    <button onclick="editTask('${t.id}')" class="text-blue-500 mr-2">✏️</button>
-                                    <button onclick="deleteTask('${t.id}')" class="text-red-500">🗑️</button>
+                                    <button onclick="editTask('${t.id}')" class="text-indigo-600 font-bold mr-2">✏️</button>
+                                    <button onclick="deleteTask('${t.id}')" class="text-rose-600 font-bold">🗑️</button>
                                 </td>
                             </tr>
                         `).join('')}
                     </tbody>
                 </table>
-            ` : '<p class="text-gray-500 text-center py-8">No tasks for this month.</p>';
+            ` : '<p class="text-slate-500 text-center py-8">No tasks for this month.</p>';
 
             document.getElementById('adminTasksList').innerHTML = html;
         }
@@ -1519,30 +1832,30 @@
             openModal('Add New Task', `
                 <div class="space-y-4">
                     <div>
-                        <label class="block font-semibold mb-2">Date</label>
-                        <input type="date" id="taskDate" class="w-full px-4 py-2 border rounded-lg" value="2026-${month}-01">
+                        <label class="block font-extrabold mb-2 text-slate-700">Date</label>
+                        <input type="date" id="taskDate" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="2026-${month}-01">
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">Morning Topic</label>
-                        <input type="text" id="taskMorning" class="w-full px-4 py-2 border rounded-lg">
+                        <label class="block font-extrabold mb-2 text-slate-700">Morning Topic</label>
+                        <input type="text" id="taskMorning" class="w-full px-4 py-3 border rounded-2xl bg-white/70">
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">Evening Practice</label>
-                        <input type="text" id="taskEvening" class="w-full px-4 py-2 border rounded-lg">
+                        <label class="block font-extrabold mb-2 text-slate-700">Evening Practice</label>
+                        <input type="text" id="taskEvening" class="w-full px-4 py-3 border rounded-2xl bg-white/70">
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">Test/Activity</label>
-                        <input type="text" id="taskTest" class="w-full px-4 py-2 border rounded-lg" value="-">
+                        <label class="block font-extrabold mb-2 text-slate-700">Test/Activity</label>
+                        <input type="text" id="taskTest" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="-">
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">Subject</label>
-                        <select id="taskSubject" class="w-full px-4 py-2 border rounded-lg">
+                        <label class="block font-extrabold mb-2 text-slate-700">Subject</label>
+                        <select id="taskSubject" class="w-full px-4 py-3 border rounded-2xl bg-white/70">
                             ${appData.subjects.map(s => `<option value="${s}">${s}</option>`).join('')}
                         </select>
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">Hours</label>
-                        <input type="number" id="taskHours" class="w-full px-4 py-2 border rounded-lg" value="3.75" step="0.25">
+                        <label class="block font-extrabold mb-2 text-slate-700">Hours</label>
+                        <input type="number" id="taskHours" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="3.75" step="0.25">
                     </div>
                 </div>
             `, () => {
@@ -1570,30 +1883,30 @@
             openModal('Edit Task', `
                 <div class="space-y-4">
                     <div>
-                        <label class="block font-semibold mb-2">Date</label>
-                        <input type="date" id="editDate" class="w-full px-4 py-2 border rounded-lg" value="${task.date}">
+                        <label class="block font-extrabold mb-2 text-slate-700">Date</label>
+                        <input type="date" id="editDate" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="${task.date}">
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">Morning Topic</label>
-                        <input type="text" id="editMorning" class="w-full px-4 py-2 border rounded-lg" value="${task.morning}">
+                        <label class="block font-extrabold mb-2 text-slate-700">Morning Topic</label>
+                        <input type="text" id="editMorning" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="${task.morning}">
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">Evening Practice</label>
-                        <input type="text" id="editEvening" class="w-full px-4 py-2 border rounded-lg" value="${task.evening}">
+                        <label class="block font-extrabold mb-2 text-slate-700">Evening Practice</label>
+                        <input type="text" id="editEvening" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="${task.evening}">
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">Test/Activity</label>
-                        <input type="text" id="editTest" class="w-full px-4 py-2 border rounded-lg" value="${task.test}">
+                        <label class="block font-extrabold mb-2 text-slate-700">Test/Activity</label>
+                        <input type="text" id="editTest" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="${task.test}">
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">Subject</label>
-                        <select id="editSubject" class="w-full px-4 py-2 border rounded-lg">
+                        <label class="block font-extrabold mb-2 text-slate-700">Subject</label>
+                        <select id="editSubject" class="w-full px-4 py-3 border rounded-2xl bg-white/70">
                             ${appData.subjects.map(s => `<option value="${s}" ${s === task.subject ? 'selected' : ''}>${s}</option>`).join('')}
                         </select>
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">Hours</label>
-                        <input type="number" id="editHours" class="w-full px-4 py-2 border rounded-lg" value="${task.hours}" step="0.25">
+                        <label class="block font-extrabold mb-2 text-slate-700">Hours</label>
+                        <input type="number" id="editHours" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="${task.hours}" step="0.25">
                     </div>
                 </div>
             `, () => {
@@ -1612,7 +1925,6 @@
         function deleteTask(taskId) {
             if (confirm('Delete this task?')) {
                 appData.tasks = appData.tasks.filter(t => t.id !== taskId);
-                // also clean per-user overrides for this task
                 if (appData.userProgress?.completedTasks) delete appData.userProgress.completedTasks[taskId];
                 if (appData.userProgress?.customDates) delete appData.userProgress.customDates[taskId];
 
@@ -1625,19 +1937,19 @@
 
         function adminAddTest() {
             const nextNum = appData.tests.length + 1;
-            openModal('Add New Test', `
+            openModal('Add New Test (Blueprint)', `
                 <div class="space-y-4">
                     <div>
-                        <label class="block font-semibold mb-2">Test Number</label>
-                        <input type="number" id="testNumber" class="w-full px-4 py-2 border rounded-lg" value="${nextNum}">
+                        <label class="block font-extrabold mb-2 text-slate-700">Test Number</label>
+                        <input type="number" id="testNumber" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="${nextNum}">
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">Date</label>
-                        <input type="date" id="testDate" class="w-full px-4 py-2 border rounded-lg">
+                        <label class="block font-extrabold mb-2 text-slate-700">Date</label>
+                        <input type="date" id="testDate" class="w-full px-4 py-3 border rounded-2xl bg-white/70">
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">Type</label>
-                        <select id="testType" class="w-full px-4 py-2 border rounded-lg">
+                        <label class="block font-extrabold mb-2 text-slate-700">Type</label>
+                        <select id="testType" class="w-full px-4 py-3 border rounded-2xl bg-white/70">
                             <option>Subject</option>
                             <option>Mixed</option>
                             <option>Full</option>
@@ -1646,16 +1958,16 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">MCQs</label>
-                        <input type="number" id="testMcqs" class="w-full px-4 py-2 border rounded-lg" value="75">
+                        <label class="block font-extrabold mb-2 text-slate-700">MCQs</label>
+                        <input type="number" id="testMcqs" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="75">
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">Focus Area</label>
-                        <input type="text" id="testFocus" class="w-full px-4 py-2 border rounded-lg">
+                        <label class="block font-extrabold mb-2 text-slate-700">Focus Area</label>
+                        <input type="text" id="testFocus" class="w-full px-4 py-3 border rounded-2xl bg-white/70">
                     </div>
                     <div>
-                        <label class="block font-semibold mb-2">Target Score</label>
-                        <input type="number" id="testTarget" class="w-full px-4 py-2 border rounded-lg" value="60">
+                        <label class="block font-extrabold mb-2 text-slate-700">Target Score</label>
+                        <input type="number" id="testTarget" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="60">
                     </div>
                 </div>
             `, () => {
@@ -1672,20 +1984,20 @@
                 appData.tests.sort((a, b) => a.number - b.number);
                 saveAppData();
                 renderAll();
-                showToast('Test added!', 'success');
+                showToast('Blueprint test added!', 'success');
             });
         }
 
         function editRoutine(type) {
             const routine = appData.routines[type];
             const html = routine.map((r, i) => `
-                <div class="border rounded p-3 mb-2">
+                <div class="border border-white/60 rounded-2xl p-3 mb-2 bg-white/40">
                     <div class="grid grid-cols-2 gap-2 mb-2">
-                        <input type="text" value="${r.time}" placeholder="Time" class="routine-time px-2 py-1 border rounded" data-index="${i}">
-                        <input type="text" value="${r.duration}" placeholder="Duration" class="routine-duration px-2 py-1 border rounded" data-index="${i}">
+                        <input type="text" value="${r.time}" placeholder="Time" class="routine-time px-3 py-2 border rounded-2xl bg-white/70" data-index="${i}">
+                        <input type="text" value="${r.duration}" placeholder="Duration" class="routine-duration px-3 py-2 border rounded-2xl bg-white/70" data-index="${i}">
                     </div>
-                    <input type="text" value="${r.activity}" placeholder="Activity" class="routine-activity w-full px-2 py-1 border rounded mb-2" data-index="${i}">
-                    <input type="text" value="${r.details}" placeholder="Details" class="routine-details w-full px-2 py-1 border rounded" data-index="${i}">
+                    <input type="text" value="${r.activity}" placeholder="Activity" class="routine-activity w-full px-3 py-2 border rounded-2xl bg-white/70 mb-2" data-index="${i}">
+                    <input type="text" value="${r.details}" placeholder="Details" class="routine-details w-full px-3 py-2 border rounded-2xl bg-white/70" data-index="${i}">
                 </div>
             `).join('');
 
@@ -1848,10 +2160,22 @@
         }
 
         // =============================================
+        // Fancy glow cursor tracking for .btn-glow
+        // =============================================
+        document.addEventListener('pointermove', (e) => {
+            const target = e.target.closest('.btn-glow');
+            if (!target) return;
+            const rect = target.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            target.style.setProperty('--x', `${x}%`);
+            target.style.setProperty('--y', `${y}%`);
+        });
+
+        // =============================================
         // INITIALIZATION
         // =============================================
         window.onload = () => {
-            // Check for existing session
             const token = localStorage.getItem('wbcs_token');
             const savedUser = localStorage.getItem('wbcs_user');
 
