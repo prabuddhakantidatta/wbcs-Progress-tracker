@@ -255,6 +255,262 @@
             .no-print { display: none !important; }
             body { font-size: 10pt !important; background: #fff !important; }
         }
+
+        /* =========================================================
+           OPTION B (Classic) SKIN OVERRIDES
+           Applies a cleaner, more "classic" UI while keeping Option A functionality.
+        ========================================================= */
+        :root {
+            --primary: #667eea;
+            --primary-2: #764ba2;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --dark-bg: #1a1a2e;
+            --dark-card: #16213e;
+            --text-main: #1f2937;
+            --text-light: #eef2ff;
+        }
+
+        body {
+            font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            line-height: 1.6;
+            background: #f5f7fa !important;
+            color: var(--text-main) !important;
+        }
+
+        .dark-mode {
+            background: var(--dark-bg) !important;
+            color: var(--text-light) !important;
+        }
+
+        /* Main content spacing like Option B */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            /* leave room for the right action dock + left sidebar toggle */
+            padding: 20px 90px 20px 90px;
+        }
+        @media (max-width: 768px) {
+            /* on mobile the dock becomes a bottom bar */
+            .app-container { padding: 84px 20px 20px 20px; }
+        }
+
+        /* Cards: more solid and crisp */
+        .glass, .glass-strong {
+            background: rgba(255,255,255,0.96) !important;
+            border: 1px solid rgba(15, 23, 42, 0.08) !important;
+            box-shadow: 0 12px 30px rgba(2, 6, 23, 0.08) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+        .dark-mode .glass, .dark-mode .glass-strong {
+            background: rgba(22, 33, 62, 0.95) !important;
+            border-color: rgba(255,255,255,0.08) !important;
+            box-shadow: 0 18px 45px rgba(0,0,0,0.35) !important;
+        }
+
+        /* Reduce overly-round Tailwind radii for a more rectangular look */
+        .rounded-3xl { border-radius: 14px !important; }
+        .rounded-2xl { border-radius: 12px !important; }
+        .rounded-xl { border-radius: 10px !important; }
+
+        /* Sidebar: classic Option B style */
+        .sidebar {
+            position: fixed;
+            left: -288px;
+            top: 0;
+            width: 288px;
+            height: 100%;
+            background: var(--dark-card) !important;
+            color: rgba(255,255,255,0.92) !important;
+            transition: left 0.28s ease;
+            z-index: 2000;
+            overflow-y: auto;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.35) !important;
+            border-right: 1px solid rgba(255,255,255,0.08) !important;
+            border-top-right-radius: 14px !important;
+            border-bottom-right-radius: 14px !important;
+        }
+        .sidebar.active { left: 0; }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55) !important;
+            z-index: 1999;
+        }
+        .overlay.active { display: block; }
+
+        /* Sidebar buttons: ensure text fits and stays readable */
+        .sidebar nav .menu-item {
+            margin: 6px 12px !important;
+            padding: 12px 14px !important;
+            border-radius: 12px !important;
+            border-left: 4px solid transparent;
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.25;
+            color: rgba(255,255,255,0.92) !important;
+        }
+        .sidebar nav .menu-item:hover {
+            background: rgba(255,255,255,0.08) !important;
+            border-left-color: var(--primary) !important;
+        }
+
+        .sidebar-section-toggle {
+            margin: 6px 12px !important;
+            padding: 12px 14px !important;
+            border-radius: 12px !important;
+            color: rgba(255,255,255,0.92) !important;
+        }
+
+        #monthMenu, #subjectMenu {
+            margin: 0 12px 14px !important;
+            padding: 8px 0 !important;
+            border-radius: 12px !important;
+            background: rgba(0,0,0,0.22) !important;
+        }
+
+        .sidebar-subitem {
+            margin: 6px 10px !important;
+            padding: 10px 12px !important;
+            border-radius: 10px !important;
+            color: rgba(255,255,255,0.86) !important;
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.25;
+        }
+        .sidebar-subitem:hover { background: rgba(255,255,255,0.08) !important; color: rgba(255,255,255,0.95) !important; }
+
+        /* Tables: more classic (Option B) */
+        table { width: 100%; border-collapse: collapse; }
+        th { font-size: 13px; letter-spacing: 0.01em; }
+        td { border-color: rgba(15, 23, 42, 0.08) !important; }
+        .dark-mode td { border-color: rgba(255,255,255,0.08) !important; }
+        .table-row-hover:hover { background: rgba(102, 126, 234, 0.08) !important; }
+
+        /* Date chip: keep but tone it to match classic skin */
+        .date-chip {
+            background: rgba(102, 126, 234, 0.12) !important;
+            border-color: rgba(102, 126, 234, 0.22) !important;
+            color: rgba(79, 70, 229, 1) !important;
+        }
+        .dark-mode .date-chip {
+            background: rgba(102, 126, 234, 0.18) !important;
+            border-color: rgba(102, 126, 234, 0.25) !important;
+            color: rgba(224, 231, 255, 0.95) !important;
+        }
+
+        /* Modal: slightly more classic */
+        #genericModal > div, #notesModal > div, #timerModal > div {
+            border-radius: 16px !important;
+        }
+
+        /* =========================================================
+           RIGHT ACTION DOCK (Icons + Tooltips)
+        ========================================================= */
+        .action-dock {
+            position: fixed;
+            right: 16px;
+            left: auto;
+            top: 78px;
+            z-index: 1600;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.95);
+            border: 1px solid rgba(15, 23, 42, 0.10);
+            box-shadow: 0 12px 30px rgba(2, 6, 23, 0.10);
+        }
+        .dark-mode .action-dock {
+            background: rgba(22, 33, 62, 0.96);
+            border-color: rgba(255,255,255,0.10);
+            box-shadow: 0 18px 45px rgba(0,0,0,0.35);
+        }
+
+        .dock-btn {
+            position: relative;
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 800;
+            border: 1px solid rgba(255,255,255,0.18);
+            box-shadow: 0 10px 22px rgba(2, 6, 23, 0.14);
+            transition: transform 140ms ease, filter 140ms ease;
+            cursor: pointer;
+            user-select: none;
+        }
+        .dock-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
+        /* Tooltip (shows purpose on hover) */
+        .dock-btn::after {
+            content: attr(data-tip);
+            position: absolute;
+            right: calc(100% + 12px);
+            left: auto;
+            top: 50%;
+            transform: translateY(-50%) translateX(4px);
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 8px 10px;
+            border-radius: 12px;
+            color: rgba(255,255,255,0.96);
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(255,255,255,0.10);
+            box-shadow: 0 18px 40px rgba(2, 6, 23, 0.28);
+            transition: opacity 120ms ease, transform 120ms ease;
+        }
+        .dock-btn::before {
+            content: '';
+            position: absolute;
+            right: calc(100% + 6px);
+            left: auto;
+            top: 50%;
+            transform: translateY(-50%) translateX(4px);
+            opacity: 0;
+            width: 10px;
+            height: 10px;
+            background: rgba(15, 23, 42, 0.92);
+            border-right: 1px solid rgba(255,255,255,0.10);
+            border-top: 1px solid rgba(255,255,255,0.10);
+            rotate: 45deg;
+            transition: opacity 120ms ease, transform 120ms ease;
+        }
+        .dock-btn:hover::after, .dock-btn:hover::before {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
+        }
+
+        .dock-divider {
+            height: 1px;
+            margin: 2px 4px;
+            background: rgba(15, 23, 42, 0.12);
+        }
+        .dark-mode .dock-divider { background: rgba(255,255,255,0.12); }
+
+        @media (max-width: 768px) {
+            .action-dock {
+                top: auto;
+                bottom: 14px;
+                right: auto;
+                left: 50%;
+                transform: translateX(-50%);
+                flex-direction: row;
+                border-radius: 18px;
+            }
+            .dock-btn::after, .dock-btn::before { display: none; }
+        }
     </style>
 </head>
 <body class="min-h-screen antialiased">
@@ -320,6 +576,17 @@
                 style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
             ☰
         </button>
+
+        <!-- Left Action Dock -->
+        <div class="action-dock no-print" id="actionDock" aria-label="Quick actions">
+            <button class="dock-btn btn-glow" data-tip="Theme" onclick="toggleDarkMode()" style="background: linear-gradient(135deg, #334155, #475569);">🌙</button>
+            <button class="dock-btn btn-glow" data-tip="Backup" onclick="exportData()" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">💾</button>
+            <button class="dock-btn btn-glow" data-tip="Restore" onclick="importData()" style="background: linear-gradient(135deg, #fde047, #f59e0b); color: #0f172a; border-color: rgba(15,23,42,0.10);">📥</button>
+            <button class="dock-btn btn-glow" data-tip="Print" onclick="window.print()" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">🖨️</button>
+            <div class="dock-divider"></div>
+            <button class="dock-btn btn-glow" data-tip="Sync" onclick="syncData()" style="background: linear-gradient(135deg, #22c55e, #10b981);">🔄</button>
+            <button class="dock-btn btn-glow" data-tip="Logout" onclick="handleLogout()" style="background: linear-gradient(135deg, #ef4444, #f43f5e);">🔒</button>
+        </div>
 
         <!-- Overlay -->
         <div class="overlay fixed inset-0 bg-black/50 z-40" onclick="toggleSidebar()"></div>
@@ -388,28 +655,27 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="pl-4 md:pl-20 pr-4 py-6 transition-all">
+        <main class="app-container transition-all">
             <!-- Header -->
             <header class="relative overflow-hidden rounded-3xl mb-6 no-print glass">
                 <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(99,102,241,0.92), rgba(217,70,239,0.78));"></div>
                 <div class="absolute -top-20 -right-20 w-72 h-72 bg-white/15 blur-2xl rounded-full"></div>
                 <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-white/15 blur-2xl rounded-full"></div>
                 <div class="relative p-7 text-white">
-                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">🎯 WBCS Exam Preparation 2026</h1>
-                    <p class="text-white/90 mt-1">A beautiful blueprint + progress system with per-user rescheduling</p>
+                    <div class="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                            <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">🎯 WBCS Exam Preparation 2026</h1>
+                            <p class="text-white/90 mt-1">A beautiful blueprint + progress system with per-user rescheduling</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-white/80 font-bold">Signed in</div>
+                            <div id="userEmailDisplay" class="text-sm font-extrabold text-white/95"></div>
+                        </div>
+                    </div>
                 </div>
             </header>
 
-            <!-- Controls Bar -->
-            <div class="glass rounded-3xl p-4 mb-6 flex flex-wrap gap-3 items-center no-print">
-                <button onclick="toggleDarkMode()" class="px-4 py-2 rounded-2xl text-sm font-bold text-white btn-glow" style="background: linear-gradient(135deg, #334155, #475569);">🌙 Theme</button>
-                <button onclick="exportData()" class="px-4 py-2 rounded-2xl text-sm font-bold text-white btn-glow" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">💾 Backup</button>
-                <button onclick="importData()" class="px-4 py-2 rounded-2xl text-sm font-bold text-slate-900 btn-glow" style="background: linear-gradient(135deg, #fde047, #f59e0b);">📥 Restore</button>
-                <button onclick="window.print()" class="px-4 py-2 rounded-2xl text-sm font-bold text-white btn-glow" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">🖨️ Print</button>
-                <button onclick="syncData()" class="px-4 py-2 rounded-2xl text-sm font-bold text-white btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">🔄 Sync</button>
-                <button onclick="handleLogout()" class="px-4 py-2 rounded-2xl text-sm font-bold text-white btn-glow ml-auto" style="background: linear-gradient(135deg, #ef4444, #f43f5e);">🔒 Logout</button>
-                <span id="userEmailDisplay" class="font-bold text-indigo-700"></span>
-            </div>
+            <!-- Controls moved to left action dock -->
 
             <!-- Tab Contents -->
             <!-- Overview Tab -->
