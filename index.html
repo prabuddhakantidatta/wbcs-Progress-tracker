@@ -127,8 +127,57 @@
         .dark-mode table { background: rgba(17, 24, 39, 0.55) !important; }
         .dark-mode td { border-color: rgba(255,255,255,0.08) !important; }
 
-        .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+        /* Sidebar shape (more rectangular, slight rounding) */
+        .sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            border-top-right-radius: 18px;
+            border-bottom-right-radius: 18px;
+            overflow: hidden;
+        }
         .sidebar.active { transform: translateX(0); }
+
+        /* Sidebar item containers (avoid text hugging curved edges) */
+        #monthMenu, #subjectMenu {
+            margin: 0 10px 12px;
+            padding: 6px 0;
+            border-radius: 14px;
+            overflow: visible;
+        }
+
+        /* Sidebar items: slightly rounded rectangles + better text fit */
+        .sidebar nav .menu-item {
+            border-radius: 14px;
+            margin: 6px 10px;
+            padding: 12px 14px; /* ensure text doesn't touch edges */
+            line-height: 1.25;
+            white-space: normal;
+            word-break: break-word;
+            overflow: hidden;
+        }
+
+        /* Sidebar section headers (the toggle rows for month/subject) */
+        .sidebar-section-toggle {
+            margin: 6px 10px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            line-height: 1.25;
+        }
+
+        /* Sidebar submenu items (month list + subjects list + add subject) */
+        .sidebar-subitem {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            margin: 6px 8px;
+            line-height: 1.25;
+            white-space: normal;
+            word-break: break-word;
+            overflow: hidden;
+        }
+
         .overlay { display: none; }
         .overlay.active { display: block; }
 
@@ -136,9 +185,27 @@
         .tab-content.active { display: block; animation: fadeIn 0.25s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-        .completed-row { background: rgba(34, 197, 94, 0.16) !important; }
-        .dark-mode .completed-row { background: rgba(34, 197, 94, 0.18) !important; }
+        /* Completed styling (keep strike-through, but background is handled by date-highlights) */
+        .completed-row { background: transparent !important; }
+        .dark-mode .completed-row { background: transparent !important; }
         .completed-row td { text-decoration: line-through; opacity: 0.75; }
+
+        /* Date-based row highlights (Monthly + Subject views)
+           - Today: light green
+           - Tomorrow: light yellow
+           - Past & pending: light red
+           - Past & completed: light blue
+           - Otherwise: keep default/white
+        */
+        .row-today { background: rgba(34, 197, 94, 0.14) !important; }
+        .row-tomorrow { background: rgba(245, 158, 11, 0.18) !important; }
+        .row-past-missed { background: rgba(239, 68, 68, 0.12) !important; }
+        .row-past-done { background: rgba(59, 130, 246, 0.12) !important; }
+
+        .dark-mode .row-today { background: rgba(34, 197, 94, 0.18) !important; }
+        .dark-mode .row-tomorrow { background: rgba(245, 158, 11, 0.16) !important; }
+        .dark-mode .row-past-missed { background: rgba(239, 68, 68, 0.16) !important; }
+        .dark-mode .row-past-done { background: rgba(59, 130, 246, 0.16) !important; }
 
         .progress-bar { transition: width 0.5s ease; }
 
@@ -259,7 +326,7 @@
 
         <!-- Sidebar -->
         <aside class="sidebar fixed left-0 top-0 w-72 h-full z-50 overflow-y-auto no-print glass"
-               style="background: rgba(2, 6, 23, 0.62); border-right: 1px solid rgba(255,255,255,0.10); color: rgba(226, 232, 240, 0.92);">
+               style="background: rgba(2, 6, 23, 0.62); border-right: 1px solid rgba(255,255,255,0.10); color: rgba(226, 232, 240, 0.92); border-top-right-radius: 18px; border-bottom-right-radius: 18px;">
             <div class="p-6 border-b" style="border-color: rgba(255,255,255,0.10);">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center shadow">🎯</div>
@@ -282,18 +349,18 @@
                     <span>🌅</span> Weekend Routine
                 </div>
 
-                <div class="px-6 py-3 cursor-pointer hover:bg-white/10 flex items-center justify-between" onclick="toggleSubmenu('monthMenu')">
+                <div class="sidebar-section-toggle cursor-pointer hover:bg-white/10 flex items-center justify-between" onclick="toggleSubmenu('monthMenu')">
                     <span class="flex items-center gap-3"><span>📆</span> Monthly Schedules</span>
                     <span id="monthMenuArrow">▼</span>
                 </div>
                 <div id="monthMenu" class="hidden" style="background: rgba(2, 6, 23, 0.40);"></div>
 
-                <div class="px-6 py-3 cursor-pointer hover:bg-white/10 flex items-center justify-between" onclick="toggleSubmenu('subjectMenu')">
+                <div class="sidebar-section-toggle cursor-pointer hover:bg-white/10 flex items-center justify-between" onclick="toggleSubmenu('subjectMenu')">
                     <span class="flex items-center gap-3"><span>📚</span> Subjects</span>
                     <span id="subjectMenuArrow">▼</span>
                 </div>
                 <div id="subjectMenu" class="hidden" style="background: rgba(2, 6, 23, 0.40);">
-                    <div class="px-8 py-2 text-emerald-300 cursor-pointer hover:bg-white/10 text-sm" onclick="createNewSubject()">➕ Add Subject</div>
+                    <div class="sidebar-subitem text-emerald-300 cursor-pointer hover:bg-white/10 text-sm" onclick="createNewSubject()">➕ Add Subject</div>
                     <div id="subjectMenuList"></div>
                 </div>
 
@@ -610,9 +677,27 @@
 
     <script>
         // =============================================
-        // API CONFIGURATION - Change this to your server
+        // API CONFIGURATION (soft-coded)
         // =============================================
-        const API_BASE = 'http://localhost:5000/api'; // Change to your backend URL
+        // Default:
+        // - If frontend is served by the same server as the API (recommended), it auto-uses:  <current-origin>/api
+        // Override (useful when hosting frontend on Firebase and backend elsewhere):
+        //   localStorage.setItem('wbcs_api_base', 'https://YOUR_BACKEND_DOMAIN/api')
+        //   location.reload()
+        const API_BASE = (function resolveApiBase(){
+            const override = localStorage.getItem('wbcs_api_base');
+            if (override) return override.replace(/\/$/, '');
+
+            // Same-origin by default (works for Render/Railway/VM where Express serves index.html)
+            const sameOrigin = `${window.location.origin}/api`;
+
+            // If you are on localhost but using a different backend port, keep old default
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                return 'http://localhost:5000/api';
+            }
+
+            return sameOrigin;
+        })();
 
         // =============================================
         // APP STATE
@@ -665,6 +750,37 @@
             const d = parseISODate(dateStr);
             if (!d || Number.isNaN(d.getTime())) return '';
             return d.toLocaleDateString('en-US', { weekday: 'short' });
+        }
+
+        // =============================================
+        // DATE HIGHLIGHT HELPERS (Monthly + Subject tables)
+        // =============================================
+        function getTaskRowHighlightClass(isoDate, isCompleted) {
+            if (!isoDate) return '';
+            const d = parseISODate(isoDate);
+            if (!d || Number.isNaN(d.getTime())) return '';
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            const dd = new Date(d);
+            dd.setHours(0, 0, 0, 0);
+
+            const ddISO = toLocalISODate(dd);
+            const todayISO = toLocalISODate(today);
+            const tomorrowISO = toLocalISODate(tomorrow);
+
+            if (ddISO === todayISO) return 'row-today';
+            if (ddISO === tomorrowISO) return 'row-tomorrow';
+
+            if (dd < today) {
+                return isCompleted ? 'row-past-done' : 'row-past-missed';
+            }
+
+            return '';
         }
 
         // =============================================
@@ -1234,7 +1350,7 @@
                     .sort((a, b) => getEffectiveTaskDate(a).localeCompare(getEffectiveTaskDate(b)));
 
                 if (monthTasks.length > 0) {
-                    menuHtml += `<div class="px-8 py-2 text-slate-200/90 cursor-pointer hover:bg-white/10 text-sm" onclick="switchTab('${month}')">${monthNames[idx]} 2026</div>`;
+                    menuHtml += `<div class="sidebar-subitem text-slate-200/90 cursor-pointer hover:bg-white/10 text-sm" onclick="switchTab('${month}')">${monthNames[idx]} 2026</div>`;
 
                     tabsHtml += `
                         <div id="tab-${month}" class="tab-content">
@@ -1262,8 +1378,9 @@
                                             const effDate = getEffectiveTaskDate(t);
                                             const displayDate = formatDate(effDate);
                                             const dayName = getDayName(effDate);
+                                            const highlightClass = getTaskRowHighlightClass(effDate, isCompleted);
                                             return `
-                                                <tr class="${isCompleted ? 'completed-row' : ''} border-b border-black/5 table-row-hover">
+                                                <tr class="${highlightClass} ${isCompleted ? 'completed-row' : ''} border-b border-black/5 table-row-hover">
                                                     <td class="p-3">
                                                         <div class="date-chip">${displayDate} • ${dayName}</div>
                                                         <div class="mt-2">
@@ -1296,7 +1413,7 @@
 
         function renderSubjects() {
             const menuHtml = appData.subjects.map(s => `
-                <div class="px-8 py-2 text-slate-200/90 cursor-pointer hover:bg-white/10 text-sm" onclick="viewSubject('${s}')">📚 ${s}</div>
+                <div class="sidebar-subitem text-slate-200/90 cursor-pointer hover:bg-white/10 text-sm" onclick="viewSubject('${s}')">📚 ${s}</div>
             `).join('');
             document.getElementById('subjectMenuList').innerHTML = menuHtml;
         }
@@ -1458,8 +1575,9 @@
                 const isCompleted = appData.userProgress.completedTasks[t.id];
                 const effDate = getEffectiveTaskDate(t);
                 const dayName = getDayName(effDate);
+                const highlightClass = getTaskRowHighlightClass(effDate, isCompleted);
                 return `
-                    <tr class="${isCompleted ? 'completed-row' : ''} border-b border-black/5 table-row-hover">
+                    <tr class="${highlightClass} ${isCompleted ? 'completed-row' : ''} border-b border-black/5 table-row-hover">
                         <td class="p-3">
                             <div class="font-extrabold">${t.morning}</div>
                             <div class="text-sm text-slate-600">${t.evening}</div>

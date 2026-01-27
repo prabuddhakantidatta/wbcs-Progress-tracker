@@ -149,32 +149,163 @@ wbcs-tracker/
 - CORS enabled for cross-origin requests
 - Input validation on all endpoints
 
-## 🌐 Deployment
+## 🌐 Deployment + Integration (MongoDB + Firebase)
 
-### MongoDB Atlas (Cloud)
+This app already supports **MongoDB persistence** via the Node/Express backend (`server.js`). Firebase can be used in two common ways:
 
-1. Create a free cluster at [MongoDB Atlas](https://www.mongodb.com/atlas)
-2. Get your connection string
-3. Update `MONGODB_URI` in `.env`
+1) **Firebase Hosting (recommended)** for the frontend (fast CDN + custom domain)
+2) **Firebase Authentication (optional)** for sign-in, while still storing study data in MongoDB
 
-### Hosting Options
+Below is the end-to-end process.
 
-- **Heroku**: Add MongoDB Atlas addon, deploy with Git
-- **Railway**: Connect to MongoDB Atlas, deploy from GitHub
-- **Render**: Free tier available, add environment variables
-- **DigitalOcean**: App Platform with MongoDB integration
-- **AWS/GCP/Azure**: Use managed MongoDB services
+---
 
-### Production Checklist
+## 1) MongoDB Atlas Setup (Required)
+
+1. Create a free MongoDB Atlas cluster: https://www.mongodb.com/atlas
+2. Create a DB user (Database Access → Add New Database User)
+3. Whitelist IPs (Network Access):
+   - For development: `0.0.0.0/0` (not recommended for production)
+   - For production: add the IP range of your hosting provider (Render/Railway/etc.)
+4. Copy your connection URI (Connect → Drivers), for example:
+   ```
+   mongodb+srv://<user>:<pass>@cluster0.xxxxx.mongodb.net/wbcs_tracker?retryWrites=true&w=majority
+   ```
+
+---
+
+## 2) Local Integration Test (Backend + Frontend)
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Create `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+3. Edit `.env`:
+   - `MONGODB_URI=<your atlas uri>`
+   - `JWT_SECRET=<long random secret>`
+   - `PORT=5000`
+4. Start server:
+   ```bash
+   npm start
+   ```
+5. Open:
+   - http://localhost:5000
+
+The Express server serves the SPA and exposes the API at `/api/*`.
+
+---
+
+## 3) Deploy the Backend (MongoDB + API)
+
+You have two good patterns:
+
+### Option A (Simplest): Single deployment (Backend serves Frontend)
+Deploy the entire project as one Node service. This is the easiest because the frontend auto-uses `window.location.origin + /api`.
+
+**Render** example:
+1. Create a new **Web Service** from your GitHub repo
+2. Environment:
+   - Runtime: Node
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+3. Add environment variables in Render dashboard:
+   - `MONGODB_URI`
+   - `JWT_SECRET`
+   - `NODE_ENV=production`
+4. Deploy
+
+Visit:
+- `https://YOUR_RENDER_URL/` (app)
+- `https://YOUR_RENDER_URL/api` (API)
+
+
+### Option B: Split deployment (Frontend on Firebase Hosting, Backend elsewhere)
+Deploy backend to Render/Railway/Fly.io, and host the SPA on Firebase Hosting.
+
+When split, you must point the frontend to your backend API.
+
+This app supports a **soft-coded API URL override**:
+```js
+localStorage.setItem('wbcs_api_base', 'https://YOUR_BACKEND_DOMAIN/api');
+location.reload();
+```
+(You can run this once from the browser console on your deployed frontend.)
+
+**CORS:** if you deploy split-origin, configure CORS in `server.js` to allow your Firebase hosting domain.
+
+---
+
+## 4) Deploy Frontend to Firebase Hosting (Recommended CDN)
+
+### 4.1 Install Firebase tools
+```bash
+npm i -g firebase-tools
+firebase login
+```
+
+### 4.2 Initialize Firebase Hosting
+From the project folder:
+```bash
+firebase init hosting
+```
+Choose:
+- Public directory: `.` (because `index.html` is at project root)
+- Configure as SPA: **Yes** (rewrite all to `index.html`)
+
+It will create `firebase.json`.
+
+### 4.3 Deploy
+```bash
+firebase deploy
+```
+
+### 4.4 Point frontend to your backend API
+Open your deployed Firebase site, open DevTools Console, run:
+```js
+localStorage.setItem('wbcs_api_base', 'https://YOUR_BACKEND_DOMAIN/api');
+location.reload();
+```
+
+---
+
+## 5) Optional: Firebase Authentication + MongoDB (Advanced)
+
+If you want Firebase Auth UI/OTP/Google login etc., a typical architecture is:
+
+- **Firebase Auth** = identity provider
+- **Node/Express** verifies Firebase ID token
+- **MongoDB** stores blueprint + per-user progress keyed by Firebase UID
+
+### High-level steps
+1. Create Firebase project
+2. Enable Auth providers (Email/Password, Google, etc.)
+3. Add Firebase client SDK to frontend and sign-in via Firebase
+4. On backend:
+   - Install `firebase-admin`
+   - Verify `Authorization: Bearer <FIREBASE_ID_TOKEN>`
+   - Map `uid/email/name` to a MongoDB `User` record
+   - Store progress in MongoDB per user
+
+### Notes
+- If you do Firebase Auth, you typically remove the app’s `/api/auth/login` + `/api/auth/register` (or keep them as a fallback).
+- Firebase Hosting pairs nicely with Firebase Auth.
+
+---
+
+## 6) Production Checklist
 
 - [ ] Change default admin credentials
-- [ ] Use strong JWT_SECRET (32+ characters)
-- [ ] Enable HTTPS
-- [ ] Set `NODE_ENV=production`
-- [ ] Configure proper CORS origins
-- [ ] Set up database backups
-- [ ] Add rate limiting
-- [ ] Enable logging
+- [ ] Use a strong `JWT_SECRET` (32+ chars)
+- [ ] Restrict MongoDB IP access (do NOT keep 0.0.0.0/0)
+- [ ] Configure CORS to only allow your production domains
+- [ ] Enable HTTPS (Render/Firebase provide this by default)
+- [ ] Backups/monitoring for MongoDB Atlas
+- [ ] Add rate limiting + request validation (recommended)
+
 
 ## 📱 Offline Support
 
