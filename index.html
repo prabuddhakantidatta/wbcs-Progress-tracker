@@ -17,14 +17,14 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        .loader { 
-            border: 4px solid #f3f3f3; 
-            border-top: 4px solid var(--primary); 
-            border-radius: 50%; 
-            width: 40px; 
-            height: 40px; 
-            animation: spin 1s linear infinite; 
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
             margin: 20px auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -80,7 +80,7 @@
                 <h1 class="text-3xl font-bold text-gray-800">🎯 WBCS 2026</h1>
                 <p class="text-gray-500 mt-2">Interactive Study Portal</p>
             </div>
-            
+
             <div id="authTabs" class="flex mb-6 bg-gray-100 rounded-lg p-1">
                 <button onclick="showAuthTab('login')" id="loginTab" class="flex-1 py-2 px-4 rounded-lg bg-indigo-500 text-white font-semibold transition">Login</button>
                 <button onclick="showAuthTab('register')" id="registerTab" class="flex-1 py-2 px-4 rounded-lg text-gray-600 font-semibold transition">Register</button>
@@ -136,7 +136,7 @@
                 <p class="text-xs text-slate-400 mt-1">Interactive Study Portal</p>
                 <p class="text-xs text-indigo-300 mt-2" id="sidebarUserEmail"></p>
             </div>
-            
+
             <nav class="py-4">
                 <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="switchTab('overview')">
                     <span>📊</span> Dashboard
@@ -147,7 +147,7 @@
                 <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="switchTab('weekend')">
                     <span>🌅</span> Weekend Routine
                 </div>
-                
+
                 <div class="px-6 py-3 cursor-pointer hover:bg-slate-700 flex items-center justify-between" onclick="toggleSubmenu('monthMenu')">
                     <span class="flex items-center gap-3"><span>📆</span> Monthly Schedules</span>
                     <span id="monthMenuArrow">▼</span>
@@ -175,7 +175,7 @@
                 <div class="menu-item px-6 py-3 cursor-pointer hover:bg-slate-700 border-l-4 border-transparent hover:border-indigo-500 transition flex items-center gap-3" onclick="openTimerModal()">
                     <span>⏱️</span> Session Timer
                 </div>
-                
+
                 <!-- Admin Menu (visible for admins) -->
                 <div id="adminMenuSection" class="hidden border-t border-slate-700 mt-4 pt-4">
                     <div class="px-6 py-2 text-xs text-slate-400 uppercase">Admin Panel</div>
@@ -206,7 +206,7 @@
             </div>
 
             <!-- Tab Contents -->
-            
+
             <!-- Overview Tab -->
             <div id="tab-overview" class="tab-content active">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -296,7 +296,7 @@
                         <thead class="bg-indigo-500 text-white">
                             <tr>
                                 <th class="p-3 text-left">Topic</th>
-                                <th class="p-3 text-left">Date</th>
+                                <th class="p-3 text-left">Date (editable)</th>
                                 <th class="p-3 text-left">Day</th>
                                 <th class="p-3 text-left">Hours</th>
                                 <th class="p-3 text-left">Status</th>
@@ -312,12 +312,13 @@
             <!-- Tests Tab -->
             <div id="tab-tests" class="tab-content">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4">✅ Test Performance Tracker</h2>
+                <p class="text-gray-500 mb-3">You can reschedule test dates for your account (does not change the global/admin blueprint).</p>
                 <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
                     <table class="w-full">
                         <thead class="bg-indigo-500 text-white">
                             <tr>
                                 <th class="p-3 text-left">Test #</th>
-                                <th class="p-3 text-left">Date</th>
+                                <th class="p-3 text-left">Date (editable)</th>
                                 <th class="p-3 text-left">Type</th>
                                 <th class="p-3 text-left">MCQs</th>
                                 <th class="p-3 text-left">Focus</th>
@@ -349,7 +350,7 @@
             <!-- Admin Tab -->
             <div id="tab-admin" class="tab-content">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4">⚙️ Admin - Manage Blueprints</h2>
-                
+
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     <!-- Manage Routines -->
                     <div class="bg-white rounded-xl p-6 shadow-sm">
@@ -390,6 +391,7 @@
                         <button onclick="loadAdminMonthTasks()" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition">Load Tasks</button>
                         <button onclick="adminAddTask()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">➕ Add Task</button>
                     </div>
+                    <div class="text-xs text-gray-500 mb-3">Tip: You can edit task dates inline (admin blueprint update).</div>
                     <div id="adminTasksList" class="overflow-x-auto"></div>
                 </div>
 
@@ -397,6 +399,7 @@
                 <div class="bg-white rounded-xl p-6 shadow-sm">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">✅ Manage Test Schedule</h3>
                     <button onclick="adminAddTest()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition mb-4">➕ Add Test</button>
+                    <div class="text-xs text-gray-500 mb-3">Tip: You can edit test dates inline (admin blueprint update).</div>
                     <div id="adminTestsList" class="overflow-x-auto"></div>
                 </div>
             </div>
@@ -404,7 +407,7 @@
     </div>
 
     <!-- Modals -->
-    
+
     <!-- Generic Modal -->
     <div id="genericModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
@@ -463,11 +466,12 @@
         // API CONFIGURATION - Change this to your server
         // =============================================
         const API_BASE = 'http://localhost:5000/api'; // Change to your backend URL
-        
+
         // =============================================
         // APP STATE
         // =============================================
         let currentUser = null;
+        let activeTabId = 'overview';
         let appData = {
             subjects: [],
             tasks: [],
@@ -477,6 +481,7 @@
                 completedTasks: {},
                 testScores: {},
                 customDates: {},
+                customTestDates: {},
                 dailyNotes: {},
                 studySessions: [],
                 notes: '',
@@ -486,6 +491,97 @@
         let activeSubject = null;
         let timerInterval = null;
         let timerSeconds = 0;
+
+        // =============================================
+        // DATE HELPERS (avoid timezone shifts)
+        // =============================================
+        function parseISODate(dateStr) {
+            if (!dateStr) return null;
+            // Force local midnight
+            return new Date(dateStr + 'T00:00:00');
+        }
+
+        function toLocalISODate(d) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const da = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${da}`;
+        }
+
+        function formatDate(dateStr) {
+            const d = parseISODate(dateStr);
+            if (!d || Number.isNaN(d.getTime())) return '';
+            return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+        }
+
+        function getDayName(dateStr) {
+            const d = parseISODate(dateStr);
+            if (!d || Number.isNaN(d.getTime())) return '';
+            return d.toLocaleDateString('en-US', { weekday: 'short' });
+        }
+
+        // =============================================
+        // RESCHEDULING (per-user)
+        // =============================================
+        function getEffectiveTaskDate(task) {
+            return appData.userProgress?.customDates?.[task.id] || task.date;
+        }
+
+        function getEffectiveTestDate(test) {
+            return appData.userProgress?.customTestDates?.[test.id] || test.date;
+        }
+
+        function updateTaskDate(taskId, newDate) {
+            if (!newDate) return;
+            appData.userProgress.customDates ||= {};
+
+            const task = appData.tasks.find(t => t.id === taskId);
+            if (task && task.date === newDate) {
+                delete appData.userProgress.customDates[taskId];
+            } else {
+                appData.userProgress.customDates[taskId] = newDate;
+            }
+            saveProgress();
+            renderAll();
+            showToast('Task date updated (rescheduled)', 'success');
+        }
+
+        function updateTestDate(testId, newDate) {
+            if (!newDate) return;
+            appData.userProgress.customTestDates ||= {};
+
+            const test = appData.tests.find(t => t.id === testId);
+            if (test && test.date === newDate) {
+                delete appData.userProgress.customTestDates[testId];
+            } else {
+                appData.userProgress.customTestDates[testId] = newDate;
+            }
+            saveProgress();
+            renderAll();
+            showToast('Test date updated (rescheduled)', 'success');
+        }
+
+        // Admin blueprint inline updates
+        function adminUpdateTaskDate(taskId, newDate) {
+            if (!currentUser?.isAdmin) return;
+            const task = appData.tasks.find(t => t.id === taskId);
+            if (!task) return;
+            task.date = newDate;
+            saveAppData();
+            loadAdminMonthTasks();
+            renderAll();
+            showToast('Blueprint task date updated', 'success');
+        }
+
+        function adminUpdateTestDate(testId, newDate) {
+            if (!currentUser?.isAdmin) return;
+            const test = appData.tests.find(t => t.id === testId);
+            if (!test) return;
+            test.date = newDate;
+            saveAppData();
+            renderAll();
+            showToast('Blueprint test date updated', 'success');
+        }
 
         // =============================================
         // API FUNCTIONS
@@ -500,7 +596,7 @@
                 }
             };
             if (data) options.body = JSON.stringify(data);
-            
+
             try {
                 const response = await fetch(`${API_BASE}${endpoint}`, options);
                 const result = await response.json();
@@ -530,18 +626,18 @@
         async function handleLogin() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-            
+
             if (!email || !password) {
                 showAuthError('Please fill in all fields');
                 return;
             }
 
             document.getElementById('authLoader').classList.remove('hidden');
-            
+
             const result = await apiCall('/auth/login', 'POST', { email, password });
-            
+
             document.getElementById('authLoader').classList.add('hidden');
-            
+
             if (result && result.token) {
                 localStorage.setItem('wbcs_token', result.token);
                 currentUser = result.user;
@@ -558,23 +654,23 @@
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
-            
+
             if (!name || !email || !password) {
                 showAuthError('Please fill in all fields');
                 return;
             }
-            
+
             if (password.length < 6) {
                 showAuthError('Password must be at least 6 characters');
                 return;
             }
 
             document.getElementById('authLoader').classList.remove('hidden');
-            
+
             const result = await apiCall('/auth/register', 'POST', { name, email, password });
-            
+
             document.getElementById('authLoader').classList.add('hidden');
-            
+
             if (result && result.token) {
                 localStorage.setItem('wbcs_token', result.token);
                 currentUser = result.user;
@@ -606,12 +702,24 @@
         // =============================================
         // DATA LOADING & SAVING
         // =============================================
+        function normalizeUserProgress() {
+            appData.userProgress ||= {};
+            appData.userProgress.completedTasks ||= {};
+            appData.userProgress.testScores ||= {};
+            appData.userProgress.customDates ||= {};
+            appData.userProgress.customTestDates ||= {};
+            appData.userProgress.dailyNotes ||= {};
+            appData.userProgress.studySessions ||= [];
+            appData.userProgress.notes ||= '';
+            appData.userProgress.darkMode ||= false;
+        }
+
         async function loadAppData() {
             // Try to load from API
             const serverData = await apiCall('/data');
-            
+
             if (serverData) {
-                appData = serverData;
+                appData = { ...appData, ...serverData };
             } else {
                 // Fallback: Load from localStorage or use defaults
                 const localData = localStorage.getItem('wbcs_appData');
@@ -622,23 +730,27 @@
                     appData = getDefaultAppData();
                 }
             }
-            
+
             // Load user-specific progress
             const userProgress = await apiCall('/progress');
             if (userProgress) {
-                appData.userProgress = userProgress;
+                appData.userProgress = { ...appData.userProgress, ...userProgress };
             } else {
                 const localProgress = localStorage.getItem('wbcs_progress_' + currentUser.email);
                 if (localProgress) {
-                    appData.userProgress = JSON.parse(localProgress);
+                    appData.userProgress = { ...appData.userProgress, ...JSON.parse(localProgress) };
                 }
             }
+
+            normalizeUserProgress();
         }
 
         async function saveProgress() {
+            normalizeUserProgress();
+
             // Save to API
             await apiCall('/progress', 'PUT', appData.userProgress);
-            
+
             // Also save to localStorage as backup
             localStorage.setItem('wbcs_progress_' + currentUser.email, JSON.stringify(appData.userProgress));
             localStorage.setItem('wbcs_appData', JSON.stringify(appData));
@@ -647,14 +759,14 @@
         async function saveAppData() {
             // Admin only - save blueprint data
             if (!currentUser.isAdmin) return;
-            
+
             await apiCall('/data', 'PUT', {
                 subjects: appData.subjects,
                 tasks: appData.tasks,
                 tests: appData.tests,
                 routines: appData.routines
             });
-            
+
             localStorage.setItem('wbcs_appData', JSON.stringify(appData));
         }
 
@@ -668,6 +780,7 @@
                     completedTasks: {},
                     testScores: {},
                     customDates: {},
+                    customTestDates: {},
                     dailyNotes: {},
                     studySessions: [],
                     notes: '',
@@ -833,26 +946,26 @@
         // =============================================
         async function initializeApp() {
             await loadAppData();
-            
+
             document.getElementById('authScreen').classList.add('hidden');
             document.getElementById('mainApp').classList.remove('hidden');
-            
+
             document.getElementById('userEmailDisplay').textContent = '👤 ' + currentUser.email;
             document.getElementById('sidebarUserEmail').textContent = currentUser.email;
-            
+
             // Show admin menu if admin
             if (currentUser.isAdmin) {
                 document.getElementById('adminMenuSection').classList.remove('hidden');
             }
-            
+
             // Apply dark mode
             if (appData.userProgress.darkMode) {
                 document.body.classList.add('dark-mode');
             }
-            
+
             // Load notes
             document.getElementById('globalNotes').value = appData.userProgress.notes || '';
-            
+
             renderAll();
             showToast('Welcome back, ' + currentUser.name + '!', 'success');
         }
@@ -867,23 +980,27 @@
             renderSubjects();
             renderTests();
             renderAnalytics();
+            if (activeSubject) renderSubjectViewTable();
             if (currentUser.isAdmin) renderAdminPanel();
+
+            // Restore the currently open tab after re-rendering dynamic content
+            setActiveTab(activeTabId, true);
         }
 
         function renderDashboard() {
             const tasks = appData.tasks;
             const completed = Object.keys(appData.userProgress.completedTasks).filter(k => appData.userProgress.completedTasks[k]).length;
             const progress = tasks.length ? Math.round((completed / tasks.length) * 100) : 0;
-            
+
             document.getElementById('statProgress').textContent = progress + '%';
             document.getElementById('progressBar').style.width = progress + '%';
-            
+
             // Days to exam
-            const examDate = new Date('2026-03-20');
+            const examDate = new Date('2026-03-20T00:00:00');
             const today = new Date();
             const daysLeft = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
             document.getElementById('statDays').textContent = Math.max(0, daysLeft);
-            
+
             // Total hours
             let totalHours = 0;
             tasks.forEach(t => {
@@ -892,10 +1009,10 @@
                 }
             });
             document.getElementById('statHours').textContent = totalHours.toFixed(1) + 'h';
-            
+
             // Streak
             document.getElementById('statStreak').textContent = calculateStreak() + ' days';
-            
+
             // Subject cards
             const cardsHtml = appData.subjects.map(s => {
                 const subjectTasks = tasks.filter(t => t.subject === s);
@@ -918,22 +1035,25 @@
             const completedDates = new Set();
             appData.tasks.forEach(t => {
                 if (appData.userProgress.completedTasks[t.id]) {
-                    completedDates.add(t.date);
+                    completedDates.add(getEffectiveTaskDate(t));
                 }
             });
-            
+
             let streak = 0;
             let checkDate = new Date();
             checkDate.setHours(0, 0, 0, 0);
-            
+
+            // Start from today, otherwise from yesterday
+            let dateStr = toLocalISODate(checkDate);
+            if (!completedDates.has(dateStr)) {
+                checkDate.setDate(checkDate.getDate() - 1);
+            }
+
             while (true) {
-                const dateStr = checkDate.toISOString().split('T')[0];
+                dateStr = toLocalISODate(checkDate);
                 if (completedDates.has(dateStr)) {
                     streak++;
                     checkDate.setDate(checkDate.getDate() - 1);
-                } else if (streak === 0) {
-                    checkDate.setDate(checkDate.getDate() - 1);
-                    if (!completedDates.has(checkDate.toISOString().split('T')[0])) break;
                 } else {
                     break;
                 }
@@ -953,7 +1073,7 @@
                     </tr>
                 `).join('');
             };
-            
+
             renderTable(appData.routines.weekday, 'weekdayTable');
             renderTable(appData.routines.saturday, 'saturdayTable');
             renderTable(appData.routines.sunday, 'sundayTable');
@@ -962,20 +1082,26 @@
         function renderMonthlySchedules() {
             const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            
+
             let menuHtml = '';
             let tabsHtml = '';
-            
+
             months.forEach((month, idx) => {
                 const monthNum = String(idx + 1).padStart(2, '0');
-                const monthTasks = appData.tasks.filter(t => t.date.split('-')[1] === monthNum);
-                
+                const monthTasks = appData.tasks
+                    .filter(t => (getEffectiveTaskDate(t) || '').split('-')[1] === monthNum)
+                    .slice()
+                    .sort((a, b) => getEffectiveTaskDate(a).localeCompare(getEffectiveTaskDate(b)));
+
                 if (monthTasks.length > 0) {
                     menuHtml += `<div class="px-8 py-2 text-slate-300 cursor-pointer hover:bg-slate-800 text-sm" onclick="switchTab('${month}')">${monthNames[idx]} 2026</div>`;
-                    
+
                     tabsHtml += `
                         <div id="tab-${month}" class="tab-content">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-4">📆 ${monthNames[idx]} 2026</h2>
+                            <div class="flex items-center justify-between gap-3 mb-4">
+                                <h2 class="text-2xl font-bold text-gray-800">📆 ${monthNames[idx]} 2026</h2>
+                                <div class="text-xs text-gray-500">Edit dates to reschedule tasks (saved per-user)</div>
+                            </div>
                             <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
                                 <table class="w-full">
                                     <thead class="bg-indigo-500 text-white">
@@ -993,11 +1119,15 @@
                                     <tbody>
                                         ${monthTasks.map(t => {
                                             const isCompleted = appData.userProgress.completedTasks[t.id];
-                                            const dayName = new Date(t.date).toLocaleDateString('en-US', { weekday: 'short' });
-                                            const displayDate = formatDate(t.date);
+                                            const effDate = getEffectiveTaskDate(t);
+                                            const displayDate = formatDate(effDate);
+                                            const dayName = getDayName(effDate);
                                             return `
                                                 <tr class="${isCompleted ? 'completed-row' : ''} border-b hover:bg-gray-50">
-                                                    <td class="p-3">${displayDate}</td>
+                                                    <td class="p-3">
+                                                        <div class="font-semibold">${displayDate}</div>
+                                                        <input type="date" value="${effDate}" onchange="updateTaskDate('${t.id}', this.value)" class="mt-1 w-36 px-2 py-1 border rounded text-xs">
+                                                    </td>
                                                     <td class="p-3">${dayName}</td>
                                                     <td class="p-3">${t.morning}</td>
                                                     <td class="p-3">${t.evening}</td>
@@ -1017,7 +1147,7 @@
                     `;
                 }
             });
-            
+
             document.getElementById('monthMenu').innerHTML = menuHtml;
             document.getElementById('monthlyTabs').innerHTML = tabsHtml;
         }
@@ -1030,27 +1160,34 @@
         }
 
         function renderTests() {
-            const html = appData.tests.map(t => {
-                const score = appData.userProgress.testScores[t.id];
-                const percentage = score ? Math.round((score / t.mcqs) * 100) : '-';
-                const status = score ? (percentage >= 80 ? '✅ Excellent' : percentage >= 60 ? '👍 Good' : '⚠️ Improve') : '⏳ Pending';
-                return `
-                    <tr class="border-b">
-                        <td class="p-3 font-bold">Test ${t.number}</td>
-                        <td class="p-3">${formatDate(t.date)}</td>
-                        <td class="p-3">${t.type}</td>
-                        <td class="p-3">${t.mcqs}</td>
-                        <td class="p-3">${t.focus}</td>
-                        <td class="p-3">
-                            <input type="number" value="${score || ''}" placeholder="Score" 
-                                onchange="updateTestScore('${t.id}', this.value)"
-                                class="w-20 px-2 py-1 border rounded text-center">
-                        </td>
-                        <td class="p-3 font-bold ${score ? (percentage >= 80 ? 'text-green-600' : percentage >= 60 ? 'text-yellow-600' : 'text-red-600') : ''}">${percentage}%</td>
-                        <td class="p-3">${status}</td>
-                    </tr>
-                `;
-            }).join('');
+            const html = appData.tests
+                .slice()
+                .sort((a, b) => (getEffectiveTestDate(a) || '').localeCompare(getEffectiveTestDate(b) || '') || (a.number - b.number))
+                .map(t => {
+                    const score = appData.userProgress.testScores[t.id];
+                    const percentage = score ? Math.round((score / t.mcqs) * 100) : '-';
+                    const status = score ? (percentage >= 80 ? '✅ Excellent' : percentage >= 60 ? '👍 Good' : '⚠️ Improve') : '⏳ Pending';
+                    const effDate = getEffectiveTestDate(t);
+                    return `
+                        <tr class="border-b">
+                            <td class="p-3 font-bold">Test ${t.number}</td>
+                            <td class="p-3">
+                                <div class="font-semibold">${formatDate(effDate)}</div>
+                                <input type="date" value="${effDate}" onchange="updateTestDate('${t.id}', this.value)" class="mt-1 w-36 px-2 py-1 border rounded text-xs">
+                            </td>
+                            <td class="p-3">${t.type}</td>
+                            <td class="p-3">${t.mcqs}</td>
+                            <td class="p-3">${t.focus}</td>
+                            <td class="p-3">
+                                <input type="number" value="${score ?? ''}" placeholder="Score" 
+                                    onchange="updateTestScore('${t.id}', this.value)"
+                                    class="w-20 px-2 py-1 border rounded text-center">
+                            </td>
+                            <td class="p-3 font-bold ${score ? (percentage >= 80 ? 'text-green-600' : percentage >= 60 ? 'text-yellow-600' : 'text-red-600') : ''}">${percentage}%</td>
+                            <td class="p-3">${status}</td>
+                        </tr>
+                    `;
+                }).join('');
             document.getElementById('testsTable').innerHTML = html;
         }
 
@@ -1060,7 +1197,9 @@
                 const subjectTasks = appData.tasks.filter(t => t.subject === s);
                 const completed = subjectTasks.filter(t => appData.userProgress.completedTasks[t.id]).length;
                 const progress = subjectTasks.length ? Math.round((completed / subjectTasks.length) * 100) : 0;
-                const hours = subjectTasks.filter(t => appData.userProgress.completedTasks[t.id]).reduce((sum, t) => sum + (t.hours || 0), 0);
+                const hours = subjectTasks
+                    .filter(t => appData.userProgress.completedTasks[t.id])
+                    .reduce((sum, t) => sum + (t.hours || 0), 0);
                 return `
                     <div class="flex items-center justify-between py-3 border-b">
                         <div>
@@ -1077,7 +1216,7 @@
                 `;
             }).join('');
             document.getElementById('subjectAnalytics').innerHTML = analyticsHtml;
-            
+
             // Weekly chart (simple bar representation)
             const weeklyData = [4, 6, 3, 5, 8, 7, 2]; // Sample data
             const weeklyHtml = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => `
@@ -1098,6 +1237,87 @@
                 </div>
             `).join('');
             document.getElementById('adminSubjectList').innerHTML = subjectListHtml;
+
+            // Admin tests list (inline date edit)
+            const testsHtml = appData.tests.length ? `
+                <table class="w-full">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="p-2 text-left">#</th>
+                            <th class="p-2 text-left">Date</th>
+                            <th class="p-2 text-left">Type</th>
+                            <th class="p-2 text-left">MCQs</th>
+                            <th class="p-2 text-left">Focus</th>
+                            <th class="p-2 text-left">Target</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${appData.tests
+                            .slice()
+                            .sort((a, b) => a.number - b.number)
+                            .map(t => `
+                            <tr class="border-b">
+                                <td class="p-2 font-semibold">${t.number}</td>
+                                <td class="p-2">
+                                    <input type="date" class="px-2 py-1 border rounded text-xs w-36" value="${t.date}" onchange="adminUpdateTestDate('${t.id}', this.value)">
+                                    <div class="text-xs text-gray-500 mt-1">${formatDate(t.date)}</div>
+                                </td>
+                                <td class="p-2">${t.type}</td>
+                                <td class="p-2">${t.mcqs}</td>
+                                <td class="p-2">${t.focus}</td>
+                                <td class="p-2">${t.target}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            ` : '<p class="text-gray-500 text-center py-8">No tests configured.</p>';
+
+            const adminTestsListEl = document.getElementById('adminTestsList');
+            if (adminTestsListEl) adminTestsListEl.innerHTML = testsHtml;
+        }
+
+        // =============================================
+        // SUBJECT VIEW RENDER
+        // =============================================
+        function renderSubjectViewTable() {
+            if (!activeSubject) return;
+            document.getElementById('subjectViewTitle').textContent = '📚 ' + activeSubject;
+
+            const subjectTasks = appData.tasks
+                .filter(t => t.subject === activeSubject)
+                .slice()
+                .sort((a, b) => getEffectiveTaskDate(a).localeCompare(getEffectiveTaskDate(b)));
+
+            const html = subjectTasks.map(t => {
+                const isCompleted = appData.userProgress.completedTasks[t.id];
+                const effDate = getEffectiveTaskDate(t);
+                const dayName = getDayName(effDate);
+                return `
+                    <tr class="${isCompleted ? 'completed-row' : ''} border-b">
+                        <td class="p-3">
+                            <div class="font-semibold">${t.morning}</div>
+                            <div class="text-sm text-gray-500">${t.evening}</div>
+                        </td>
+                        <td class="p-3">
+                            <div class="font-semibold">${formatDate(effDate)}</div>
+                            <input type="date" value="${effDate}" onchange="updateTaskDate('${t.id}', this.value)" class="mt-1 w-36 px-2 py-1 border rounded text-xs">
+                        </td>
+                        <td class="p-3">${dayName}</td>
+                        <td class="p-3">${t.hours}h</td>
+                        <td class="p-3">
+                            <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleTask('${t.id}')" class="w-5 h-5 accent-indigo-500 cursor-pointer">
+                        </td>
+                        <td class="p-3">
+                            <button onclick="editTask('${t.id}')" class="text-blue-500 hover:text-blue-700 mr-2">✏️</button>
+                            <button onclick="deleteTask('${t.id}')" class="text-red-500 hover:text-red-700">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('subjectTopicsTable').innerHTML = html || `
+                <tr><td class="p-3 text-gray-500" colspan="6">No tasks found for ${activeSubject}. Add a topic to start tracking.</td></tr>
+            `;
         }
 
         // =============================================
@@ -1115,22 +1335,31 @@
             arrow.textContent = menu.classList.contains('hidden') ? '▼' : '▲';
         }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        function setActiveTab(tabId, silent = false) {
             const target = document.getElementById('tab-' + tabId);
-            if (target) target.classList.add('active');
-            toggleSidebar();
+            const fallback = document.getElementById('tab-overview');
+
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+
+            if (target) {
+                target.classList.add('active');
+                activeTabId = tabId;
+            } else {
+                fallback?.classList.add('active');
+                activeTabId = 'overview';
+            }
+
+            if (!silent) toggleSidebar();
+        }
+
+        function switchTab(tabId) {
+            setActiveTab(tabId, false);
         }
 
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
             appData.userProgress.darkMode = document.body.classList.contains('dark-mode');
             saveProgress();
-        }
-
-        function formatDate(dateStr) {
-            const d = new Date(dateStr);
-            return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
         }
 
         // =============================================
@@ -1143,9 +1372,9 @@
         }
 
         function updateTestScore(testId, score) {
-            appData.userProgress.testScores[testId] = parseInt(score) || null;
+            appData.userProgress.testScores[testId] = Number.isFinite(parseInt(score)) ? parseInt(score) : null;
             saveProgress();
-            renderTests();
+            renderAll();
         }
 
         // =============================================
@@ -1153,33 +1382,8 @@
         // =============================================
         function viewSubject(name) {
             activeSubject = name;
-            document.getElementById('subjectViewTitle').textContent = '📚 ' + name;
-            
-            const subjectTasks = appData.tasks.filter(t => t.subject === name);
-            const html = subjectTasks.map(t => {
-                const isCompleted = appData.userProgress.completedTasks[t.id];
-                const dayName = new Date(t.date).toLocaleDateString('en-US', { weekday: 'short' });
-                return `
-                    <tr class="${isCompleted ? 'completed-row' : ''} border-b">
-                        <td class="p-3">
-                            <div class="font-semibold">${t.morning}</div>
-                            <div class="text-sm text-gray-500">${t.evening}</div>
-                        </td>
-                        <td class="p-3">${formatDate(t.date)}</td>
-                        <td class="p-3">${dayName}</td>
-                        <td class="p-3">${t.hours}h</td>
-                        <td class="p-3">
-                            <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleTask('${t.id}')" class="w-5 h-5 accent-indigo-500 cursor-pointer">
-                        </td>
-                        <td class="p-3">
-                            <button onclick="editTask('${t.id}')" class="text-blue-500 hover:text-blue-700 mr-2">✏️</button>
-                            <button onclick="deleteTask('${t.id}')" class="text-red-500 hover:text-red-700">🗑️</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-            document.getElementById('subjectTopicsTable').innerHTML = html;
-            switchTab('subject-view');
+            renderSubjectViewTable();
+            setActiveTab('subject-view');
         }
 
         function createNewSubject() {
@@ -1201,16 +1405,19 @@
         }
 
         function deleteCurrentSubject() {
+            if (!activeSubject) return;
             if (confirm(`Delete subject "${activeSubject}"? This won't delete tasks.`)) {
                 appData.subjects = appData.subjects.filter(s => s !== activeSubject);
                 saveAppData();
+                activeSubject = null;
                 renderAll();
-                switchTab('overview');
+                setActiveTab('overview');
                 showToast('Subject deleted', 'info');
             }
         }
 
         function addTopicToSubject() {
+            if (!activeSubject) return;
             openModal('Add Topic to ' + activeSubject, `
                 <div class="space-y-4">
                     <div>
@@ -1223,7 +1430,7 @@
                     </div>
                     <div>
                         <label class="block font-semibold mb-2">Date</label>
-                        <input type="date" id="topicDate" class="w-full px-4 py-2 border rounded-lg">
+                        <input type="date" id="topicDate" class="w-full px-4 py-2 border rounded-lg" value="${toLocalISODate(new Date())}">
                     </div>
                     <div>
                         <label class="block font-semibold mb-2">Hours</label>
@@ -1243,7 +1450,7 @@
                 appData.tasks.push(newTask);
                 saveAppData();
                 renderAll();
-                viewSubject(activeSubject);
+                setActiveTab('subject-view');
                 showToast('Topic added!', 'success');
             });
         }
@@ -1259,7 +1466,6 @@
             if (confirm(`Delete subject "${name}"?`)) {
                 appData.subjects = appData.subjects.filter(s => s !== name);
                 saveAppData();
-                renderAdminPanel();
                 renderAll();
                 showToast('Subject deleted', 'info');
             }
@@ -1267,8 +1473,11 @@
 
         function loadAdminMonthTasks() {
             const month = document.getElementById('adminMonthSelect').value;
-            const monthTasks = appData.tasks.filter(t => t.date.split('-')[1] === month);
-            
+            const monthTasks = appData.tasks
+                .filter(t => (t.date || '').split('-')[1] === month)
+                .slice()
+                .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
             const html = monthTasks.length ? `
                 <table class="w-full">
                     <thead class="bg-gray-100">
@@ -1284,7 +1493,10 @@
                     <tbody>
                         ${monthTasks.map(t => `
                             <tr class="border-b">
-                                <td class="p-2">${formatDate(t.date)}</td>
+                                <td class="p-2">
+                                    <input type="date" value="${t.date}" onchange="adminUpdateTaskDate('${t.id}', this.value)" class="px-2 py-1 border rounded text-xs w-36">
+                                    <div class="text-xs text-gray-500 mt-1">${formatDate(t.date)}</div>
+                                </td>
                                 <td class="p-2">${t.morning}</td>
                                 <td class="p-2">${t.evening}</td>
                                 <td class="p-2">${t.subject}</td>
@@ -1298,7 +1510,7 @@
                     </tbody>
                 </table>
             ` : '<p class="text-gray-500 text-center py-8">No tasks for this month.</p>';
-            
+
             document.getElementById('adminTasksList').innerHTML = html;
         }
 
@@ -1354,7 +1566,7 @@
         function editTask(taskId) {
             const task = appData.tasks.find(t => t.id === taskId);
             if (!task) return;
-            
+
             openModal('Edit Task', `
                 <div class="space-y-4">
                     <div>
@@ -1393,7 +1605,6 @@
                 task.hours = parseFloat(document.getElementById('editHours').value);
                 saveAppData();
                 renderAll();
-                if (activeSubject) viewSubject(activeSubject);
                 showToast('Task updated!', 'success');
             });
         }
@@ -1401,9 +1612,13 @@
         function deleteTask(taskId) {
             if (confirm('Delete this task?')) {
                 appData.tasks = appData.tasks.filter(t => t.id !== taskId);
+                // also clean per-user overrides for this task
+                if (appData.userProgress?.completedTasks) delete appData.userProgress.completedTasks[taskId];
+                if (appData.userProgress?.customDates) delete appData.userProgress.customDates[taskId];
+
                 saveAppData();
+                saveProgress();
                 renderAll();
-                if (activeSubject) viewSubject(activeSubject);
                 showToast('Task deleted', 'info');
             }
         }
@@ -1456,7 +1671,7 @@
                 appData.tests.push(newTest);
                 appData.tests.sort((a, b) => a.number - b.number);
                 saveAppData();
-                renderTests();
+                renderAll();
                 showToast('Test added!', 'success');
             });
         }
@@ -1473,7 +1688,7 @@
                     <input type="text" value="${r.details}" placeholder="Details" class="routine-details w-full px-2 py-1 border rounded" data-index="${i}">
                 </div>
             `).join('');
-            
+
             openModal('Edit ' + type.charAt(0).toUpperCase() + type.slice(1) + ' Routine', html, () => {
                 routine.forEach((r, i) => {
                     r.time = document.querySelector(`.routine-time[data-index="${i}"]`).value;
@@ -1552,7 +1767,7 @@
             const hrs = Math.floor(timerSeconds / 3600);
             const mins = Math.floor((timerSeconds % 3600) / 60);
             const secs = timerSeconds % 60;
-            document.getElementById('timerDisplay').textContent = 
+            document.getElementById('timerDisplay').textContent =
                 `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
         }
 
@@ -1593,13 +1808,14 @@
         function handleImport(event) {
             const file = event.target.files[0];
             if (!file) return;
-            
+
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
                     const imported = JSON.parse(e.target.result);
                     if (imported.appData) {
                         appData = imported.appData;
+                        normalizeUserProgress();
                         saveAppData();
                         saveProgress();
                         renderAll();
@@ -1638,7 +1854,7 @@
             // Check for existing session
             const token = localStorage.getItem('wbcs_token');
             const savedUser = localStorage.getItem('wbcs_user');
-            
+
             if (token || savedUser) {
                 currentUser = savedUser ? JSON.parse(savedUser) : { email: 'user@demo.com', name: 'User', isAdmin: false };
                 initializeApp();
