@@ -236,6 +236,29 @@
             color: rgba(199, 210, 254, 0.95);
         }
 
+        /* Progress-tinted topic pill (Monthly + Subject views)
+           Uses CSS vars so we can set per-row/subject styling inline:
+           --topicBg, --topicBorder, --topicText
+        */
+        /* Topic (Monthly + Subject view) - plain (no color cards) */
+        .topic-inline {
+            display: block;
+            padding: 4px 0;
+            border-radius: 0;
+            background: transparent;
+            border: 0;
+            color: inherit;
+            line-height: 1.25;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        /* Subject label in monthly table: plain text */
+        .subject-plain {
+            font-weight: 800;
+            color: inherit;
+        }
+
         .input-mini {
             width: 9.8rem;
             padding: 6px 8px;
@@ -1051,7 +1074,7 @@
                     <div class="flex flex-wrap items-start justify-between gap-3">
                         <div>
                             <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">🎯 WBCS Exam Preparation 2026</h1>
-                            <p class="text-white/90 mt-1">A beautiful blueprint + progress system with per-user rescheduling</p>
+                            <p class="text-white/90 mt-1">Plan with clarity • Track with confidence • Finish strong for WBCS 2026</p>
                         </div>
                         <div class="text-right">
                             <div class="text-xs text-white/80 font-bold">Signed in</div>
@@ -1151,7 +1174,7 @@
                     <h2 class="text-2xl font-extrabold" id="subjectViewTitle">Subject</h2>
                     <button onclick="deleteCurrentSubject()" class="px-4 py-2 rounded-2xl text-sm font-extrabold text-white btn-glow" style="background: linear-gradient(135deg, #ef4444, #f43f5e);">🗑️ Delete Subject</button>
                 </div>
-                <div class="glass no-hover-card rounded-3xl overflow-x-auto">
+                <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead class="text-white" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
                             <tr>
@@ -1339,20 +1362,71 @@
         // Override (useful when hosting frontend on Firebase and backend elsewhere):
         //   localStorage.setItem('wbcs_api_base', 'https://YOUR_BACKEND_DOMAIN/api')
         //   location.reload()
-        const API_BASE = (function resolveApiBase(){
+        let API_BASE = (function resolveApiBase(){
             const override = localStorage.getItem('wbcs_api_base');
             if (override) return override.replace(/\/$/, '');
 
-            // Same-origin by default (works for Render/Railway/VM where Express serves index.html)
+            // Same-origin by default (recommended when Express serves index.html)
             const sameOrigin = `${window.location.origin}/api`;
 
-            // If you are on localhost but using a different backend port, keep old default
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                return 'http://localhost:5000/api';
+            const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+            if (isLocal) {
+                // If frontend is not served by Node (e.g., Live Server), default to backend on :5000.
+                const port = window.location.port;
+                if (port && port !== '5000') return 'http://localhost:5000/api';
+                return sameOrigin;
             }
 
             return sameOrigin;
         })();
+
+        function setApiBase(newBase) {
+            if (!newBase) return;
+            API_BASE = String(newBase).replace(/\/$/, '');
+            localStorage.setItem('wbcs_api_base', API_BASE);
+        }
+
+        function getApiCandidates() {
+            const c = [];
+            const override = localStorage.getItem('wbcs_api_base');
+            if (override) c.push(override.replace(/\/$/, ''));
+            c.push(`${window.location.origin}/api`);
+            c.push('http://localhost:5000/api');
+            c.push('http://127.0.0.1:5000/api');
+            return [...new Set(c)].filter(Boolean);
+        }
+
+        // Used by Login/Register to automatically find a working backend.
+        async function authRequest(endpoint, payload) {
+            const candidates = getApiCandidates();
+
+            for (const base of candidates) {
+                try {
+                    const resp = await fetch(`${base}${endpoint}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const ct = resp.headers.get('content-type') || '';
+                    if (!ct.includes('application/json')) {
+                        // Not our backend (e.g., static hosting returning HTML/Not found)
+                        continue;
+                    }
+
+                    const result = await resp.json().catch(() => ({}));
+
+                    // If it responded with JSON, pin this base for the rest of the app.
+                    setApiBase(base);
+
+                    return { ok: resp.ok, result, base };
+                } catch (e) {
+                    // try next base
+                }
+            }
+
+            return null;
+        }
 
         // =============================================
         // APP STATE
@@ -1401,6 +1475,16 @@
             return { hue, border, text, bar };
         }
 
+        // Deterministic "random" font color that stays readable
+        function getRandomReadableFontColor(seed) {
+            const hue = hashString(seed) % 360;
+            const isDark = document.body.classList.contains('dark-mode');
+            // Dark mode needs brighter text; light mode needs darker text.
+            return isDark
+                ? `hsl(${hue} 90% 78%)`
+                : `hsl(${hue} 70% 28%)`;
+        }
+
         function clamp(n, min, max) {
             return Math.min(max, Math.max(min, n));
         }
@@ -1423,6 +1507,7 @@
             const border = `hsl(${hue} 80% 44%)`;
             const bar = `linear-gradient(90deg, hsl(${clamp(hue - 10, 0, 120)} 85% 50%), hsl(${clamp(hue + 10, 0, 120)} 85% 45%))`;
 
+            // Subtle badges
             const pillBg = isDark
                 ? `hsla(${hue}, 80%, 52%, 0.18)`
                 : `hsla(${hue}, 85%, 55%, 0.16)`;
@@ -1431,7 +1516,16 @@
                 ? `hsla(${hue}, 90%, 70%, 0.22)`
                 : `hsla(${hue}, 65%, 38%, 0.22)`;
 
-            return { pct: p, hue, text, mutedText, border, bar, pillBg, pillBorder };
+            // Stronger tints for topic backgrounds (monthly/subject views)
+            const cellBg = isDark
+                ? `hsla(${hue}, 88%, 60%, 0.22)`
+                : `hsla(${hue}, 88%, 55%, 0.18)`;
+
+            const cellBorder = isDark
+                ? `hsla(${hue}, 92%, 72%, 0.30)`
+                : `hsla(${hue}, 70%, 35%, 0.22)`;
+
+            return { pct: p, hue, text, mutedText, border, bar, pillBg, pillBorder, cellBg, cellBorder };
         }
 
         function getSubjectProgress(subject) {
@@ -1660,35 +1754,32 @@
                 await initializeApp();
             };
 
-            try {
-                const response = await fetch(`${API_BASE}/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
+            // Auto-detect correct backend (prevents "Server connection failed" when using Live Server/Firebase)
+            const res = await authRequest('/auth/login', { email, password });
 
-                // If backend returns HTML (wrong API_BASE), JSON parsing can fail.
-                const result = await response.json().catch(() => ({}));
-
-                // If login fails (invalid credentials OR API mismatch), fall back to demo (old sign-in behavior)
-                if (!response.ok || !result?.token) {
-                    const msg = result?.message || (!response.ok ? 'Login failed.' : 'Login failed: invalid server response.');
-                    // Keep the error visible, but still allow entry into app in demo mode.
-                    showAuthError(msg + ' (Entering Demo Mode)');
-                    await enterDemo('Started in Demo Mode');
-                    return;
-                }
-
-                // Success
-                localStorage.setItem('wbcs_token', result.token);
-                currentUser = result.user;
-                localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
-                document.getElementById('authLoader').classList.add('hidden');
-                await initializeApp();
-            } catch (e) {
-                console.warn('Login API unreachable, switching to demo mode:', e);
+            if (!res) {
+                // Nothing reachable
+                showAuthError("Server connection failed. Ensure you use http://localhost:5000");
                 await enterDemo('Server unreachable — started in Demo Mode');
+                return;
             }
+
+            const { ok, result } = res;
+
+            // If login fails (invalid credentials OR server rules), fall back to demo (your preferred behavior)
+            if (!ok || !result?.token) {
+                const msg = result?.message || 'Login failed.';
+                showAuthError(msg + ' (Entering Demo Mode)');
+                await enterDemo('Started in Demo Mode');
+                return;
+            }
+
+            // Success
+            localStorage.setItem('wbcs_token', result.token);
+            currentUser = result.user;
+            localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
+            document.getElementById('authLoader').classList.add('hidden');
+            await initializeApp();
         }
 
         async function handleRegister() {
@@ -1725,12 +1816,16 @@
                     body: JSON.stringify({ name, email, password })
                 });
 
-                const result = await response.json().catch(() => ({}));
+                const ct = response.headers.get('content-type') || '';
+                const isJson = ct.includes('application/json');
+                const result = isJson ? await response.json().catch(() => ({})) : {};
 
                 // Old behavior: if registration can't complete (API mismatch, server rules, etc.)
                 // allow user to still proceed in demo mode.
                 if (!response.ok || !result?.token) {
-                    const msg = result?.message || (!response.ok ? 'Registration failed.' : 'Registration failed: invalid server response.');
+                    const msg = isJson
+                        ? (result?.message || 'Registration failed.')
+                        : 'Backend API not configured for this site.';
                     showAuthError(msg + ' (Entering Demo Mode)');
                     await enterDemo('Created account in Demo Mode');
                     return;
@@ -2075,15 +2170,23 @@
                 const { completed: subjectCompleted, total: subjectTotal, pct: subjectProgress } = getSubjectProgress(s);
                 const pal = getProgressPalette(subjectProgress);
 
+                // Progress-based background tint, random readable font color
+                const titleColor = getRandomReadableFontColor('subj-title-' + s);
+                const subTextColor = getRandomReadableFontColor('subj-sub-' + s);
+                const isDark = document.body.classList.contains('dark-mode');
+                const cardBg = isDark
+                    ? `linear-gradient(135deg, ${pal.cellBg}, rgba(45,55,72,0.96))`
+                    : `linear-gradient(135deg, ${pal.cellBg}, rgba(255,255,255,0.98))`;
+
                 return `
-                    <div onclick="viewSubject('${s}')" class="glass bouncy-card rounded-3xl p-5 cursor-pointer hover:shadow-lg transition border-l-4" style="border-left-color: ${pal.border};">
+                    <div onclick="viewSubject('${s}')" class="glass bouncy-card rounded-3xl p-5 cursor-pointer hover:shadow-lg transition border-l-4" style="border-left-color: ${pal.border}; --card: ${cardBg};">
                         <div class="flex items-start justify-between gap-3">
-                            <h4 class="font-extrabold text-lg md:text-xl" style="color: ${pal.text};">${s}</h4>
-                            <span class="px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: ${pal.pillBg}; border: 1px solid ${pal.pillBorder}; color: ${pal.text};">
+                            <h4 class="font-extrabold text-lg md:text-xl" style="color: ${titleColor};">${s}</h4>
+                            <span class="px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: ${pal.pillBg}; border: 1px solid ${pal.pillBorder}; color: ${titleColor};">
                                 ${subjectProgress}%
                             </span>
                         </div>
-                        <div class="text-sm" style="color: ${pal.mutedText};">${subjectCompleted}/${subjectTotal} topics</div>
+                        <div class="text-sm" style="color: ${subTextColor};">${subjectCompleted}/${subjectTotal} topics</div>
                         <div class="h-2 bg-white/70 rounded-full mt-3 overflow-hidden">
                             <div class="h-full" style="width: ${subjectProgress}%; background: ${pal.bar};"></div>
                         </div>
@@ -2155,9 +2258,8 @@
                         <div id="tab-${month}" class="tab-content">
                             <div class="flex items-center justify-between gap-3 mb-4">
                                 <h2 class="text-2xl font-extrabold text-slate-800">📆 ${monthNames[idx]} 2026</h2>
-                                <div class="text-xs text-slate-500">Edit dates to reschedule tasks (saved per-user)</div>
                             </div>
-                            <div class="glass no-hover-card rounded-3xl overflow-x-auto">
+                            <div class="overflow-x-auto">
                                 <table class="w-full">
                                     <thead class="text-white" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
                                         <tr>
@@ -2178,7 +2280,6 @@
                                             const displayDate = formatDate(effDate);
                                             const dayName = getDayName(effDate);
                                             const highlightClass = getTaskRowHighlightClass(effDate, isCompleted);
-                                            const pal = getSubjectProgressPalette(t.subject);
                                             return `
                                                 <tr class="${highlightClass} ${isCompleted ? 'completed-row' : ''} border-b border-black/5 table-row-hover">
                                                     <td class="p-3">
@@ -2188,14 +2289,14 @@
                                                         </div>
                                                     </td>
                                                     <td class="p-3 font-bold">${dayName}</td>
-                                                    <td class="p-3"><span class="hover-bounce" style="color: ${pal.text};">${t.morning}</span></td>
-                                                    <td class="p-3"><span class="hover-bounce" style="color: ${pal.mutedText};">${t.evening}</span></td>
-                                                    <td class="p-3">${t.test}</td>
                                                     <td class="p-3">
-                                                        <span class="px-2 py-1 rounded-xl text-xs font-bold" style="background: ${pal.pillBg}; color: ${pal.text}; border: 1px solid ${pal.pillBorder};">
-                                                            ${t.subject}
-                                                        </span>
+                                                        <div class="hover-bounce topic-inline">${t.morning}</div>
                                                     </td>
+                                                    <td class="p-3">
+                                                        <div class="hover-bounce topic-inline">${t.evening}</div>
+                                                    </td>
+                                                    <td class="p-3">${t.test}</td>
+                                                    <td class="p-3"><span class="subject-plain">${t.subject}</span></td>
                                                     <td class="p-3 font-bold">${t.hours}</td>
                                                     <td class="p-3">
                                                         <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleTask('${t.id}')" class="w-5 h-5 accent-indigo-500 cursor-pointer">
@@ -2368,10 +2469,9 @@
         // =============================================
         function renderSubjectViewTable() {
             if (!activeSubject) return;
-            const palHead = getSubjectProgressPalette(activeSubject);
             const titleEl = document.getElementById('subjectViewTitle');
             titleEl.textContent = '📚 ' + activeSubject;
-            titleEl.style.color = palHead.text;
+            titleEl.style.color = '';
 
             const subjectTasks = appData.tasks
                 .filter(t => t.subject === activeSubject)
@@ -2383,12 +2483,11 @@
                 const effDate = getEffectiveTaskDate(t);
                 const dayName = getDayName(effDate);
                 const highlightClass = getTaskRowHighlightClass(effDate, isCompleted);
-                const pal = getSubjectProgressPalette(activeSubject);
                 return `
                     <tr class="${highlightClass} ${isCompleted ? 'completed-row' : ''} border-b border-black/5 table-row-hover">
                         <td class="p-3">
-                            <div class="font-extrabold hover-bounce" style="color: ${pal.text};">${t.morning}</div>
-                            <div class="text-sm hover-bounce" style="color: ${pal.mutedText};">${t.evening}</div>
+                            <div class="hover-bounce topic-inline"><div class="font-extrabold">${t.morning}</div></div>
+                            <div class="mt-2 hover-bounce topic-inline" style="font-size: 12px;">${t.evening}</div>
                         </td>
                         <td class="p-3">
                             <div class="date-chip bounceable">${formatDate(effDate)} • ${dayName}</div>
