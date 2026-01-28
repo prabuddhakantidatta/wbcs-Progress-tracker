@@ -1019,139 +1019,6 @@
             #statProgress, #statStreak, #statHours, #statDays { font-size: 2.05rem; }
         }
 
-        /* =========================================================
-           VISUAL UPGRADE: Browser chrome + Status bar (like screenshot)
-        ========================================================= */
-        .browser-chrome {
-            position: sticky;
-            top: 0;
-            z-index: 4000;
-            width: 100%;
-            border-bottom: 1px solid rgba(15, 23, 42, 0.10);
-            background: rgba(241, 245, 249, 0.96);
-            backdrop-filter: blur(10px);
-        }
-        .dark-mode .browser-chrome {
-            background: rgba(2, 6, 23, 0.72);
-            border-bottom-color: rgba(255,255,255,0.10);
-        }
-        .browser-chrome .titlebar {
-            height: 34px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 12px;
-            background: #c1121f; /* solid red like screenshot */
-            color: rgba(255,255,255,0.95);
-            font-weight: 800;
-            letter-spacing: 0.01em;
-        }
-        .browser-chrome .toolbar {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            padding: 8px 12px;
-        }
-        .browser-chrome .chrome-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 10px;
-            display: grid;
-            place-items: center;
-            background: rgba(15, 23, 42, 0.06);
-            border: 1px solid rgba(15, 23, 42, 0.08);
-            color: rgba(30,41,59,0.92);
-            font-weight: 900;
-        }
-        .dark-mode .browser-chrome .chrome-btn {
-            background: rgba(255,255,255,0.06);
-            border-color: rgba(255,255,255,0.10);
-            color: rgba(226,232,240,0.95);
-        }
-        .browser-chrome .address {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.92);
-            border: 1px solid rgba(15, 23, 42, 0.10);
-            color: rgba(30,41,59,0.92);
-            box-shadow: 0 10px 20px rgba(2, 6, 23, 0.06);
-            min-height: 34px;
-            overflow: hidden;
-        }
-        .dark-mode .browser-chrome .address {
-            background: rgba(15, 23, 42, 0.55);
-            border-color: rgba(255,255,255,0.10);
-            color: rgba(226,232,240,0.92);
-        }
-        .browser-chrome .address code {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-            font-size: 12px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .status-bar {
-            position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 3500;
-            height: 34px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 12px;
-            background: rgba(148, 163, 184, 0.22);
-            border-top: 1px solid rgba(15, 23, 42, 0.10);
-            color: rgba(30, 41, 59, 0.92);
-            backdrop-filter: blur(10px);
-        }
-        .dark-mode .status-bar {
-            background: rgba(15, 23, 42, 0.80);
-            border-top-color: rgba(255,255,255,0.10);
-            color: rgba(226,232,240,0.92);
-        }
-        .status-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 12px;
-            font-weight: 800;
-        }
-        .status-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.75);
-            border: 1px solid rgba(15, 23, 42, 0.10);
-        }
-        .dark-mode .status-pill {
-            background: rgba(255,255,255,0.06);
-            border-color: rgba(255,255,255,0.10);
-        }
-        .status-mini-btn {
-            padding: 6px 10px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 900;
-            border: 1px solid rgba(15, 23, 42, 0.10);
-            background: rgba(255,255,255,0.75);
-        }
-        .dark-mode .status-mini-btn {
-            border-color: rgba(255,255,255,0.10);
-            background: rgba(255,255,255,0.06);
-            color: rgba(226,232,240,0.92);
-        }
-
-        /* Make room for bottom status bar */
-        .app-container { padding-bottom: 70px !important; }
 
         /* =========================================================
            Sidebar active state + icon visibility (light sidebar)
@@ -1180,7 +1047,7 @@
         }
 
         /* =========================================================
-           Right tool dock as tall stacked buttons (like screenshot)
+           Right tool dock as tall stacked buttons
         ========================================================= */
         .dock-btn {
             width: 52px;
@@ -1203,9 +1070,7 @@
         }
         .subject-tile:hover { box-shadow: 0 16px 34px rgba(2, 6, 23, 0.12) !important; }
 
-        /* Hide browser chrome on small screens to keep layout clean */
         @media (max-width: 768px) {
-            .browser-chrome { display: none; }
             .status-bar { height: 36px; }
         }
 
@@ -1307,32 +1172,6 @@
     </style>
 </head>
 <body class="min-h-screen antialiased">
-    <!-- VISUAL: Browser chrome (for the exact look shown in your reference screenshot) -->
-    <div class="browser-chrome no-print">
-        <div class="titlebar">
-            <div class="flex items-center gap-2">
-                <span class="font-black">WBCS 2026 - Interactive Prep Tracker</span>
-            </div>
-            <div class="text-xs font-extrabold opacity-90">● ● ●</div>
-        </div>
-        <div class="toolbar">
-            <div class="flex items-center gap-2">
-                <div class="chrome-btn" title="Back">←</div>
-                <div class="chrome-btn" title="Forward">→</div>
-                <div class="chrome-btn" title="Reload">⟳</div>
-            </div>
-            <div class="address" title="Address bar">
-                <span class="text-xs font-extrabold opacity-80">🔒</span>
-                <code>prabuddhakantidatta.github.io/wbcs-Progress-tracker/</code>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="chrome-btn" title="Bookmark">☆</div>
-                <div class="chrome-btn" title="Extensions">🧩</div>
-                <div class="chrome-btn" title="Profile">👤</div>
-            </div>
-        </div>
-    </div>
-
     <!-- Auth Screen (Firebase Authentication) -->
     <div id="authScreen" class="min-h-screen flex items-center justify-center p-6 relative" aria-hidden="false">
         <!-- Decorative blobs -->
@@ -4282,23 +4121,5 @@
         };
     </script>
 
-    <!-- VISUAL: Bottom status bar (like screenshot) -->
-    <div class="status-bar no-print" aria-label="Status bar">
-        <div class="status-group">
-            <span class="status-pill" title="Mini timer">
-                <span id="statusMiniTimer">00</span>
-                <span class="opacity-70">⏱</span>
-            </span>
-            <span class="status-pill" title="Active tab">
-                <span class="opacity-70">Tab:</span>
-                <span id="statusActiveTab">overview</span>
-            </span>
-        </div>
-        <div class="status-group">
-            <button class="status-mini-btn" onclick="resetTimer()" title="Reset timer">Reset</button>
-            <span class="status-pill" title="Zoom">100%</span>
-            <span class="status-pill" title="Build">14.02</span>
-        </div>
-    </div>
 </body>
 </html>
