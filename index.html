@@ -181,6 +181,87 @@
             overflow: hidden;
         }
 
+        /* Sidebar icon visibility: give icons a contrast badge */
+        .sidebar nav .menu-item > span:first-child {
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: rgba(102,126,234,0.14);
+            border: 1px solid rgba(102,126,234,0.18);
+            flex: 0 0 auto;
+        }
+        body.dark-mode .sidebar nav .menu-item > span:first-child {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.10);
+        }
+
+        /* Icon badge for section toggles (Monthly/Subjects) */
+        .sidebar-section-toggle span > span:first-child {
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: rgba(102,126,234,0.14);
+            border: 1px solid rgba(102,126,234,0.18);
+            flex: 0 0 auto;
+        }
+        body.dark-mode .sidebar-section-toggle span > span:first-child {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.10);
+        }
+
+        /* Tiny dot used for subject progress indicators */
+        .subj-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            flex: 0 0 auto;
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.9);
+        }
+        body.dark-mode .subj-dot { box-shadow: 0 0 0 2px rgba(2,6,23,0.55); }
+
+        .subj-pct {
+            margin-left: auto;
+            font-size: 12px;
+            font-weight: 900;
+            opacity: 0.9;
+        }
+
+        /* Sidebar subitem icon badge */
+        .sidebar-subitem .subitem-icon {
+            width: 26px;
+            height: 26px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: rgba(102,126,234,0.12);
+            border: 1px solid rgba(102,126,234,0.18);
+            flex: 0 0 auto;
+        }
+        body.dark-mode .sidebar-subitem .subitem-icon {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.10);
+        }
+
+        /* Subject chip used inside tables */
+        .subject-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.03);
+            border: 1px solid rgba(15, 23, 42, 0.06);
+            max-width: 100%;
+        }
+        body.dark-mode .subject-chip {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.10);
+        }
+
         .overlay { display: none; }
         .overlay.active { display: block; }
 
@@ -920,11 +1001,340 @@
             font-weight: 900 !important;
             letter-spacing: -0.01em;
         }
+
+        /* =========================================================
+           FONT SCALE TUNING (Option B felt too large)
+           Reduce overall rem scale slightly + minor heading tweaks.
+        ========================================================= */
+        html { font-size: 15px !important; }
+        @media (max-width: 768px) {
+            html { font-size: 14.5px !important; }
+        }
+
+        /* Keep dashboard stats strong but a touch more compact */
+        #statProgress, #statStreak, #statHours, #statDays {
+            font-size: 2.25rem; /* ~36px at 16px base; scales with html font-size */
+        }
+        @media (max-width: 768px) {
+            #statProgress, #statStreak, #statHours, #statDays { font-size: 2.05rem; }
+        }
+
+        /* =========================================================
+           VISUAL UPGRADE: Browser chrome + Status bar (like screenshot)
+        ========================================================= */
+        .browser-chrome {
+            position: sticky;
+            top: 0;
+            z-index: 4000;
+            width: 100%;
+            border-bottom: 1px solid rgba(15, 23, 42, 0.10);
+            background: rgba(241, 245, 249, 0.96);
+            backdrop-filter: blur(10px);
+        }
+        .dark-mode .browser-chrome {
+            background: rgba(2, 6, 23, 0.72);
+            border-bottom-color: rgba(255,255,255,0.10);
+        }
+        .browser-chrome .titlebar {
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            background: #c1121f; /* solid red like screenshot */
+            color: rgba(255,255,255,0.95);
+            font-weight: 800;
+            letter-spacing: 0.01em;
+        }
+        .browser-chrome .toolbar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 8px 12px;
+        }
+        .browser-chrome .chrome-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            background: rgba(15, 23, 42, 0.06);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            color: rgba(30,41,59,0.92);
+            font-weight: 900;
+        }
+        .dark-mode .browser-chrome .chrome-btn {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.10);
+            color: rgba(226,232,240,0.95);
+        }
+        .browser-chrome .address {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.92);
+            border: 1px solid rgba(15, 23, 42, 0.10);
+            color: rgba(30,41,59,0.92);
+            box-shadow: 0 10px 20px rgba(2, 6, 23, 0.06);
+            min-height: 34px;
+            overflow: hidden;
+        }
+        .dark-mode .browser-chrome .address {
+            background: rgba(15, 23, 42, 0.55);
+            border-color: rgba(255,255,255,0.10);
+            color: rgba(226,232,240,0.92);
+        }
+        .browser-chrome .address code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .status-bar {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 3500;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            background: rgba(148, 163, 184, 0.22);
+            border-top: 1px solid rgba(15, 23, 42, 0.10);
+            color: rgba(30, 41, 59, 0.92);
+            backdrop-filter: blur(10px);
+        }
+        .dark-mode .status-bar {
+            background: rgba(15, 23, 42, 0.80);
+            border-top-color: rgba(255,255,255,0.10);
+            color: rgba(226,232,240,0.92);
+        }
+        .status-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.75);
+            border: 1px solid rgba(15, 23, 42, 0.10);
+        }
+        .dark-mode .status-pill {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.10);
+        }
+        .status-mini-btn {
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 900;
+            border: 1px solid rgba(15, 23, 42, 0.10);
+            background: rgba(255,255,255,0.75);
+        }
+        .dark-mode .status-mini-btn {
+            border-color: rgba(255,255,255,0.10);
+            background: rgba(255,255,255,0.06);
+            color: rgba(226,232,240,0.92);
+        }
+
+        /* Make room for bottom status bar */
+        .app-container { padding-bottom: 70px !important; }
+
+        /* =========================================================
+           Sidebar active state + icon visibility (light sidebar)
+        ========================================================= */
+        .sidebar nav .menu-item.active {
+            background: rgba(102, 126, 234, 0.14) !important;
+            border-left-color: var(--primary) !important;
+        }
+        body.dark-mode .sidebar nav .menu-item.active {
+            background: rgba(255,255,255,0.10) !important;
+            border-left-color: rgba(199, 210, 254, 0.85) !important;
+        }
+
+        /* Stronger icon badge contrast for light sidebar */
+        .sidebar nav .menu-item > span:first-child,
+        .sidebar-section-toggle span > span:first-child,
+        .sidebar-subitem .subitem-icon {
+            background: rgba(99,102,241,0.18) !important;
+            border-color: rgba(99,102,241,0.26) !important;
+        }
+        body.dark-mode .sidebar nav .menu-item > span:first-child,
+        body.dark-mode .sidebar-section-toggle span > span:first-child,
+        body.dark-mode .sidebar-subitem .subitem-icon {
+            background: rgba(255,255,255,0.08) !important;
+            border-color: rgba(255,255,255,0.12) !important;
+        }
+
+        /* =========================================================
+           Right tool dock as tall stacked buttons (like screenshot)
+        ========================================================= */
+        .dock-btn {
+            width: 52px;
+            height: 64px;
+            border-radius: 18px;
+            font-size: 20px;
+        }
+        .action-dock {
+            padding: 12px;
+            border-radius: 20px;
+        }
+
+        /* =========================================================
+           Dashboard subject tiles: pastel tile style
+        ========================================================= */
+        .subject-tile {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .subject-tile:hover { box-shadow: 0 16px 34px rgba(2, 6, 23, 0.12) !important; }
+
+        /* Hide browser chrome on small screens to keep layout clean */
+        @media (max-width: 768px) {
+            .browser-chrome { display: none; }
+            .status-bar { height: 36px; }
+        }
+
+        /* =========================================================
+           SIDEBAR: DESKTOP PIN + COLLAPSE (Icon rail)
+        ========================================================= */
+        body.sidebar-pinned .sidebar {
+            left: 0 !important;
+            transform: translateX(0) !important;
+        }
+        body.sidebar-pinned .overlay {
+            display: none !important;
+        }
+
+        /* Make room for pinned sidebar */
+        body.sidebar-pinned .app-container {
+            padding-left: 336px !important;
+        }
+        body.sidebar-pinned.sidebar-collapsed .app-container {
+            padding-left: 140px !important;
+        }
+
+        /* Collapsed sidebar (icon-only) */
+        .sidebar.collapsed {
+            width: 92px !important;
+        }
+        .sidebar.collapsed #monthMenu,
+        .sidebar.collapsed #subjectMenu {
+            display: none !important;
+        }
+        .sidebar.collapsed .item-label,
+        .sidebar.collapsed .subitem-label,
+        .sidebar.collapsed .subj-pct,
+        .sidebar.collapsed #monthMenuArrow,
+        .sidebar.collapsed #subjectMenuArrow,
+        .sidebar.collapsed .sidebar-subtitle,
+        .sidebar.collapsed .sidebar-email {
+            display: none !important;
+        }
+
+        /* Center icons in collapsed state */
+        .sidebar.collapsed .menu-item,
+        .sidebar.collapsed .sidebar-section-toggle,
+        .sidebar.collapsed .sidebar-subitem {
+            justify-content: center !important;
+            gap: 0 !important;
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+        }
+
+        /* Tooltips for collapsed items */
+        .sidebar [data-tip] { position: relative; }
+        .sidebar.collapsed [data-tip]::after {
+            content: attr(data-tip);
+            position: absolute;
+            left: calc(100% + 10px);
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+            font-size: 12px;
+            font-weight: 900;
+            padding: 8px 10px;
+            border-radius: 12px;
+            color: rgba(255,255,255,0.96);
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(255,255,255,0.10);
+            box-shadow: 0 18px 40px rgba(2, 6, 23, 0.28);
+            transition: opacity 120ms ease, transform 120ms ease;
+        }
+        .sidebar.collapsed [data-tip]:hover::after {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
+        }
+
+        /* Sidebar header collapse button */
+        .collapse-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-weight: 900;
+            background: rgba(99,102,241,0.14);
+            border: 1px solid rgba(99,102,241,0.22);
+            color: rgba(30,41,59,0.92);
+        }
+        body.dark-mode .collapse-btn {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.12);
+            color: rgba(226,232,240,0.92);
+        }
+
+        @media (max-width: 1023px) {
+            body.sidebar-pinned .app-container { padding-left: 104px !important; }
+            body.sidebar-pinned.sidebar-collapsed .app-container { padding-left: 104px !important; }
+        }
     </style>
 </head>
 <body class="min-h-screen antialiased">
-    <!-- Auth Screen -->
-    <div id="authScreen" class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <!-- VISUAL: Browser chrome (for the exact look shown in your reference screenshot) -->
+    <div class="browser-chrome no-print">
+        <div class="titlebar">
+            <div class="flex items-center gap-2">
+                <span class="font-black">WBCS 2026 - Interactive Prep Tracker</span>
+            </div>
+            <div class="text-xs font-extrabold opacity-90">● ● ●</div>
+        </div>
+        <div class="toolbar">
+            <div class="flex items-center gap-2">
+                <div class="chrome-btn" title="Back">←</div>
+                <div class="chrome-btn" title="Forward">→</div>
+                <div class="chrome-btn" title="Reload">⟳</div>
+            </div>
+            <div class="address" title="Address bar">
+                <span class="text-xs font-extrabold opacity-80">🔒</span>
+                <code>prabuddhakantidatta.github.io/wbcs-Progress-tracker/</code>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="chrome-btn" title="Bookmark">☆</div>
+                <div class="chrome-btn" title="Extensions">🧩</div>
+                <div class="chrome-btn" title="Profile">👤</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Screen (Firebase Authentication) -->
+    <div id="authScreen" class="min-h-screen flex items-center justify-center p-6 relative" aria-hidden="false">
         <!-- Decorative blobs -->
         <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-500/35 blur-3xl rounded-full"></div>
         <div class="absolute -bottom-28 -right-24 w-[28rem] h-[28rem] bg-fuchsia-500/30 blur-3xl rounded-full"></div>
@@ -934,7 +1344,7 @@
             <div class="text-center mb-8">
                 <div class="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white flex items-center justify-center text-2xl shadow-lg">🎯</div>
                 <h1 class="text-3xl font-extrabold mt-4 tracking-tight"><span class="gradient-text">WBCS 2026</span></h1>
-                <p class="text-slate-600 dark:text-slate-300 mt-2">Interactive Study Portal • MongoDB Powered</p>
+                <p class="text-slate-600 dark:text-slate-300 mt-2">Interactive Study Portal • Firestore Powered</p>
             </div>
 
             <div id="authTabs" class="grid grid-cols-2 bg-white/50 rounded-2xl p-1 border border-white/60 shadow-sm">
@@ -953,7 +1363,7 @@
                     <input type="password" id="loginPassword" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="••••••••" autocomplete="current-password">
                 </div>
                 <button onclick="handleLogin()" class="w-full py-3 rounded-2xl font-extrabold text-white bg-gradient-to-r from-indigo-500 to-fuchsia-500 hover:brightness-110 transition shadow-lg btn-glow">Sign In</button>
-                <p class="text-xs text-slate-500 mt-4 text-center">Tip: use <span class="font-semibold">admin@wbcs.com</span> / <span class="font-semibold">admin123</span> to access admin panel (if server seeded).</p>
+                <p class="text-xs text-slate-500 mt-4 text-center">Tip: Admin panel is available when your user is marked as <span class="font-semibold">isAdmin</span> in Firestore (optional).</p>
             </div>
 
             <!-- Register Form -->
@@ -986,78 +1396,87 @@
             ☰
         </button>
 
-        <!-- Left Action Dock -->
+        <!-- Right Action Dock (like screenshot) -->
         <div class="action-dock no-print" id="actionDock" aria-label="Quick actions">
             <button class="dock-btn btn-glow" data-tip="Theme" onclick="toggleDarkMode()" style="background: linear-gradient(135deg, #334155, #475569);">🌙</button>
-            <button class="dock-btn btn-glow" data-tip="Backup" onclick="exportData()" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">💾</button>
-            <button class="dock-btn btn-glow" data-tip="Restore" onclick="importData()" style="background: linear-gradient(135deg, #fde047, #f59e0b); color: #0f172a; border-color: rgba(15,23,42,0.10);">📥</button>
+            <button class="dock-btn btn-glow" data-tip="Save (Backup)" onclick="exportData()" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">💾</button>
+            <button class="dock-btn btn-glow" data-tip="Upload (Restore)" onclick="importData()" style="background: linear-gradient(135deg, #fde047, #f59e0b); color: #0f172a; border-color: rgba(15,23,42,0.10);">⬆️</button>
             <button class="dock-btn btn-glow" data-tip="Print" onclick="window.print()" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">🖨️</button>
-            <div class="dock-divider"></div>
-            <button class="dock-btn btn-glow" data-tip="Sync" onclick="syncData()" style="background: linear-gradient(135deg, #22c55e, #10b981);">🔄</button>
-            <button class="dock-btn btn-glow" data-tip="Logout" onclick="handleLogout()" style="background: linear-gradient(135deg, #ef4444, #f43f5e);">🔒</button>
+            <button class="dock-btn btn-glow" data-tip="Settings" onclick="openSettingsModal()" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">⚙️</button>
+            <button class="dock-btn btn-glow" data-tip="Lock (Logout)" onclick="handleLogout()" style="background: linear-gradient(135deg, #ef4444, #f43f5e);">🔒</button>
         </div>
 
         <!-- Overlay -->
         <div class="overlay fixed inset-0 bg-black/50 z-40" onclick="toggleSidebar()"></div>
 
         <!-- Sidebar -->
-        <aside class="sidebar fixed left-0 top-0 w-72 h-full z-50 overflow-y-auto no-print glass"
+        <aside class="sidebar fixed left-0 top-0 w-72 h-full z-50 overflow-y-auto no-print glass" id="appSidebar"
                style="border-top-right-radius: 18px; border-bottom-right-radius: 18px;">
             <div class="p-6 border-b" style="border-color: rgba(255,255,255,0.10);">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center shadow">🎯</div>
-                    <div>
-                        <h2 class="text-lg font-extrabold text-indigo-200">WBCS 2026</h2>
-                        <p class="text-xs text-slate-300/70">Interactive Study Portal</p>
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center shadow">🎯</div>
+                        <div class="min-w-0">
+                            <h2 class="text-lg font-extrabold truncate">WBCS 2026</h2>
+                            <p class="text-xs opacity-70 sidebar-subtitle truncate">Interactive Study Portal</p>
+                        </div>
                     </div>
+                    <button class="collapse-btn no-print" title="Collapse sidebar" onclick="toggleSidebarCollapse()">⫶</button>
                 </div>
-                <p class="text-xs text-indigo-200/90 mt-3" id="sidebarUserEmail"></p>
+                <p class="text-xs font-extrabold mt-3 sidebar-email truncate" id="sidebarUserEmail"></p>
+                <div class="mt-3 flex gap-2 no-print">
+                    <button class="status-mini-btn" onclick="toggleSidebarPin()" title="Pin sidebar">Pin</button>
+                </div>
             </div>
 
             <nav class="py-4">
-                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" onclick="switchTab('overview')">
-                    <span>📊</span> Dashboard
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" data-tip="Dashboard" onclick="switchTab('overview')">
+                    <span>📊</span> <span class="item-label">Dashboard</span>
                 </div>
-                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" onclick="switchTab('weekday')">
-                    <span>📅</span> Weekday Routine
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" data-tip="Weekday Routine" onclick="switchTab('weekday')">
+                    <span>📅</span> <span class="item-label">Weekday Routine</span>
                 </div>
-                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" onclick="switchTab('weekend')">
-                    <span>🌅</span> Weekend Routine
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" data-tip="Weekend Routine" onclick="switchTab('weekend')">
+                    <span>🌅</span> <span class="item-label">Weekend Routine</span>
                 </div>
 
-                <div class="sidebar-section-toggle cursor-pointer hover:bg-white/10 flex items-center justify-between" onclick="toggleSubmenu('monthMenu')">
-                    <span class="flex items-center gap-3"><span>📆</span> Monthly Schedules</span>
+                <div class="sidebar-section-toggle cursor-pointer hover:bg-white/10 flex items-center justify-between" data-tip="Monthly Schedules" onclick="toggleSubmenu('monthMenu')">
+                    <span class="flex items-center gap-3"><span>📆</span> <span class="item-label">Monthly Schedules</span></span>
                     <span id="monthMenuArrow">▼</span>
                 </div>
                 <div id="monthMenu" class="hidden" style="background: rgba(2, 6, 23, 0.40);"></div>
 
-                <div class="sidebar-section-toggle cursor-pointer hover:bg-white/10 flex items-center justify-between" onclick="toggleSubmenu('subjectMenu')">
-                    <span class="flex items-center gap-3"><span>📚</span> Subjects</span>
+                <div class="sidebar-section-toggle cursor-pointer hover:bg-white/10 flex items-center justify-between" data-tip="Subjects" onclick="toggleSubmenu('subjectMenu')">
+                    <span class="flex items-center gap-3"><span>📚</span> <span class="item-label">Subjects</span></span>
                     <span id="subjectMenuArrow">▼</span>
                 </div>
                 <div id="subjectMenu" class="hidden" style="background: rgba(2, 6, 23, 0.40);">
-                    <div class="sidebar-subitem text-emerald-300 cursor-pointer hover:bg-white/10 text-sm" onclick="createNewSubject()">➕ Add Subject</div>
+                    <div class="sidebar-subitem cursor-pointer hover:bg-white/10 text-sm" data-tip="All Subjects" onclick="switchTab('subjects')">📚 <span class="subitem-label">All Subjects</span></div>
+                    <div class="sidebar-subitem text-emerald-300 cursor-pointer hover:bg-white/10 text-sm" data-tip="Add Subject" onclick="createNewSubject()">➕ <span class="subitem-label">Add Subject</span></div>
                     <div id="subjectMenuList"></div>
                 </div>
 
-                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" onclick="switchTab('tests')">
-                    <span>✅</span> Test Tracker
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" data-tip="Test Tracker" onclick="switchTab('tests')">
+                    <span>✅</span> <span class="item-label">Test Tracker</span>
                 </div>
-                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" onclick="switchTab('analytics')">
-                    <span>📈</span> Analytics
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" data-tip="Analytics" onclick="switchTab('analytics')">
+                    <span>📈</span> <span class="item-label">Analytics</span>
                 </div>
-                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" onclick="openNotesModal()">
-                    <span>📝</span> Global Notes
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" data-tip="Cutoff Analytics" onclick="switchTab('cutoff')">
+                    <span>🎯</span> <span class="item-label">Cutoff Analytics</span>
                 </div>
-                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" onclick="openTimerModal()">
-                    <span>⏱️</span> Session Timer
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" data-tip="Global Notes" onclick="openNotesModal()">
+                    <span>📝</span> <span class="item-label">Global Notes</span>
+                </div>
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" data-tip="Session Timer" onclick="openTimerModal()">
+                    <span>⏱️</span> <span class="item-label">Session Timer</span>
                 </div>
 
                 <!-- Admin Menu (visible for admins) -->
                 <div id="adminMenuSection" class="hidden border-t mt-4 pt-4" style="border-color: rgba(255,255,255,0.10);">
-                    <div class="px-6 py-2 text-xs text-slate-300/70 uppercase">Admin Panel</div>
-                    <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-yellow-400 transition flex items-center gap-3 text-yellow-300" onclick="switchTab('admin')">
-                        <span>⚙️</span> Manage Blueprints
+                    <div class="px-6 py-2 text-xs text-slate-300/70 uppercase item-label">Admin Panel</div>
+                    <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-yellow-400 transition flex items-center gap-3 text-yellow-300" data-tip="Manage Blueprints" onclick="switchTab('admin')">
+                        <span>⚙️</span> <span class="item-label">Manage Blueprints</span>
                     </div>
                 </div>
             </nav>
@@ -1116,8 +1535,17 @@
 
                 <div class="glass bouncy-card rounded-3xl p-8 mb-7">
                     <h3 class="text-xl font-extrabold text-slate-800 mb-3">📋 Preparation Summary</h3>
-                    <p class="text-slate-700 text-base">Target Date: <strong class="text-indigo-700">20 March 2026 (Preliminary)</strong></p>
+                    <p class="text-slate-700 text-base">Target Date: <strong class="text-indigo-700" style="text-decoration: underline;">20 March 2026 (Preliminary)</strong></p>
                     <p class="text-slate-600 mt-2 text-sm">Your plan includes comprehensive GS coverage with regular mock tests and rescheduling support per user.</p>
+                </div>
+
+                <div class="glass bouncy-card rounded-3xl p-8 mb-7">
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <h3 class="text-xl font-extrabold text-slate-800">📌 Daily Focus</h3>
+                        <div id="todayDateChip" class="date-chip">Today</div>
+                    </div>
+                    <div id="todayMeta" class="text-sm text-slate-600 font-bold mb-3"></div>
+                    <div id="todaySchedule" class="divide-y divide-black/5"></div>
                 </div>
 
                 <h2 class="text-xl font-extrabold text-slate-800 mb-4">📚 Quick Subject Access</h2>
@@ -1168,6 +1596,33 @@
             <!-- Monthly Tabs (Dynamic) -->
             <div id="monthlyTabs"></div>
 
+            <!-- Subjects Tab (Manage + Overview) -->
+            <div id="tab-subjects" class="tab-content">
+                <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-slate-800">📚 Subjects</h2>
+                        <p class="text-slate-600 mt-1">Add subjects, track progress, and open a subject to schedule/reschedule topics.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="createNewSubject()" class="px-4 py-2 rounded-2xl text-sm font-extrabold text-white btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">➕ Add Subject</button>
+                    </div>
+                </div>
+
+                <div class="glass rounded-3xl overflow-hidden">
+                    <table class="w-full">
+                        <thead class="text-white" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
+                            <tr>
+                                <th class="p-3 text-left">Subject</th>
+                                <th class="p-3 text-left">Progress</th>
+                                <th class="p-3 text-left">Topics</th>
+                                <th class="p-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="subjectsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Subject View Tab -->
             <div id="tab-subject-view" class="tab-content">
                 <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
@@ -1197,7 +1652,7 @@
                 <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
                     <div>
                         <h2 class="text-2xl font-extrabold text-slate-800">✅ Test Tracker</h2>
-                        <p class="text-slate-600 mt-1">Reschedule blueprint tests per-user, or add your own subject/mixed/full mock tests (stored in your MongoDB progress).</p>
+                        <p class="text-slate-600 mt-1">Reschedule blueprint tests per-user, or add your own subject/mixed/full mock tests (stored in your Firestore profile).</p>
                     </div>
                     <div class="flex flex-wrap gap-2">
                         <button onclick="openAddPersonalTestModal()" class="px-4 py-2 rounded-2xl text-sm font-extrabold text-white btn-glow" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">➕ Add Personal Test</button>
@@ -1236,6 +1691,64 @@
                     <div class="glass rounded-3xl p-6">
                         <h3 class="text-lg font-extrabold text-slate-800 mb-4">Weekly Study Hours</h3>
                         <div id="weeklyChart" class="h-48 flex items-end gap-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cutoff Analytics Tab -->
+            <div id="tab-cutoff" class="tab-content">
+                <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-slate-800">🎯 Cutoff Analytics</h2>
+                        <p class="text-slate-600 mt-1">Set your target cutoffs by test type and instantly see which tests are above/below cutoff.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="saveCutoffs()" class="px-4 py-2 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">💾 Save Cutoffs</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="glass rounded-3xl p-6">
+                        <h3 class="text-lg font-extrabold text-slate-800 mb-3">Cutoff Settings</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-extrabold text-slate-700 mb-1">Subject cutoff (out of 75)</label>
+                                <input id="cutoffSubject" type="number" min="0" max="75" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="e.g., 55">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-extrabold text-slate-700 mb-1">Mixed cutoff (out of 75)</label>
+                                <input id="cutoffMixed" type="number" min="0" max="75" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="e.g., 60">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-extrabold text-slate-700 mb-1">Full cutoff (out of 100)</label>
+                                <input id="cutoffFull" type="number" min="0" max="100" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="e.g., 80">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-extrabold text-slate-700 mb-1">Full Mock / Final Mock cutoff (out of 200)</label>
+                                <input id="cutoffFullMock" type="number" min="0" max="200" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="e.g., 150">
+                            </div>
+                        </div>
+                        <div class="text-xs text-slate-500 mt-3">Saved per-user in Firestore.</div>
+                    </div>
+
+                    <div class="glass rounded-3xl p-6 lg:col-span-2">
+                        <h3 class="text-lg font-extrabold text-slate-800 mb-3">Cutoff Summary</h3>
+                        <div id="cutoffSummary" class="text-sm text-slate-600 font-bold"></div>
+                        <div class="mt-4 overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="text-white" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
+                                    <tr>
+                                        <th class="p-3 text-left">Test</th>
+                                        <th class="p-3 text-left">Date</th>
+                                        <th class="p-3 text-left">Type</th>
+                                        <th class="p-3 text-left">Score</th>
+                                        <th class="p-3 text-left">Cutoff</th>
+                                        <th class="p-3 text-left">Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cutoffTable"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1350,82 +1863,81 @@
         </div>
     </div>
 
+    <!-- Settings Modal (matches screenshot “⚙️” dock button) -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-strong rounded-3xl shadow-2xl w-full max-w-md">
+            <div class="p-6 border-b border-white/50 flex justify-between items-center">
+                <h3 class="text-xl font-extrabold text-slate-800">⚙️ Settings & Tools</h3>
+                <button onclick="closeSettingsModal()" class="text-slate-500 hover:text-slate-800 text-2xl">&times;</button>
+            </div>
+            <div class="p-6 space-y-3">
+                <button onclick="syncData(); closeSettingsModal();" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">🔄 Sync with Cloud</button>
+                <button onclick="exportData();" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">💾 Download Backup</button>
+                <button onclick="importData();" class="w-full px-4 py-3 rounded-2xl font-extrabold btn-glow" style="background: linear-gradient(135deg, #fde047, #f59e0b); color: #0f172a; border-color: rgba(15,23,42,0.10);">⬆️ Restore from Backup</button>
+                <button onclick="window.print();" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">🖨️ Print</button>
+                <button onclick="toggleDarkMode();" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #334155, #475569);">🌙 Toggle Theme</button>
+                <div class="text-xs text-slate-500 font-bold pt-2">Tip: Your progress is saved per-user in Firestore.</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Hidden file input for import -->
     <input type="file" id="importFile" class="hidden" accept=".json" onchange="handleImport(event)">
 
+    <!-- Firebase (compat SDKs) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
     <script>
         // =============================================
-        // API CONFIGURATION (soft-coded)
+        // FIREBASE AUTH CONFIG
         // =============================================
-        // Default:
-        // - If frontend is served by the same server as the API (recommended), it auto-uses:  <current-origin>/api
-        // Override (useful when hosting frontend on Firebase and backend elsewhere):
-        //   localStorage.setItem('wbcs_api_base', 'https://YOUR_BACKEND_DOMAIN/api')
-        //   location.reload()
-        let API_BASE = (function resolveApiBase(){
-            const override = localStorage.getItem('wbcs_api_base');
-            if (override) return override.replace(/\/$/, '');
+        const firebaseConfig = {
+            apiKey: "AIzaSyAThe1_F61AYEZtXl6ISwNkd6D0XMSgg3k",
+            authDomain: "wbcs-progress-tracker-30fa6.firebaseapp.com",
+            projectId: "wbcs-progress-tracker-30fa6",
+            storageBucket: "wbcs-progress-tracker-30fa6.firebasestorage.app",
+            messagingSenderId: "9259146",
+            appId: "1:9259146:web:8fc8523c6040658bf40573"
+        };
 
-            // Same-origin by default (recommended when Express serves index.html)
-            const sameOrigin = `${window.location.origin}/api`;
+        let firebaseApp = null;
+        let firebaseAuth = null;
+        let firestoreDb = null;
+        let firebaseReady = false;
 
-            const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-            if (isLocal) {
-                // If frontend is not served by Node (e.g., Live Server), default to backend on :5000.
-                const port = window.location.port;
-                if (port && port !== '5000') return 'http://localhost:5000/api';
-                return sameOrigin;
-            }
-
-            return sameOrigin;
-        })();
-
-        function setApiBase(newBase) {
-            if (!newBase) return;
-            API_BASE = String(newBase).replace(/\/$/, '');
-            localStorage.setItem('wbcs_api_base', API_BASE);
+        try {
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+            firebaseAuth = firebase.auth();
+            firestoreDb = firebase.firestore();
+            firebaseReady = true;
+        } catch (e) {
+            console.warn('Firebase init failed. Auth + Firestore will be disabled.', e);
         }
 
-        function getApiCandidates() {
-            const c = [];
-            const override = localStorage.getItem('wbcs_api_base');
-            if (override) c.push(override.replace(/\/$/, ''));
-            c.push(`${window.location.origin}/api`);
-            c.push('http://localhost:5000/api');
-            c.push('http://127.0.0.1:5000/api');
-            return [...new Set(c)].filter(Boolean);
+        // =============================================
+        // FIRESTORE STORAGE (No backend required)
+        // =============================================
+        // All app data is stored in Firestore:
+        // - Shared blueprint (optional): wbcsApp/shared
+        // - Per-user progress: wbcsUsers/{uid}
+        //
+        // This removes the localhost /api dependency entirely.
+
+        function requireFirestore() {
+            if (!firebaseReady || !firestoreDb) {
+                throw new Error('Firestore not initialized. Check Firebase config and network.');
+            }
         }
 
-        // Used by Login/Register to automatically find a working backend.
-        async function authRequest(endpoint, payload) {
-            const candidates = getApiCandidates();
+        async function fsGetDoc(ref) {
+            const snap = await ref.get();
+            return snap.exists ? snap.data() : null;
+        }
 
-            for (const base of candidates) {
-                try {
-                    const resp = await fetch(`${base}${endpoint}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    const ct = resp.headers.get('content-type') || '';
-                    if (!ct.includes('application/json')) {
-                        // Not our backend (e.g., static hosting returning HTML/Not found)
-                        continue;
-                    }
-
-                    const result = await resp.json().catch(() => ({}));
-
-                    // If it responded with JSON, pin this base for the rest of the app.
-                    setApiBase(base);
-
-                    return { ok: resp.ok, result, base };
-                } catch (e) {
-                    // try next base
-                }
-            }
-
-            return null;
+        async function fsSetDoc(ref, data, merge = true) {
+            await ref.set(data, { merge });
         }
 
         // =============================================
@@ -1677,40 +2189,24 @@
         }
 
         // =============================================
-        // API FUNCTIONS
+        // FIRESTORE FUNCTIONS (No backend required)
         // =============================================
-        async function apiCall(endpoint, method = 'GET', data = null) {
-            const token = localStorage.getItem('wbcs_token');
-            const options = {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(token && { 'Authorization': `Bearer ${token}` })
+        async function getBearerToken() {
+            // Still useful for future, but not required for Firestore reads/writes
+            if (firebaseReady && firebaseAuth?.currentUser) {
+                try {
+                    return await firebaseAuth.currentUser.getIdToken();
+                } catch (e) {
+                    // ignore
                 }
-            };
-            if (data) options.body = JSON.stringify(data);
-
-            try {
-                const response = await fetch(`${API_BASE}${endpoint}`, options);
-
-                const ct = response.headers.get('content-type') || '';
-                let result = null;
-
-                // If API returns HTML/text (common when /api is not deployed), avoid JSON parse crash.
-                if (ct.includes('application/json')) {
-                    result = await response.json().catch(() => null);
-                } else {
-                    const text = await response.text().catch(() => '');
-                    throw new Error(text || `Non-JSON API response (${response.status})`);
-                }
-
-                if (!response.ok) throw new Error(result?.message || `API Error (${response.status})`);
-                return result;
-            } catch (error) {
-                // Quiet fallback: use localStorage data when API is missing/unreachable.
-                console.warn('API unavailable, using local fallback:', error?.message || error);
-                return null;
             }
+            return null;
+        }
+
+        // (Deprecated) apiCall kept for backward compatibility of older code paths.
+        // We no longer call /api at all; this always returns null.
+        async function apiCall() {
+            return null;
         }
 
         // =============================================
@@ -1741,45 +2237,38 @@
                 return;
             }
 
+            if (!firebaseReady || !firebaseAuth) {
+                showAuthError('Firebase Authentication is not initialized. Check firebaseConfig and network.');
+                return;
+            }
+
             document.getElementById('authError').classList.add('hidden');
             document.getElementById('authLoader').classList.remove('hidden');
 
-            // Helper: enter demo mode (old behavior)
-            const enterDemo = async (reasonMsg) => {
-                document.getElementById('authLoader').classList.add('hidden');
-                localStorage.removeItem('wbcs_token');
-                currentUser = { email, name: email.split('@')[0], isAdmin: email.includes('admin') };
+            try {
+                const cred = await firebaseAuth.signInWithEmailAndPassword(email, password);
+                const u = cred.user;
+                const idToken = await u.getIdToken();
+
+                // store for compatibility (apiCall prefers firebase token anyway)
+                localStorage.setItem('wbcs_token', idToken);
+
+                currentUser = {
+                    email: u.email,
+                    name: u.displayName || (u.email ? u.email.split('@')[0] : 'User'),
+                    isAdmin: false,
+                    uid: u.uid,
+                    authProvider: 'firebase'
+                };
                 localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
-                if (reasonMsg) showToast(reasonMsg, 'info');
+
+                document.getElementById('authLoader').classList.add('hidden');
                 await initializeApp();
-            };
-
-            // Auto-detect correct backend (prevents "Server connection failed" when using Live Server/Firebase)
-            const res = await authRequest('/auth/login', { email, password });
-
-            if (!res) {
-                // Nothing reachable
-                showAuthError("Server connection failed. Ensure you use http://localhost:5000");
-                await enterDemo('Server unreachable — started in Demo Mode');
-                return;
+            } catch (e) {
+                document.getElementById('authLoader').classList.add('hidden');
+                const msg = e?.message || 'Login failed';
+                showAuthError(msg);
             }
-
-            const { ok, result } = res;
-
-            // If login fails (invalid credentials OR server rules), fall back to demo (your preferred behavior)
-            if (!ok || !result?.token) {
-                const msg = result?.message || 'Login failed.';
-                showAuthError(msg + ' (Entering Demo Mode)');
-                await enterDemo('Started in Demo Mode');
-                return;
-            }
-
-            // Success
-            localStorage.setItem('wbcs_token', result.token);
-            currentUser = result.user;
-            localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
-            document.getElementById('authLoader').classList.add('hidden');
-            await initializeApp();
         }
 
         async function handleRegister() {
@@ -1797,69 +2286,61 @@
                 return;
             }
 
+            if (!firebaseReady || !firebaseAuth) {
+                showAuthError('Firebase Authentication is not initialized. Check firebaseConfig and network.');
+                return;
+            }
+
             document.getElementById('authError').classList.add('hidden');
             document.getElementById('authLoader').classList.remove('hidden');
 
-            const enterDemo = async (reasonMsg) => {
-                document.getElementById('authLoader').classList.add('hidden');
-                localStorage.removeItem('wbcs_token');
-                currentUser = { email, name, isAdmin: false };
-                localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
-                if (reasonMsg) showToast(reasonMsg, 'info');
-                await initializeApp();
-            };
-
             try {
-                const response = await fetch(`${API_BASE}/auth/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password })
-                });
-
-                const ct = response.headers.get('content-type') || '';
-                const isJson = ct.includes('application/json');
-                const result = isJson ? await response.json().catch(() => ({})) : {};
-
-                // Old behavior: if registration can't complete (API mismatch, server rules, etc.)
-                // allow user to still proceed in demo mode.
-                if (!response.ok || !result?.token) {
-                    const msg = isJson
-                        ? (result?.message || 'Registration failed.')
-                        : 'Backend API not configured for this site.';
-                    showAuthError(msg + ' (Entering Demo Mode)');
-                    await enterDemo('Created account in Demo Mode');
-                    return;
+                const cred = await firebaseAuth.createUserWithEmailAndPassword(email, password);
+                const u = cred.user;
+                if (u && name) {
+                    await u.updateProfile({ displayName: name });
                 }
+                const idToken = await u.getIdToken();
 
-                localStorage.setItem('wbcs_token', result.token);
-                currentUser = result.user;
+                localStorage.setItem('wbcs_token', idToken);
+
+                currentUser = {
+                    email: u.email,
+                    name: name,
+                    isAdmin: false,
+                    uid: u.uid,
+                    authProvider: 'firebase'
+                };
                 localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
+
                 document.getElementById('authLoader').classList.add('hidden');
                 await initializeApp();
             } catch (e) {
-                console.warn('Register API unreachable, switching to demo mode:', e);
-                await enterDemo('Server unreachable — created account in Demo Mode');
+                document.getElementById('authLoader').classList.add('hidden');
+                const msg = e?.message || 'Registration failed';
+                showAuthError(msg);
             }
         }
 
-        function handleLogout() {
+        async function handleLogout() {
+            try {
+                if (firebaseReady && firebaseAuth?.currentUser) {
+                    await firebaseAuth.signOut();
+                }
+            } catch (e) {
+                // ignore
+            }
+
             localStorage.removeItem('wbcs_token');
             localStorage.removeItem('wbcs_user');
-            currentUser = null;
-            activeSubject = null;
-            activeTabId = 'overview';
 
             // stop timer if running
             pauseTimer();
             timerSeconds = 0;
             updateTimerDisplay();
 
-            document.getElementById('authScreen').classList.remove('hidden');
-            document.getElementById('mainApp').classList.add('hidden');
-
-            // close sidebar if open
-            document.querySelector('.sidebar')?.classList.remove('active');
-            document.querySelector('.overlay')?.classList.remove('active');
+            showToast('Signed out. Reloading…', 'info');
+            setTimeout(() => location.reload(), 350);
         }
 
         function showAuthError(msg) {
@@ -1883,32 +2364,70 @@
             appData.userProgress.studySessions ||= [];
             appData.userProgress.notes ||= '';
             appData.userProgress.darkMode ||= false;
+            appData.userProgress.cutoffs ||= {
+                subject: 55,
+                mixed: 60,
+                full: 80,
+                fullMock: 150
+            };
         }
 
         async function loadAppData() {
-            // Try to load from API
-            const serverData = await apiCall('/data');
+            // Firestore-first
+            try {
+                if (firebaseReady && firestoreDb && currentUser?.uid) {
+                    // Shared blueprint (optional). If it doesn't exist, we use defaults.
+                    const sharedRef = firestoreDb.collection('wbcsApp').doc('shared');
+                    const shared = await fsGetDoc(sharedRef);
 
-            if (serverData) {
-                appData = { ...appData, ...serverData };
-            } else {
-                const localData = localStorage.getItem('wbcs_appData');
-                if (localData) {
-                    appData = JSON.parse(localData);
-                } else {
-                    appData = getDefaultAppData();
+                    // Per-user
+                    const userRef = firestoreDb.collection('wbcsUsers').doc(currentUser.uid);
+                    const userDoc = await fsGetDoc(userRef);
+
+                    // 1) Pick a base blueprint (shared → local → default)
+                    let base = null;
+                    if (shared && (shared.subjects || shared.tasks || shared.tests || shared.routines)) {
+                        base = shared;
+                    } else {
+                        const localData = localStorage.getItem('wbcs_appData');
+                        base = localData ? JSON.parse(localData) : getDefaultAppData();
+                    }
+
+                    // 2) If the user has their own editable copy of the blueprint, use it
+                    //    (This makes the demo/default data editable per-user in Firestore.)
+                    if (userDoc && userDoc.userAppData) {
+                        appData = { ...appData, ...base, ...userDoc.userAppData };
+                    } else {
+                        appData = { ...appData, ...base };
+                    }
+
+                    // 3) Merge per-user progress
+                    if (userDoc && userDoc.userProgress) {
+                        appData.userProgress = { ...appData.userProgress, ...userDoc.userProgress };
+                    } else {
+                        const localProgress = localStorage.getItem('wbcs_progress_' + (currentUser.email || currentUser.uid));
+                        if (localProgress) {
+                            appData.userProgress = { ...appData.userProgress, ...JSON.parse(localProgress) };
+                        }
+                    }
+
+                    normalizeUserProgress();
+
+                    // Save local cache for offline use
+                    localStorage.setItem('wbcs_appData', JSON.stringify(appData));
+                    return;
                 }
+            } catch (e) {
+                console.warn('Firestore load failed, using local fallback:', e?.message || e);
             }
 
-            // Load user-specific progress
-            const userProgress = await apiCall('/progress');
-            if (userProgress) {
-                appData.userProgress = { ...appData.userProgress, ...userProgress };
-            } else {
-                const localProgress = localStorage.getItem('wbcs_progress_' + currentUser.email);
-                if (localProgress) {
-                    appData.userProgress = { ...appData.userProgress, ...JSON.parse(localProgress) };
-                }
+            // Local fallback
+            const localData = localStorage.getItem('wbcs_appData');
+            appData = localData ? JSON.parse(localData) : getDefaultAppData();
+
+            const localProgress = localStorage.getItem('wbcs_progress_' + (currentUser?.email || 'local'));
+            if (localProgress) {
+                appData.userProgress = { ...appData.userProgress, ...JSON.parse(localProgress) };
             }
 
             normalizeUserProgress();
@@ -1917,22 +2436,71 @@
         async function saveProgress() {
             normalizeUserProgress();
 
-            await apiCall('/progress', 'PUT', appData.userProgress);
-            localStorage.setItem('wbcs_progress_' + currentUser.email, JSON.stringify(appData.userProgress));
+            // Local always
+            localStorage.setItem('wbcs_progress_' + (currentUser?.email || currentUser?.uid || 'local'), JSON.stringify(appData.userProgress));
             localStorage.setItem('wbcs_appData', JSON.stringify(appData));
+
+            // Firestore if available
+            try {
+                if (firebaseReady && firestoreDb && currentUser?.uid) {
+                    const userRef = firestoreDb.collection('wbcsUsers').doc(currentUser.uid);
+                    await fsSetDoc(userRef, {
+                        email: currentUser.email || null,
+                        name: currentUser.name || null,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        userProgress: appData.userProgress
+                    }, true);
+                }
+            } catch (e) {
+                console.warn('Firestore save failed (progress):', e?.message || e);
+            }
+        }
+
+        async function saveUserAppData() {
+            // Save an editable copy of the blueprint per-user.
+            // This lets "demo/default" tasks/tests/subjects be edited without admin rights.
+            try {
+                if (firebaseReady && firestoreDb && currentUser?.uid) {
+                    const userRef = firestoreDb.collection('wbcsUsers').doc(currentUser.uid);
+                    await fsSetDoc(userRef, {
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        userAppData: {
+                            subjects: appData.subjects,
+                            tasks: appData.tasks,
+                            tests: appData.tests,
+                            routines: appData.routines
+                        }
+                    }, true);
+                }
+            } catch (e) {
+                console.warn('Firestore save failed (user app data):', e?.message || e);
+            }
         }
 
         async function saveAppData() {
-            if (!currentUser.isAdmin) return;
-
-            await apiCall('/data', 'PUT', {
-                subjects: appData.subjects,
-                tasks: appData.tasks,
-                tests: appData.tests,
-                routines: appData.routines
-            });
-
+            // Always store locally
             localStorage.setItem('wbcs_appData', JSON.stringify(appData));
+
+            // If admin, also update shared blueprint
+            if (currentUser?.isAdmin) {
+                try {
+                    if (firebaseReady && firestoreDb) {
+                        const sharedRef = firestoreDb.collection('wbcsApp').doc('shared');
+                        await fsSetDoc(sharedRef, {
+                            subjects: appData.subjects,
+                            tasks: appData.tasks,
+                            tests: appData.tests,
+                            routines: appData.routines,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }, true);
+                    }
+                } catch (e) {
+                    console.warn('Firestore save failed (shared app data):', e?.message || e);
+                }
+            } else {
+                // Non-admin users keep an editable copy in their own profile
+                await saveUserAppData();
+            }
         }
 
         function getDefaultAppData() {
@@ -1950,7 +2518,8 @@
                     dailyNotes: {},
                     studySessions: [],
                     notes: '',
-                    darkMode: false
+                    darkMode: false,
+                    cutoffs: { subject: 55, mixed: 60, full: 80, fullMock: 150 }
                 }
             };
         }
@@ -2110,24 +2679,34 @@
         async function initializeApp() {
             await loadAppData();
 
-            document.getElementById('authScreen').classList.add('hidden');
-            document.getElementById('mainApp').classList.remove('hidden');
+            // Show main app
+            document.getElementById('authScreen')?.classList.add('hidden');
+            document.getElementById('mainApp')?.classList.remove('hidden');
 
-            document.getElementById('userEmailDisplay').textContent = '👤 ' + currentUser.email;
-            document.getElementById('sidebarUserEmail').textContent = currentUser.email;
+            // Apply sidebar pin/collapse preferences (desktop)
+            applySidebarPrefs();
+
+            // Persist user
+            localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
+
+            const userEmailDisplay = document.getElementById('userEmailDisplay');
+            const sidebarUserEmail = document.getElementById('sidebarUserEmail');
+            if (userEmailDisplay) userEmailDisplay.textContent = '👤 ' + (currentUser.email || 'local@wbcs.app');
+            if (sidebarUserEmail) sidebarUserEmail.textContent = (currentUser.email || 'local@wbcs.app');
 
             if (currentUser.isAdmin) {
-                document.getElementById('adminMenuSection').classList.remove('hidden');
+                document.getElementById('adminMenuSection')?.classList.remove('hidden');
             }
 
             if (appData.userProgress.darkMode) {
                 document.body.classList.add('dark-mode');
             }
 
-            document.getElementById('globalNotes').value = appData.userProgress.notes || '';
+            const notesEl = document.getElementById('globalNotes');
+            if (notesEl) notesEl.value = appData.userProgress.notes || '';
 
             renderAll();
-            showToast('Welcome back, ' + (currentUser.name || 'Friend') + '!', 'success');
+            showToast('Welcome!', 'info');
         }
 
         // =============================================
@@ -2138,8 +2717,10 @@
             renderRoutines();
             renderMonthlySchedules();
             renderSubjects();
+            renderSubjectsTab();
             renderTests();
             renderAnalytics();
+            renderCutoffAnalytics();
             if (activeSubject) renderSubjectViewTable();
             if (currentUser.isAdmin) renderAdminPanel();
             setActiveTab(activeTabId, true);
@@ -2166,27 +2747,132 @@
 
             document.getElementById('statStreak').textContent = calculateStreak() + ' days';
 
+            // -----------------------------
+            // Daily Focus (Today)
+            // -----------------------------
+            const todayISO = toLocalISODate(new Date());
+
+            const todayTasks = (appData.tasks || [])
+                .filter(t => getEffectiveTaskDate(t) === todayISO)
+                .slice()
+                .sort((a, b) => (a.subject || '').localeCompare(b.subject || '') || (a.morning || '').localeCompare(b.morning || ''));
+
+            const todayTests = getAllTestsMerged()
+                .filter(t => getEffectiveTestDate(t) === todayISO)
+                .slice()
+                .sort((a, b) => (a.number || 0) - (b.number || 0));
+
+            const todayDone = todayTasks.filter(t => appData.userProgress.completedTasks[t.id]).length;
+            const todayHours = todayTasks
+                .filter(t => appData.userProgress.completedTasks[t.id])
+                .reduce((s, t) => s + (t.hours || 0), 0);
+
+            const chip = document.getElementById('todayDateChip');
+            if (chip) chip.textContent = `${formatDate(todayISO)} • ${getDayName(todayISO)}`;
+
+            const meta = document.getElementById('todayMeta');
+            if (meta) {
+                if (!todayTasks.length && !todayTests.length) {
+                    meta.textContent = `No tasks or tests scheduled for today.`;
+                } else {
+                    const parts = [];
+                    if (todayTasks.length) parts.push(`${todayTasks.length} tasks`);
+                    if (todayTests.length) parts.push(`${todayTests.length} tests`);
+                    parts.push(`${todayDone} completed • ${todayHours.toFixed(1)}h logged`);
+                    meta.textContent = parts.join(' • ');
+                }
+            }
+
+            const todayList = document.getElementById('todaySchedule');
+            if (todayList) {
+                if (!todayTasks.length && !todayTests.length) {
+                    todayList.innerHTML = `<div class="py-3 text-slate-500">Use Monthly Schedules to reschedule tasks/tests to today, or add a topic under a subject.</div>`;
+                } else {
+                    const tasksHtml = todayTasks.map(t => {
+                        const isCompleted = !!appData.userProgress.completedTasks[t.id];
+                        const pal = getSubjectProgressPalette(t.subject || 'General');
+                        const subjColor = getRandomReadableFontColor('today-subj-' + (t.subject || 'General'));
+
+                        return `
+                            <div class="py-3 flex flex-wrap items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: ${pal.pillBg}; border: 1px solid ${pal.pillBorder}; color: ${subjColor};">
+                                            ${t.subject || 'General'}
+                                        </span>
+                                        <span class="font-extrabold text-slate-800" style="text-decoration: ${isCompleted ? 'line-through' : 'none'}; opacity: ${isCompleted ? '0.75' : '1'};">
+                                            ${t.morning || '-'}
+                                        </span>
+                                    </div>
+                                    <div class="text-sm text-slate-600 mt-1" style="text-decoration: ${isCompleted ? 'line-through' : 'none'}; opacity: ${isCompleted ? '0.75' : '1'};">
+                                        ${t.evening || ''}
+                                    </div>
+                                    <div class="text-xs text-slate-500 font-bold mt-1">${t.test && t.test !== '-' ? `🧪 ${t.test} • ` : ''}${t.hours || 0}h</div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleTask('${t.id}')" class="w-5 h-5 accent-indigo-500 cursor-pointer">
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    const testsHtml = todayTests.length ? `
+                        <div class="pt-4 pb-2 text-xs font-extrabold text-slate-500 tracking-wider uppercase">Tests scheduled today</div>
+                        <div class="space-y-2">
+                            ${todayTests.map(t => {
+                                const effDate = getEffectiveTestDate(t);
+                                const badge = t.origin === 'personal'
+                                    ? `<span class="px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: rgba(34,197,94,0.14); border: 1px solid rgba(34,197,94,0.18); color: rgb(21,128,61);">Personal</span>`
+                                    : `<span class="px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.18); color: rgb(79,70,229);">Blueprint</span>`;
+
+                                const focusText = t.focus || (t.subject ? `${t.subject} - Subject Test` : '-');
+                                return `
+                                    <div class="py-2 flex items-start justify-between gap-3">
+                                        <div class="min-w-0">
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <div class="font-extrabold text-slate-800">🧪 Test ${t.number || ''}</div>
+                                                ${badge}
+                                                <div class="text-xs font-extrabold text-slate-500">${t.type || '-'} • ${t.mcqs ?? '-'} marks</div>
+                                            </div>
+                                            <div class="text-sm text-slate-600 mt-1">${focusText}</div>
+                                        </div>
+                                        <button onclick="switchTab('tests')" class="px-3 py-2 rounded-2xl text-xs font-extrabold text-white btn-glow" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">Open</button>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    ` : '';
+
+                    todayList.innerHTML = tasksHtml + testsHtml;
+                }
+            }
+
+            // -----------------------------
+            // Subject cards
+            // -----------------------------
             const cardsHtml = appData.subjects.map(s => {
                 const { completed: subjectCompleted, total: subjectTotal, pct: subjectProgress } = getSubjectProgress(s);
                 const pal = getProgressPalette(subjectProgress);
 
-                // Progress-based background tint, random readable font color
-                const titleColor = getRandomReadableFontColor('subj-title-' + s);
-                const subTextColor = getRandomReadableFontColor('subj-sub-' + s);
+                // Pastel tile background (subject-based) + progress badge
+                const hue = (hashString(s) % 360);
                 const isDark = document.body.classList.contains('dark-mode');
-                const cardBg = isDark
-                    ? `linear-gradient(135deg, ${pal.cellBg}, rgba(45,55,72,0.96))`
-                    : `linear-gradient(135deg, ${pal.cellBg}, rgba(255,255,255,0.98))`;
+                const tileBg = isDark
+                    ? `linear-gradient(135deg, hsla(${hue}, 70%, 55%, 0.18), rgba(17,24,39,0.92))`
+                    : `linear-gradient(135deg, hsla(${hue}, 85%, 70%, 0.35), rgba(255,255,255,0.98))`;
+
+                const titleColor = getRandomReadableFontColor('tile-title-' + s);
+                const pctRing = `hsl(${hue} 78% 48%)`;
 
                 return `
-                    <div onclick="viewSubject('${s}')" class="glass bouncy-card rounded-3xl p-5 cursor-pointer hover:shadow-lg transition border-l-4" style="border-left-color: ${pal.border}; --card: ${cardBg};">
+                    <div onclick="viewSubject('${s}')" class="glass bouncy-card subject-tile p-5 cursor-pointer transition" style="background: ${tileBg}; border-color: var(--border);">
                         <div class="flex items-start justify-between gap-3">
                             <h4 class="font-extrabold text-lg md:text-xl" style="color: ${titleColor};">${s}</h4>
-                            <span class="px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: ${pal.pillBg}; border: 1px solid ${pal.pillBorder}; color: ${titleColor};">
+                            <div class="w-10 h-10 rounded-full grid place-items-center text-[11px] font-black" style="background: rgba(255,255,255,0.72); border: 2px solid ${pctRing}; color: ${titleColor};">
                                 ${subjectProgress}%
-                            </span>
+                            </div>
                         </div>
-                        <div class="text-sm" style="color: ${subTextColor};">${subjectCompleted}/${subjectTotal} topics</div>
+                        <div class="text-sm font-bold mt-1" style="color: rgba(15,23,42,0.65);">${subjectCompleted}/${subjectTotal} topics</div>
                         <div class="h-2 bg-white/70 rounded-full mt-3 overflow-hidden">
                             <div class="h-full" style="width: ${subjectProgress}%; background: ${pal.bar};"></div>
                         </div>
@@ -2251,61 +2937,150 @@
                     .slice()
                     .sort((a, b) => getEffectiveTaskDate(a).localeCompare(getEffectiveTaskDate(b)));
 
-                if (monthTasks.length > 0) {
-                    menuHtml += `<div class="sidebar-subitem text-slate-200/90 cursor-pointer hover:bg-white/10 text-sm" onclick="switchTab('${month}')">${monthNames[idx]} 2026</div>`;
+                const monthTests = getAllTestsMerged()
+                    .filter(t => (getEffectiveTestDate(t) || '').split('-')[1] === monthNum)
+                    .slice()
+                    .sort((a, b) => (getEffectiveTestDate(a) || '').localeCompare(getEffectiveTestDate(b) || '') || ((a.number || 0) - (b.number || 0)));
+
+                if (monthTasks.length > 0 || monthTests.length > 0) {
+                    menuHtml += `
+                        <div class="sidebar-subitem cursor-pointer text-sm" data-tip="${monthNames[idx]} 2026" onclick="switchTab('${month}')">
+                            <span class="subitem-icon">📆</span>
+                            <span class="subitem-label font-extrabold">${monthNames[idx]} 2026</span>
+                        </div>
+                    `;
+
+                    const tasksTableHtml = monthTasks.length ? `
+                        <table class="w-full">
+                            <thead class="text-white" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
+                                <tr>
+                                    <th class="p-3 text-left">Date</th>
+                                    <th class="p-3 text-left">Day</th>
+                                    <th class="p-3 text-left">Morning</th>
+                                    <th class="p-3 text-left">Evening</th>
+                                    <th class="p-3 text-left">Test</th>
+                                    <th class="p-3 text-left">Subject</th>
+                                    <th class="p-3 text-left">Hrs</th>
+                                    <th class="p-3 text-left">✓</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${monthTasks.map(t => {
+                                    const isCompleted = appData.userProgress.completedTasks[t.id];
+                                    const effDate = getEffectiveTaskDate(t);
+                                    const displayDate = formatDate(effDate);
+                                    const dayName = getDayName(effDate);
+                                    const highlightClass = getTaskRowHighlightClass(effDate, isCompleted);
+                                    const pal = getSubjectProgressPalette(t.subject || 'General');
+                                    return `
+                                        <tr class="${highlightClass} ${isCompleted ? 'completed-row' : ''} border-b border-black/5 table-row-hover">
+                                            <td class="p-3">
+                                                <div class="date-chip bounceable">${displayDate} • ${dayName}</div>
+                                                <div class="mt-2">
+                                                    <input type="date" value="${effDate}" onchange="updateTaskDate('${t.id}', this.value)" class="input-mini bg-white/70">
+                                                </div>
+                                            </td>
+                                            <td class="p-3 font-bold">${dayName}</td>
+                                            <td class="p-3"><div class="hover-bounce topic-inline">${t.morning}</div></td>
+                                            <td class="p-3"><div class="hover-bounce topic-inline">${t.evening}</div></td>
+                                            <td class="p-3">${t.test}</td>
+                                            <td class="p-3">
+                                                <div class="subject-chip">
+                                                    <span class="subj-dot" style="background:${pal.border};"></span>
+                                                    <span class="subject-plain">${t.subject || 'General'}</span>
+                                                    <span class="subj-pct" style="color:${pal.text};">${pal.pct}%</span>
+                                                </div>
+                                            </td>
+                                            <td class="p-3 font-bold">${t.hours}</td>
+                                            <td class="p-3"><input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleTask('${t.id}')" class="w-5 h-5 accent-indigo-500 cursor-pointer"></td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    ` : `<div class="text-slate-500 font-bold py-4">No study tasks scheduled for this month.</div>`;
+
+                    const testsTableHtml = monthTests.length ? `
+                        <table class="w-full">
+                            <thead class="text-white" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">
+                                <tr>
+                                    <th class="p-3 text-left">Test</th>
+                                    <th class="p-3 text-left">Date (editable)</th>
+                                    <th class="p-3 text-left">Day</th>
+                                    <th class="p-3 text-left">Type</th>
+                                    <th class="p-3 text-left">Marks</th>
+                                    <th class="p-3 text-left">Focus</th>
+                                    <th class="p-3 text-left">Target</th>
+                                    <th class="p-3 text-left">Score</th>
+                                    <th class="p-3 text-left">%</th>
+                                    <th class="p-3 text-left">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${monthTests.map(t => {
+                                    const effDate = getEffectiveTestDate(t);
+                                    const dayName = getDayName(effDate);
+                                    const scoreRaw = appData.userProgress?.testScores?.[t.id];
+                                    const hasScore = (scoreRaw === 0 || scoreRaw) ? Number.isFinite(Number(scoreRaw)) : false;
+                                    const highlightClass = getTaskRowHighlightClass(effDate, hasScore);
+
+                                    const score = hasScore ? Number(scoreRaw) : null;
+                                    const percentage = (score !== null) ? Math.round((score / (t.mcqs || 1)) * 100) : null;
+
+                                    const badge = t.origin === 'personal'
+                                        ? `<span class="ml-2 px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: rgba(34,197,94,0.14); border: 1px solid rgba(34,197,94,0.18); color: rgb(21,128,61);">Personal</span>`
+                                        : `<span class="ml-2 px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.18); color: rgb(79,70,229);">Blueprint</span>`;
+
+                                    const actions = t.origin === 'personal'
+                                        ? `<button onclick="deletePersonalTest('${t.id}')" class="px-3 py-1.5 rounded-2xl text-white font-extrabold text-xs btn-glow" style="background: linear-gradient(135deg, #ef4444, #f43f5e);">🗑️</button>`
+                                        : `<span class="text-xs text-slate-500">—</span>`;
+
+                                    return `
+                                        <tr class="${highlightClass} border-b border-black/5 table-row-hover">
+                                            <td class="p-3 font-extrabold">Test ${t.number || ''} ${badge}</td>
+                                            <td class="p-3">
+                                                <div class="date-chip bounceable">${formatDate(effDate)} • ${dayName}</div>
+                                                <div class="mt-2">
+                                                    <input type="date" value="${effDate || ''}" onchange="updateTestDate('${t.id}', this.value)" class="input-mini bg-white/70">
+                                                </div>
+                                            </td>
+                                            <td class="p-3 font-bold">${dayName}</td>
+                                            <td class="p-3 font-bold">${t.type || '-'}</td>
+                                            <td class="p-3 font-extrabold">${t.mcqs ?? '-'}</td>
+                                            <td class="p-3">${t.focus || (t.subject ? `${t.subject} - Subject Test` : '-') || '-'}</td>
+                                            <td class="p-3 font-extrabold">${t.target ?? '-'}</td>
+                                            <td class="p-3">
+                                                <input type="number" value="${score ?? ''}" min="0" max="${t.mcqs || 999}" placeholder="Score" 
+                                                    onchange="updateTestScore('${t.id}', this.value)" 
+                                                    class="w-24 px-3 py-2 border rounded-2xl text-center bg-white/70">
+                                            </td>
+                                            <td class="p-3 font-extrabold">${percentage === null ? '-' : `${percentage}%`}</td>
+                                            <td class="p-3">${actions}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    ` : `<div class="text-slate-500 font-bold py-4">No tests scheduled for this month.</div>`;
 
                     tabsHtml += `
                         <div id="tab-${month}" class="tab-content">
                             <div class="flex items-center justify-between gap-3 mb-4">
                                 <h2 class="text-2xl font-extrabold text-slate-800">📆 ${monthNames[idx]} 2026</h2>
                             </div>
+
                             <div class="overflow-x-auto">
-                                <table class="w-full">
-                                    <thead class="text-white" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
-                                        <tr>
-                                            <th class="p-3 text-left">Date</th>
-                                            <th class="p-3 text-left">Day</th>
-                                            <th class="p-3 text-left">Morning</th>
-                                            <th class="p-3 text-left">Evening</th>
-                                            <th class="p-3 text-left">Test</th>
-                                            <th class="p-3 text-left">Subject</th>
-                                            <th class="p-3 text-left">Hrs</th>
-                                            <th class="p-3 text-left">✓</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${monthTasks.map(t => {
-                                            const isCompleted = appData.userProgress.completedTasks[t.id];
-                                            const effDate = getEffectiveTaskDate(t);
-                                            const displayDate = formatDate(effDate);
-                                            const dayName = getDayName(effDate);
-                                            const highlightClass = getTaskRowHighlightClass(effDate, isCompleted);
-                                            return `
-                                                <tr class="${highlightClass} ${isCompleted ? 'completed-row' : ''} border-b border-black/5 table-row-hover">
-                                                    <td class="p-3">
-                                                        <div class="date-chip bounceable">${displayDate} • ${dayName}</div>
-                                                        <div class="mt-2">
-                                                            <input type="date" value="${effDate}" onchange="updateTaskDate('${t.id}', this.value)" class="input-mini bg-white/70">
-                                                        </div>
-                                                    </td>
-                                                    <td class="p-3 font-bold">${dayName}</td>
-                                                    <td class="p-3">
-                                                        <div class="hover-bounce topic-inline">${t.morning}</div>
-                                                    </td>
-                                                    <td class="p-3">
-                                                        <div class="hover-bounce topic-inline">${t.evening}</div>
-                                                    </td>
-                                                    <td class="p-3">${t.test}</td>
-                                                    <td class="p-3"><span class="subject-plain">${t.subject}</span></td>
-                                                    <td class="p-3 font-bold">${t.hours}</td>
-                                                    <td class="p-3">
-                                                        <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleTask('${t.id}')" class="w-5 h-5 accent-indigo-500 cursor-pointer">
-                                                    </td>
-                                                </tr>
-                                            `;
-                                        }).join('')}
-                                    </tbody>
-                                </table>
+                                ${tasksTableHtml}
+                            </div>
+
+                            <div class="mt-6">
+                                <div class="flex items-center justify-between gap-3 mb-3">
+                                    <h3 class="text-lg font-extrabold text-slate-800">🧪 Tests this month</h3>
+                                    <button onclick="switchTab('tests')" class="px-3 py-2 rounded-2xl text-xs font-extrabold text-white btn-glow" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">Open Test Tracker</button>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    ${testsTableHtml}
+                                </div>
                             </div>
                         </div>
                     `;
@@ -2317,10 +3092,51 @@
         }
 
         function renderSubjects() {
-            const menuHtml = appData.subjects.map(s => `
-                <div class="sidebar-subitem text-slate-200/90 cursor-pointer hover:bg-white/10 text-sm" onclick="viewSubject('${s}')">📚 ${s}</div>
-            `).join('');
+            const menuHtml = (appData.subjects || []).map(s => {
+                const { pct } = getSubjectProgress(s);
+                const pal = getProgressPalette(pct);
+                return `
+                    <div class="sidebar-subitem cursor-pointer text-sm" data-tip="${s}" onclick="viewSubject('${s}')">
+                        <span class="subitem-icon">📚</span>
+                        <span class="subitem-label font-extrabold" style="line-height:1.2;">${s}</span>
+                        <span class="subj-dot" style="background:${pal.border};"></span>
+                        <span class="subj-pct" style="color:${pal.text};">${pct}%</span>
+                    </div>
+                `;
+            }).join('');
             document.getElementById('subjectMenuList').innerHTML = menuHtml;
+        }
+
+        function renderSubjectsTab() {
+            const tbody = document.getElementById('subjectsTable');
+            if (!tbody) return;
+
+            const rows = (appData.subjects || []).map(s => {
+                const { completed, total, pct } = getSubjectProgress(s);
+                const pal = getProgressPalette(pct);
+
+                return `
+                    <tr class="border-b border-black/5 table-row-hover">
+                        <td class="p-3 font-extrabold">${s}</td>
+                        <td class="p-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-36">
+                                    <div class="h-2 bg-white/70 rounded-full overflow-hidden">
+                                        <div class="h-full" style="width:${pct}%; background:${pal.bar};"></div>
+                                    </div>
+                                </div>
+                                <div class="font-extrabold" style="color:${pal.text};">${pct}%</div>
+                            </div>
+                        </td>
+                        <td class="p-3 font-bold text-slate-600">${completed}/${total}</td>
+                        <td class="p-3">
+                            <button onclick="viewSubject('${s}')" class="px-3 py-2 rounded-2xl text-white font-extrabold text-xs btn-glow" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">Open</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            tbody.innerHTML = rows || `<tr><td class="p-4 text-slate-500" colspan="4">No subjects yet. Click “Add Subject”.</td></tr>`;
         }
 
         function getAllTestsMerged() {
@@ -2336,6 +3152,7 @@
 
             const html = tests.map(t => {
                 const score = appData.userProgress.testScores[t.id];
+                const focusText = t.focus || (t.subject ? `${t.subject} - Subject Test` : '-');
                 const percentage = (score !== undefined && score !== null && Number.isFinite(Number(score))) ? Math.round((Number(score) / t.mcqs) * 100) : null;
                 const status = (percentage === null)
                     ? '⏳ Pending'
@@ -2364,7 +3181,7 @@
                         </td>
                         <td class="p-3 font-bold">${t.type}</td>
                         <td class="p-3">${t.mcqs}</td>
-                        <td class="p-3">${t.focus || '-'}</td>
+                        <td class="p-3">${focusText}</td>
                         <td class="p-3 font-bold">${t.target ?? '-'}</td>
                         <td class="p-3">
                             <input type="number" value="${score ?? ''}" placeholder="Score" min="0" max="${t.mcqs}" 
@@ -2391,16 +3208,19 @@
                 const hours = subjectTasks
                     .filter(t => appData.userProgress.completedTasks[t.id])
                     .reduce((sum, t) => sum + (t.hours || 0), 0);
+
+                const pal = getProgressPalette(progress);
+
                 return `
                     <div class="flex items-center justify-between py-3 border-b border-black/5">
                         <div>
-                            <div class="font-extrabold">${s}</div>
+                            <div class="font-extrabold" style="color:${pal.text};">${s}</div>
                             <div class="text-sm text-slate-600">${completed}/${subjectTasks.length} topics • ${hours.toFixed(1)}h</div>
                         </div>
                         <div class="w-32">
-                            <div class="text-right text-sm font-extrabold text-indigo-600 mb-1">${progress}%</div>
+                            <div class="text-right text-sm font-extrabold" style="color:${pal.text}; margin-bottom: 4px;">${progress}%</div>
                             <div class="h-2 bg-white/70 rounded-full overflow-hidden">
-                                <div class="h-full" style="width: ${progress}%; background: linear-gradient(90deg, var(--primary), var(--primary-2));"></div>
+                                <div class="h-full" style="width: ${progress}%; background: ${pal.bar};"></div>
                             </div>
                         </div>
                     </div>
@@ -2416,6 +3236,105 @@
                 </div>
             `).join('');
             document.getElementById('weeklyChart').innerHTML = weeklyHtml;
+        }
+
+        // =============================================
+        // CUTOFF ANALYTICS
+        // =============================================
+        function getCutoffForTest(test) {
+            const c = appData.userProgress?.cutoffs || { subject: 55, mixed: 60, full: 80, fullMock: 150 };
+            const type = (test?.type || '').toLowerCase();
+
+            if (type.includes('subject')) return c.subject;
+            if (type.includes('mixed')) return c.mixed;
+            if (type === 'full') return c.full;
+            if (type.includes('mock')) return c.fullMock; // Full Mock / Final Mock
+
+            // fallback by mcqs
+            if ((test?.mcqs || 0) >= 200) return c.fullMock;
+            if ((test?.mcqs || 0) >= 100) return c.full;
+            return c.mixed;
+        }
+
+        function renderCutoffAnalytics() {
+            const tab = document.getElementById('tab-cutoff');
+            if (!tab) return;
+
+            // Populate inputs
+            const c = appData.userProgress?.cutoffs || { subject: 55, mixed: 60, full: 80, fullMock: 150 };
+            const elSubject = document.getElementById('cutoffSubject');
+            const elMixed = document.getElementById('cutoffMixed');
+            const elFull = document.getElementById('cutoffFull');
+            const elFullMock = document.getElementById('cutoffFullMock');
+            if (elSubject) elSubject.value = c.subject;
+            if (elMixed) elMixed.value = c.mixed;
+            if (elFull) elFull.value = c.full;
+            if (elFullMock) elFullMock.value = c.fullMock;
+
+            const tests = getAllTestsMerged()
+                .slice()
+                .sort((a, b) => (getEffectiveTestDate(a) || '').localeCompare(getEffectiveTestDate(b) || '') || ((a.number || 0) - (b.number || 0)));
+
+            let attempted = 0;
+            let met = 0;
+
+            const rows = tests.map(t => {
+                const scoreRaw = appData.userProgress?.testScores?.[t.id];
+                const score = (scoreRaw === 0 || scoreRaw) ? Number(scoreRaw) : null;
+                const cutoff = getCutoffForTest(t);
+                const hasScore = Number.isFinite(score);
+                if (hasScore) attempted++;
+                const pass = hasScore ? score >= cutoff : null;
+                if (pass) met++;
+
+                const effDate = getEffectiveTestDate(t);
+
+                const resultBadge = (pass === null)
+                    ? `<span class="px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: rgba(100,116,139,0.12); border: 1px solid rgba(100,116,139,0.18); color: rgba(51,65,85,0.95);">Pending</span>`
+                    : pass
+                        ? `<span class="px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: rgba(34,197,94,0.14); border: 1px solid rgba(34,197,94,0.18); color: rgb(21,128,61);">Above cutoff</span>`
+                        : `<span class="px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.18); color: rgb(185,28,28);">Below cutoff</span>`;
+
+                return `
+                    <tr class="border-b border-black/5 table-row-hover">
+                        <td class="p-3 font-extrabold">Test ${t.number || ''}</td>
+                        <td class="p-3">
+                            <div class="date-chip">${formatDate(effDate)}</div>
+                        </td>
+                        <td class="p-3 font-bold">${t.type || '-'}</td>
+                        <td class="p-3 font-extrabold">${hasScore ? score : '-'}</td>
+                        <td class="p-3 font-extrabold">${cutoff}</td>
+                        <td class="p-3">${resultBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            const tbl = document.getElementById('cutoffTable');
+            if (tbl) tbl.innerHTML = rows || `<tr><td class="p-4 text-slate-500" colspan="6">No tests found.</td></tr>`;
+
+            const summary = document.getElementById('cutoffSummary');
+            if (summary) {
+                summary.textContent = attempted
+                    ? `${met}/${attempted} attempted tests are above cutoff.`
+                    : `No attempted tests yet. Enter scores in Test Tracker to see cutoff results.`;
+            }
+        }
+
+        function saveCutoffs() {
+            appData.userProgress.cutoffs ||= { subject: 55, mixed: 60, full: 80, fullMock: 150 };
+            const s = Number(document.getElementById('cutoffSubject')?.value);
+            const m = Number(document.getElementById('cutoffMixed')?.value);
+            const f = Number(document.getElementById('cutoffFull')?.value);
+            const fm = Number(document.getElementById('cutoffFullMock')?.value);
+
+            if (Number.isFinite(s)) appData.userProgress.cutoffs.subject = s;
+            if (Number.isFinite(m)) appData.userProgress.cutoffs.mixed = m;
+            if (Number.isFinite(f)) appData.userProgress.cutoffs.full = f;
+            if (Number.isFinite(fm)) appData.userProgress.cutoffs.fullMock = fm;
+
+            saveProgress();
+            renderCutoffAnalytics();
+            showToast('Cutoffs saved!', 'success');
         }
 
         function renderAdminPanel() {
@@ -2516,9 +3435,51 @@
         // =============================================
         // UI INTERACTIONS
         // =============================================
+        function applySidebarPrefs() {
+            const pinned = localStorage.getItem('wbcs_sidebar_pinned') === '1';
+            const collapsed = localStorage.getItem('wbcs_sidebar_collapsed') === '1';
+
+            document.body.classList.toggle('sidebar-pinned', pinned);
+            const sb = document.getElementById('appSidebar');
+            if (sb) sb.classList.toggle('collapsed', pinned && collapsed);
+
+            // If pinned, keep it open; overlay should be off.
+            if (pinned) {
+                sb?.classList.add('active');
+                document.querySelector('.overlay')?.classList.remove('active');
+            }
+        }
+
+        function toggleSidebarPin() {
+            const currentlyPinned = document.body.classList.contains('sidebar-pinned');
+            const next = !currentlyPinned;
+            localStorage.setItem('wbcs_sidebar_pinned', next ? '1' : '0');
+
+            // If unpinning, also uncollapse (so drawer returns normal)
+            if (!next) {
+                localStorage.setItem('wbcs_sidebar_collapsed', '0');
+            }
+
+            applySidebarPrefs();
+            showToast(next ? 'Sidebar pinned' : 'Sidebar unpinned', 'info');
+        }
+
+        function toggleSidebarCollapse() {
+            const pinned = document.body.classList.contains('sidebar-pinned');
+            if (!pinned) {
+                // If not pinned, pin first (collapse is a desktop feature)
+                localStorage.setItem('wbcs_sidebar_pinned', '1');
+            }
+            const current = localStorage.getItem('wbcs_sidebar_collapsed') === '1';
+            localStorage.setItem('wbcs_sidebar_collapsed', current ? '0' : '1');
+            applySidebarPrefs();
+        }
+
         function toggleSidebar() {
-            document.querySelector('.sidebar').classList.toggle('active');
-            document.querySelector('.overlay').classList.toggle('active');
+            // If pinned on desktop, don't toggle off.
+            if (document.body.classList.contains('sidebar-pinned')) return;
+            document.querySelector('.sidebar')?.classList.toggle('active');
+            document.querySelector('.overlay')?.classList.toggle('active');
         }
 
         function toggleSubmenu(id) {
@@ -2541,6 +3502,27 @@
                 fallback?.classList.add('active');
                 activeTabId = 'overview';
             }
+
+            const st = document.getElementById('statusActiveTab');
+            if (st) st.textContent = activeTabId;
+
+            // sidebar active highlight
+            try {
+                document.querySelectorAll('.sidebar nav .menu-item').forEach(el => el.classList.remove('active'));
+                const map = {
+                    overview: "📊",
+                    weekday: "📅",
+                    weekend: "🌅",
+                    tests: "✅",
+                    analytics: "📈",
+                    cutoff: "🎯"
+                };
+                const icon = map[activeTabId];
+                if (icon) {
+                    const item = Array.from(document.querySelectorAll('.sidebar nav .menu-item')).find(n => (n.textContent || '').includes(icon));
+                    if (item) item.classList.add('active');
+                }
+            } catch (e) {}
 
             if (!silent) toggleSidebar();
         }
@@ -2580,35 +3562,61 @@
             return maxN + 1;
         }
 
+        function parseTestTypeOption(raw) {
+            const s = String(raw || '').trim();
+            let baseType = s;
+            let marks = null;
+
+            const m = s.match(/\((\d+)\)/);
+            if (m) {
+                marks = parseInt(m[1], 10);
+                baseType = s.split('(')[0].trim();
+            }
+
+            // Normalize common variants
+            if (/^full mock/i.test(baseType)) baseType = 'Full Mock';
+            if (/^final mock/i.test(baseType)) baseType = 'Final Mock';
+            if (/^mixed/i.test(baseType)) baseType = 'Mixed';
+            if (/^subject/i.test(baseType)) baseType = 'Subject';
+            if (/^full/i.test(baseType)) baseType = 'Full';
+
+            // Default marks per type
+            if (!Number.isFinite(marks)) {
+                if (baseType === 'Full Mock' || baseType === 'Final Mock') marks = 200;
+                else if (baseType === 'Full') marks = 100;
+                else if (baseType === 'Subject') marks = 75;
+                else if (baseType === 'Mixed') marks = 75;
+            }
+
+            // Default targets (roughly 80% goal; final mock ~85%)
+            let target = null;
+            if (Number.isFinite(marks)) {
+                target = Math.round(marks * (baseType === 'Final Mock' ? 0.85 : 0.8));
+            }
+
+            return { type: baseType, marks, target };
+        }
+
         function updatePersonalTestTypeUI() {
             const typeEl = document.getElementById('personalTestType');
             const subjectWrap = document.getElementById('personalSubjectWrap');
             const subjectEl = document.getElementById('personalSubject');
             const focusEl = document.getElementById('personalFocus');
-            const mcqsEl = document.getElementById('personalTestMcqs');
+            const marksEl = document.getElementById('personalTestMcqs');
             const targetEl = document.getElementById('personalTestTarget');
 
-            if (!typeEl || !subjectWrap || !subjectEl || !focusEl || !mcqsEl || !targetEl) return;
+            if (!typeEl || !subjectWrap || !subjectEl || !focusEl || !marksEl || !targetEl) return;
 
-            const type = typeEl.value;
-            const isSubject = type === 'Subject';
+            const parsed = parseTestTypeOption(typeEl.value);
+            const isSubject = parsed.type === 'Subject';
             subjectWrap.classList.toggle('hidden', !isSubject);
 
             // Smart defaults (only if user hasn't already typed custom values)
-            const mcqsWasEmpty = !mcqsEl.dataset.userEdited;
+            const marksWasEmpty = !marksEl.dataset.userEdited;
             const targetWasEmpty = !targetEl.dataset.userEdited;
 
-            const defaults = {
-                'Subject': { mcqs: 75, target: 60 },
-                'Mixed': { mcqs: 75, target: 60 },
-                'Full': { mcqs: 100, target: 80 },
-                'Full Mock': { mcqs: 200, target: 160 },
-                'Final Mock': { mcqs: 200, target: 170 }
-            };
-
-            const d = defaults[type] || defaults['Mixed'];
-            if (mcqsWasEmpty) mcqsEl.value = d.mcqs;
-            if (targetWasEmpty) targetEl.value = d.target;
+            if (marksWasEmpty && Number.isFinite(parsed.marks)) marksEl.value = parsed.marks;
+            if (targetWasEmpty && Number.isFinite(parsed.target)) targetEl.value = parsed.target;
 
             if (isSubject) {
                 const subj = subjectEl.value;
@@ -2637,10 +3645,13 @@
                         <label class="block font-extrabold mb-2 text-slate-700">Type</label>
                         <select id="personalTestType" class="w-full px-4 py-3 border rounded-2xl bg-white/70" onchange="updatePersonalTestTypeUI()">
                             <option>Subject</option>
-                            <option>Mixed</option>
-                            <option>Full</option>
-                            <option>Full Mock</option>
-                            <option>Final Mock</option>
+                            <option>Mixed (20)</option>
+                            <option>Mixed (30)</option>
+                            <option>Mixed (50)</option>
+                            <option>Mixed (100)</option>
+                            <option>Full (100)</option>
+                            <option>Full Mock (200)</option>
+                            <option>Final Mock (200)</option>
                         </select>
                     </div>
 
@@ -2653,7 +3664,7 @@
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block font-extrabold mb-2 text-slate-700">MCQs</label>
+                            <label class="block font-extrabold mb-2 text-slate-700">Marks</label>
                             <input type="number" id="personalTestMcqs" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="75" min="1" oninput="this.dataset.userEdited='1'">
                         </div>
                         <div>
@@ -2668,22 +3679,24 @@
                     </div>
 
                     <div class="text-xs text-slate-500">
-                        Personal tests are saved only for your account and synced to MongoDB under <code>userProgress.customTests</code>.
+                        Personal tests are saved only for your account and synced to Firestore under <code>wbcsUsers/{uid}.userProgress.customTests</code>.
                     </div>
                 </div>
             `, () => {
                 const id = 'ptest-' + Date.now();
                 const number = parseInt(document.getElementById('personalTestNumber').value) || getNextTestNumber();
                 const date = document.getElementById('personalTestDate').value;
-                const type = document.getElementById('personalTestType').value;
-                const mcqs = parseInt(document.getElementById('personalTestMcqs').value) || 75;
-                const target = parseInt(document.getElementById('personalTestTarget').value) || 0;
+                const rawType = document.getElementById('personalTestType').value;
+                const parsed = parseTestTypeOption(rawType);
+                const marks = parseInt(document.getElementById('personalTestMcqs').value) || parsed.marks || 75;
+                const target = parseInt(document.getElementById('personalTestTarget').value) || parsed.target || 0;
                 const focus = (document.getElementById('personalFocus').value || '').trim();
 
                 let finalFocus = focus;
-                if (!finalFocus && type === 'Subject') {
-                    const subj = document.getElementById('personalSubject').value;
-                    finalFocus = `${subj} - Subject Test`;
+                let subject = null;
+                if (parsed.type === 'Subject') {
+                    subject = document.getElementById('personalSubject').value;
+                    if (!finalFocus) finalFocus = `${subject} - Subject Test`;
                 }
 
                 appData.userProgress.customTests ||= [];
@@ -2691,10 +3704,11 @@
                     id,
                     number,
                     date,
-                    type,
-                    mcqs,
+                    type: parsed.type,
+                    mcqs: marks,
                     focus: finalFocus,
-                    target
+                    target,
+                    subject
                 });
 
                 saveProgress();
@@ -2730,12 +3744,12 @@
                     <label class="block font-extrabold mb-2 text-slate-700">Subject Name</label>
                     <input type="text" id="newSubjectName" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="e.g., Physics">
                 </div>
-            `, () => {
+            `, async () => {
                 const name = document.getElementById('newSubjectName').value.trim();
                 if (name && !appData.subjects.includes(name)) {
                     appData.subjects.push(name);
-                    saveAppData();
-                    saveProgress();
+                    await saveAppData();
+                    await saveProgress();
                     renderAll();
                     showToast('Subject added!', 'success');
                 }
@@ -2777,7 +3791,7 @@
                         </div>
                     </div>
                 </div>
-            `, () => {
+            `, async () => {
                 const newTask = {
                     id: 'task-' + Date.now(),
                     morning: document.getElementById('topicMorning').value,
@@ -2788,7 +3802,7 @@
                     test: '-'
                 };
                 appData.tasks.push(newTask);
-                saveAppData();
+                await saveAppData();
                 renderAll();
                 setActiveTab('subject-view');
                 showToast('Topic added!', 'success');
@@ -2934,14 +3948,14 @@
                         <input type="number" id="editHours" class="w-full px-4 py-3 border rounded-2xl bg-white/70" value="${task.hours}" step="0.25">
                     </div>
                 </div>
-            `, () => {
+            `, async () => {
                 task.date = document.getElementById('editDate').value;
                 task.morning = document.getElementById('editMorning').value;
                 task.evening = document.getElementById('editEvening').value;
                 task.test = document.getElementById('editTest').value;
                 task.subject = document.getElementById('editSubject').value;
                 task.hours = parseFloat(document.getElementById('editHours').value);
-                saveAppData();
+                await saveAppData();
                 renderAll();
                 showToast('Task updated!', 'success');
             });
@@ -3081,6 +4095,14 @@
             document.getElementById('timerModal').classList.add('hidden');
         }
 
+        function openSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
         function startTimer() {
             if (timerInterval) return;
             timerInterval = setInterval(() => {
@@ -3104,8 +4126,17 @@
             const hrs = Math.floor(timerSeconds / 3600);
             const mins = Math.floor((timerSeconds % 3600) / 60);
             const secs = timerSeconds % 60;
-            document.getElementById('timerDisplay').textContent =
-                `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            const full = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            const el = document.getElementById('timerDisplay');
+            if (el) el.textContent = full;
+
+            // Bottom bar mini timer (show minutes if any, else seconds)
+            const mini = document.getElementById('statusMiniTimer');
+            if (mini) {
+                if (hrs > 0) mini.textContent = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+                else if (mins > 0) mini.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                else mini.textContent = String(secs).padStart(2, '0');
+            }
         }
 
         function saveSession() {
@@ -3166,11 +4197,11 @@
         }
 
         async function syncData() {
-            showToast('Syncing with server...', 'info');
+            showToast('Syncing with cloud...', 'info');
             await saveProgress();
             await loadAppData();
             renderAll();
-            showToast('Data synced!', 'success');
+            showToast('Synced!', 'success');
         }
 
         // =============================================
@@ -3201,21 +4232,73 @@
         // INITIALIZATION
         // =============================================
         window.onload = () => {
-            const token = localStorage.getItem('wbcs_token');
+            // Firebase-auth-first boot:
+            // - If signed in with Firebase: show app
+            // - Otherwise: show auth screen
+
             const savedUser = localStorage.getItem('wbcs_user');
+            currentUser = savedUser ? JSON.parse(savedUser) : null;
 
-            if (token || savedUser) {
-                currentUser = savedUser ? JSON.parse(savedUser) : { email: 'user@demo.com', name: 'User', isAdmin: false };
+            const showAuth = () => {
+                document.getElementById('mainApp')?.classList.add('hidden');
+                document.getElementById('authScreen')?.classList.remove('hidden');
+                document.getElementById('authScreen')?.setAttribute('aria-hidden', 'false');
+            };
 
-                // If we have a saved user but NO token, it's likely demo mode.
-                // Try to initialize, but if API requires token it will fall back to localStorage.
-                initializeApp();
-            } else {
-                // Ensure auth screen visible when not signed in
-                document.getElementById('authScreen').classList.remove('hidden');
-                document.getElementById('mainApp').classList.add('hidden');
+            const showApp = async () => {
+                document.getElementById('authScreen')?.classList.add('hidden');
+                document.getElementById('authScreen')?.setAttribute('aria-hidden', 'true');
+                document.getElementById('mainApp')?.classList.remove('hidden');
+                await initializeApp();
+            };
+
+            if (!firebaseReady || !firebaseAuth) {
+                // If Firebase isn't available, fallback to local mode without blocking.
+                currentUser = currentUser || { email: 'local@wbcs.app', name: 'Local User', isAdmin: false };
+                showApp();
+                return;
             }
+
+            firebaseAuth.onAuthStateChanged(async (u) => {
+                if (u) {
+                    const idToken = await u.getIdToken().catch(() => null);
+                    if (idToken) localStorage.setItem('wbcs_token', idToken);
+
+                    currentUser = {
+                        email: u.email,
+                        name: u.displayName || (u.email ? u.email.split('@')[0] : 'User'),
+                        isAdmin: false,
+                        uid: u.uid,
+                        authProvider: 'firebase'
+                    };
+                    localStorage.setItem('wbcs_user', JSON.stringify(currentUser));
+                    await showApp();
+                } else {
+                    localStorage.removeItem('wbcs_token');
+                    localStorage.removeItem('wbcs_user');
+                    showAuth();
+                }
+            });
         };
     </script>
+
+    <!-- VISUAL: Bottom status bar (like screenshot) -->
+    <div class="status-bar no-print" aria-label="Status bar">
+        <div class="status-group">
+            <span class="status-pill" title="Mini timer">
+                <span id="statusMiniTimer">00</span>
+                <span class="opacity-70">⏱</span>
+            </span>
+            <span class="status-pill" title="Active tab">
+                <span class="opacity-70">Tab:</span>
+                <span id="statusActiveTab">overview</span>
+            </span>
+        </div>
+        <div class="status-group">
+            <button class="status-mini-btn" onclick="resetTimer()" title="Reset timer">Reset</button>
+            <span class="status-pill" title="Zoom">100%</span>
+            <span class="status-pill" title="Build">14.02</span>
+        </div>
+    </div>
 </body>
 </html>
