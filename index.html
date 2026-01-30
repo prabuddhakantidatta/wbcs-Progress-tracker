@@ -1736,7 +1736,16 @@
                 <div>
                     <label class="block text-sm font-extrabold text-slate-700 mb-2">Notion Database ID</label>
                     <input id="notionDbId" type="text" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="wbcs_preparation_tracker">
-                    <div class="text-xs text-slate-500 mt-1">Make sure the database is shared with your Notion integration.</div>
+                    <div class="text-xs text-slate-500 mt-1">If you don't have a DB yet, create it below.</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-extrabold text-slate-700 mb-2">Parent Page ID (to create DB)</label>
+                    <input id="notionParentPage" type="text" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="Paste a Notion page ID">
+                    <div class="text-xs text-slate-500 mt-1">The integration must be shared with this page. We'll create a database named <strong>wbcs_preparation_tracker</strong>.</div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <button onclick="createNotionDatabase()" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">➕ Create Database</button>
+                    <button onclick="syncToNotion(false)" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">⬆️ Sync Now</button>
                 </div>
                 <div>
                     <label class="block text-sm font-extrabold text-slate-700 mb-2">Sync Scope</label>
@@ -1751,8 +1760,8 @@
                     Use CORS proxy (recommended for browser)
                 </label>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <button onclick="syncToNotion(false)" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">⬆️ Sync Now</button>
                     <button onclick="syncToNotion(true)" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">🔁 Upsert (create/update)</button>
+                    <button onclick="openNotionHelp()" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #334155, #475569);">❓ How to find IDs</button>
                 </div>
                 <div id="notionStatus" class="text-sm text-slate-600 font-bold"></div>
                 <div class="text-xs text-slate-500">
@@ -3989,12 +3998,101 @@
             document.getElementById('notionStatus').textContent = '';
             const savedToken = localStorage.getItem('wbcs_notion_token');
             const savedDb = localStorage.getItem('wbcs_notion_db');
+            const savedParent = localStorage.getItem('wbcs_notion_parent');
             if (savedToken) document.getElementById('notionToken').value = savedToken;
             if (savedDb) document.getElementById('notionDbId').value = savedDb;
+            if (savedParent) document.getElementById('notionParentPage').value = savedParent;
         }
 
         function closeNotionModal() {
             document.getElementById('notionModal').classList.add('hidden');
+        }
+
+        function openNotionHelp() {
+            const msg = `To get IDs:\n\n1) Open the Notion page you want to use as the parent.\n2) Copy the page URL and extract the 32‑char ID after the last slash.\n3) For a database ID, open the DB and copy the URL (same 32‑char ID).\n\nMake sure the page/database is shared with your integration.`;
+            alert(msg);
+        }
+
+        function normalizeNotionId(raw) {
+            if (!raw) return '';
+            const clean = raw.trim().replace(/[-]/g, '');
+            const match = clean.match(/([a-f0-9]{32})/i);
+            return match ? match[1] : clean;
+        }
+
+        function buildNotionDatabaseSchema() {
+            return {
+                Name: { title: {} },
+                Date: { date: {} },
+                Type: { select: { options: [
+                    { name: 'Task' },
+                    { name: 'Test' }
+                ]}},
+                Subject: { select: {} },
+                Status: { select: { options: [
+                    { name: 'Pending' },
+                    { name: 'Completed' }
+                ]}},
+                Notes: { rich_text: {} },
+                Hours: { number: { format: 'number' } }
+            };
+        }
+
+        async function createNotionDatabase() {
+            const token = document.getElementById('notionToken').value.trim();
+            const parentRaw = document.getElementById('notionParentPage').value.trim();
+            const statusEl = document.getElementById('notionStatus');
+            const useProxy = document.getElementById('notionUseProxy')?.checked;
+
+            if (!token || !parentRaw) {
+                statusEl.textContent = 'Please provide Integration Token and Parent Page ID.';
+                return;
+            }
+
+            const parentId = normalizeNotionId(parentRaw);
+            const endpoint = useProxy
+                ? 'https://cors.isomorphic-git.org/https://api.notion.com/v1/databases'
+                : 'https://api.notion.com/v1/databases';
+
+            statusEl.textContent = 'Creating Notion database...';
+            localStorage.setItem('wbcs_notion_token', token);
+            localStorage.setItem('wbcs_notion_parent', parentId);
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Notion-Version': '2022-06-28',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        parent: { type: 'page_id', page_id: parentId },
+                        title: [{ type: 'text', text: { content: 'wbcs_preparation_tracker' } }],
+                        properties: buildNotionDatabaseSchema()
+                    })
+                });
+
+                if (!res.ok) {
+                    const text = await res.text();
+                    statusEl.textContent = `Create failed: ${text || res.status}`;
+                    return;
+                }
+
+                const data = await res.json();
+                const dbId = data?.id || '';
+                if (dbId) {
+                    const normalized = normalizeNotionId(dbId);
+                    document.getElementById('notionDbId').value = normalized;
+                    localStorage.setItem('wbcs_notion_db', normalized);
+                    statusEl.textContent = 'Database created! ID auto-filled above.';
+                    showToast('Notion DB created', 'success');
+                } else {
+                    statusEl.textContent = 'Database created but no ID returned. Check Notion.';
+                }
+            } catch (e) {
+                statusEl.textContent = 'Create failed. Browser CORS may be blocking Notion. Keep proxy enabled.';
+            }
         }
 
         function buildNotionPayload(item, type = 'Task') {
@@ -4018,11 +4116,12 @@
 
         async function syncToNotion(upsert = false) {
             const token = document.getElementById('notionToken').value.trim();
-            const dbId = document.getElementById('notionDbId').value.trim();
+            const dbIdRaw = document.getElementById('notionDbId').value.trim();
             const scope = document.getElementById('notionScope').value;
             const useProxy = document.getElementById('notionUseProxy')?.checked;
             const statusEl = document.getElementById('notionStatus');
 
+            const dbId = normalizeNotionId(dbIdRaw);
             if (!token || !dbId) {
                 statusEl.textContent = 'Please provide both Integration Token and Database ID.';
                 return;
