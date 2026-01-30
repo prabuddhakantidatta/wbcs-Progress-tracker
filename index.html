@@ -1746,13 +1746,17 @@
                         <option value="tests">Only tests</option>
                     </select>
                 </div>
+                <label class="flex items-center gap-2 text-sm font-extrabold text-slate-700">
+                    <input id="notionUseProxy" type="checkbox" class="w-4 h-4" checked>
+                    Use CORS proxy (recommended for browser)
+                </label>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <button onclick="syncToNotion(false)" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">⬆️ Sync Now</button>
                     <button onclick="syncToNotion(true)" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">🔁 Upsert (create/update)</button>
                 </div>
                 <div id="notionStatus" class="text-sm text-slate-600 font-bold"></div>
                 <div class="text-xs text-slate-500">
-                    Required Notion DB properties: <strong>Name</strong> (title), <strong>Date</strong> (date), <strong>Type</strong> (select), <strong>Subject</strong> (select), <strong>Status</strong> (select), <strong>Notes</strong> (rich text), <strong>Hours</strong> (number).
+                    Required Notion DB properties: <strong>Name</strong> (title), <strong>Date</strong> (date), <strong>Type</strong> (select), <strong>Subject</strong> (select), <strong>Status</strong> (select), <strong>Notes</strong> (rich text), <strong>Hours</strong> (number). If the sync fails in browser, keep the proxy enabled.
                 </div>
             </div>
         </div>
@@ -4016,6 +4020,7 @@
             const token = document.getElementById('notionToken').value.trim();
             const dbId = document.getElementById('notionDbId').value.trim();
             const scope = document.getElementById('notionScope').value;
+            const useProxy = document.getElementById('notionUseProxy')?.checked;
             const statusEl = document.getElementById('notionStatus');
 
             if (!token || !dbId) {
@@ -4045,12 +4050,16 @@
                 ...tests.map(t => ({ type: 'Test', props: buildNotionPayload(t, 'Test') }))
             ];
 
+            const endpoint = useProxy
+                ? 'https://cors.isomorphic-git.org/https://api.notion.com/v1/pages'
+                : 'https://api.notion.com/v1/pages';
+
             let success = 0;
             let fail = 0;
 
             try {
                 for (const item of items) {
-                    const res = await fetch('https://api.notion.com/v1/pages', {
+                    const res = await fetch(endpoint, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -4063,15 +4072,18 @@
                         })
                     });
 
-                    if (res.ok) success++;
-                    else fail++;
+                    if (res.ok) {
+                        success++;
+                    } else {
+                        fail++;
+                    }
                 }
             } catch (e) {
-                statusEl.textContent = 'Sync failed. Check token, DB ID, and CORS/network.';
+                statusEl.textContent = 'Sync failed. Browser CORS may be blocking Notion. Keep proxy enabled or use a backend proxy.';
                 return;
             }
 
-            statusEl.textContent = `Sync complete. सफल: ${success}, Failed: ${fail}`;
+            statusEl.textContent = `Sync complete. Success: ${success}, Failed: ${fail}`;
             showToast('Notion sync completed', 'success');
         }
 
