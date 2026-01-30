@@ -1755,10 +1755,15 @@
                         <option value="tests">Only tests</option>
                     </select>
                 </div>
-                <label class="flex items-center gap-2 text-sm font-extrabold text-slate-700">
-                    <input id="notionUseProxy" type="checkbox" class="w-4 h-4" checked>
-                    Use CORS proxy (recommended for browser)
-                </label>
+                <div>
+                    <label class="block text-sm font-extrabold text-slate-700 mb-2">CORS Proxy</label>
+                    <select id="notionProxy" class="w-full px-4 py-3 border rounded-2xl bg-white/70">
+                        <option value="isomorphic" selected>isomorphic-git proxy (default)</option>
+                        <option value="corsproxy">corsproxy.io</option>
+                        <option value="none">No proxy (only if backend exists)</option>
+                    </select>
+                    <div class="text-xs text-slate-500 mt-2">If sync or DB creation fails, switch the proxy and try again. Make sure your Notion integration is shared with the parent page/database.</div>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <button onclick="syncToNotion(true)" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">🔁 Upsert (create/update)</button>
                     <button onclick="openNotionHelp()" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #334155, #475569);">❓ How to find IDs</button>
@@ -4020,6 +4025,14 @@
             return match ? match[1] : clean;
         }
 
+        function getNotionEndpoint(path) {
+            const mode = document.getElementById('notionProxy')?.value || 'isomorphic';
+            const base = `https://api.notion.com/v1/${path}`;
+            if (mode === 'none') return base;
+            if (mode === 'corsproxy') return `https://corsproxy.io/?${base}`;
+            return `https://cors.isomorphic-git.org/${base}`;
+        }
+
         function buildNotionDatabaseSchema() {
             return {
                 Name: { title: {} },
@@ -4042,7 +4055,6 @@
             const token = document.getElementById('notionToken').value.trim();
             const parentRaw = document.getElementById('notionParentPage').value.trim();
             const statusEl = document.getElementById('notionStatus');
-            const useProxy = document.getElementById('notionUseProxy')?.checked;
 
             if (!token || !parentRaw) {
                 statusEl.textContent = 'Please provide Integration Token and Parent Page ID.';
@@ -4050,9 +4062,7 @@
             }
 
             const parentId = normalizeNotionId(parentRaw);
-            const endpoint = useProxy
-                ? 'https://cors.isomorphic-git.org/https://api.notion.com/v1/databases'
-                : 'https://api.notion.com/v1/databases';
+            const endpoint = getNotionEndpoint('databases');
 
             statusEl.textContent = 'Creating Notion database...';
             localStorage.setItem('wbcs_notion_token', token);
@@ -4091,7 +4101,7 @@
                     statusEl.textContent = 'Database created but no ID returned. Check Notion.';
                 }
             } catch (e) {
-                statusEl.textContent = 'Create failed. Browser CORS may be blocking Notion. Keep proxy enabled.';
+                statusEl.textContent = 'Create failed. Try switching the proxy or use a backend proxy.';
             }
         }
 
@@ -4118,7 +4128,6 @@
             const token = document.getElementById('notionToken').value.trim();
             const dbIdRaw = document.getElementById('notionDbId').value.trim();
             const scope = document.getElementById('notionScope').value;
-            const useProxy = document.getElementById('notionUseProxy')?.checked;
             const statusEl = document.getElementById('notionStatus');
 
             const dbId = normalizeNotionId(dbIdRaw);
@@ -4149,9 +4158,7 @@
                 ...tests.map(t => ({ type: 'Test', props: buildNotionPayload(t, 'Test') }))
             ];
 
-            const endpoint = useProxy
-                ? 'https://cors.isomorphic-git.org/https://api.notion.com/v1/pages'
-                : 'https://api.notion.com/v1/pages';
+            const endpoint = getNotionEndpoint('pages');
 
             let success = 0;
             let fail = 0;
@@ -4178,7 +4185,7 @@
                     }
                 }
             } catch (e) {
-                statusEl.textContent = 'Sync failed. Browser CORS may be blocking Notion. Keep proxy enabled or use a backend proxy.';
+                statusEl.textContent = 'Sync failed. Try switching the proxy or use a backend proxy.';
                 return;
             }
 
