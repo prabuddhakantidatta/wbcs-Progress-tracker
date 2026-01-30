@@ -1711,6 +1711,7 @@
             </div>
             <div class="p-6 space-y-3">
                 <button onclick="syncData(); closeSettingsModal();" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">🔄 Sync with Cloud</button>
+                <button onclick="openNotionSyncModal(); closeSettingsModal();" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #000000, #1a1a1a);">📓 Notion Sync</button>
                 <button onclick="exportData();" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">💾 Download Backup</button>
                 <button onclick="importData();" class="w-full px-4 py-3 rounded-2xl font-extrabold btn-glow" style="background: linear-gradient(135deg, #fde047, #f59e0b); color: #0f172a; border-color: rgba(15,23,42,0.10);">⬆️ Restore from Backup</button>
                 <button onclick="window.print();" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">🖨️ Print</button>
@@ -1722,6 +1723,77 @@
 
     <!-- Hidden file input for import -->
     <input type="file" id="importFile" class="hidden" accept=".json" onchange="handleImport(event)">
+
+    <!-- Notion Sync Modal -->
+    <div id="notionSyncModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-strong rounded-3xl shadow-2xl w-full max-w-2xl">
+            <div class="p-6 border-b border-white/50 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-black flex items-center justify-center text-white text-xl">📓</div>
+                    <h3 class="text-xl font-extrabold text-slate-800">Notion Sync Integration</h3>
+                </div>
+                <button onclick="closeNotionSyncModal()" class="text-slate-500 hover:text-slate-800 text-2xl">&times;</button>
+            </div>
+            <div class="p-6">
+                <div class="mb-6 p-4 bg-indigo-50 border border-indigo-200 rounded-2xl">
+                    <h4 class="font-extrabold text-indigo-900 mb-2">🔗 How to Connect</h4>
+                    <ol class="text-sm text-indigo-800 space-y-1 list-decimal list-inside">
+                        <li>Go to <a href="https://www.notion.so/my-integrations" target="_blank" class="underline font-bold">notion.so/my-integrations</a></li>
+                        <li>Click "New integration" and name it "WBCS Tracker"</li>
+                        <li>Copy the <strong>Internal Integration Token</strong></li>
+                        <li>In Notion, create a database named "wbcs_preparation_tracker"</li>
+                        <li>Share the database with your integration (... → Add connections)</li>
+                        <li>Copy the <strong>Database ID</strong> from the database URL</li>
+                    </ol>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block font-extrabold mb-2 text-slate-700">Notion Integration Token</label>
+                        <input type="password" id="notionApiKey" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="secret_xxxxxxxxxxxxx">
+                        <div class="text-xs text-slate-500 mt-1">Your secret integration token from Notion</div>
+                    </div>
+
+                    <div>
+                        <label class="block font-extrabold mb-2 text-slate-700">Database ID</label>
+                        <input type="text" id="notionDatabaseId" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+                        <div class="text-xs text-slate-500 mt-1">From your Notion database URL (wbcs_preparation_tracker)</div>
+                    </div>
+
+                    <div class="p-4 bg-amber-50 border border-amber-200 rounded-2xl">
+                        <div class="flex items-start gap-2">
+                            <span class="text-xl">⚠️</span>
+                            <div class="text-sm text-amber-900">
+                                <strong>Database Schema Required:</strong> Your Notion database should have these columns:
+                                <div class="mt-2 grid grid-cols-2 gap-1 text-xs">
+                                    <div>• Task Name (Title)</div>
+                                    <div>• Date (Date)</div>
+                                    <div>• Subject (Select)</div>
+                                    <div>• Morning (Text)</div>
+                                    <div>• Evening (Text)</div>
+                                    <div>• Hours (Number)</div>
+                                    <div>• Completed (Checkbox)</div>
+                                    <div>• Status (Select)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl">
+                        <input type="checkbox" id="notionAutoSync" class="w-5 h-5 accent-indigo-500 cursor-pointer">
+                        <label for="notionAutoSync" class="text-sm font-bold text-slate-700 cursor-pointer">Auto-sync when tasks are completed</label>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex gap-3">
+                    <button onclick="saveNotionCredentials()" class="flex-1 px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">💾 Save Credentials</button>
+                    <button onclick="syncToNotion()" class="flex-1 px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #000000, #1a1a1a);">📤 Sync to Notion</button>
+                </div>
+
+                <div id="notionSyncStatus" class="mt-4 text-sm text-center font-bold text-slate-600"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Firebase (compat SDKs) -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -3941,6 +4013,173 @@
         function closeSettingsModal() {
             document.getElementById('settingsModal').classList.add('hidden');
         }
+
+        // =============================================
+        // NOTION SYNC FUNCTIONS
+        // =============================================
+        function openNotionSyncModal() {
+            // Load saved credentials
+            const savedCreds = localStorage.getItem('wbcs_notion_creds');
+            if (savedCreds) {
+                try {
+                    const creds = JSON.parse(savedCreds);
+                    document.getElementById('notionApiKey').value = creds.apiKey || '';
+                    document.getElementById('notionDatabaseId').value = creds.databaseId || '';
+                    document.getElementById('notionAutoSync').checked = creds.autoSync || false;
+                } catch (e) {
+                    console.warn('Failed to load Notion credentials', e);
+                }
+            }
+            document.getElementById('notionSyncModal').classList.remove('hidden');
+        }
+
+        function closeNotionSyncModal() {
+            document.getElementById('notionSyncModal').classList.add('hidden');
+        }
+
+        function saveNotionCredentials() {
+            const apiKey = document.getElementById('notionApiKey').value.trim();
+            const databaseId = document.getElementById('notionDatabaseId').value.trim();
+            const autoSync = document.getElementById('notionAutoSync').checked;
+
+            if (!apiKey || !databaseId) {
+                showToast('Please enter both API Key and Database ID', 'error');
+                return;
+            }
+
+            const creds = { apiKey, databaseId, autoSync };
+            localStorage.setItem('wbcs_notion_creds', JSON.stringify(creds));
+            
+            // Also save to Firestore if available
+            if (firebaseReady && firestoreDb && currentUser?.uid) {
+                firestoreDb.collection('wbcsUsers').doc(currentUser.uid).set({
+                    notionCredentials: creds,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true }).catch(e => console.warn('Firestore save failed', e));
+            }
+
+            showToast('Notion credentials saved!', 'success');
+            document.getElementById('notionSyncStatus').textContent = '✅ Credentials saved. Ready to sync!';
+        }
+
+        async function syncToNotion() {
+            const savedCreds = localStorage.getItem('wbcs_notion_creds');
+            if (!savedCreds) {
+                showToast('Please save your Notion credentials first', 'error');
+                return;
+            }
+
+            const creds = JSON.parse(savedCreds);
+            const statusEl = document.getElementById('notionSyncStatus');
+            statusEl.textContent = '⏳ Syncing to Notion...';
+
+            try {
+                // Get all tasks with their completion status
+                const tasksToSync = appData.tasks.map(task => ({
+                    id: task.id,
+                    taskName: task.morning || 'Untitled',
+                    date: getEffectiveTaskDate(task),
+                    subject: task.subject || 'General',
+                    morning: task.morning || '',
+                    evening: task.evening || '',
+                    hours: task.hours || 0,
+                    completed: !!appData.userProgress.completedTasks[task.id],
+                    status: appData.userProgress.completedTasks[task.id] ? 'Completed' : 'Pending'
+                }));
+
+                // Sync to Notion using their REST API
+                let synced = 0;
+                for (const task of tasksToSync) {
+                    try {
+                        await syncTaskToNotion(creds.apiKey, creds.databaseId, task);
+                        synced++;
+                    } catch (e) {
+                        console.error('Failed to sync task:', task.id, e);
+                    }
+                }
+
+                statusEl.textContent = `✅ Successfully synced ${synced} tasks to Notion!`;
+                showToast(`Synced ${synced} tasks to Notion!`, 'success');
+            } catch (error) {
+                console.error('Notion sync error:', error);
+                statusEl.textContent = '❌ Sync failed: ' + (error.message || 'Unknown error');
+                showToast('Notion sync failed: ' + (error.message || 'Check console'), 'error');
+            }
+        }
+
+        async function syncTaskToNotion(apiKey, databaseId, task) {
+            const notionApiUrl = 'https://api.notion.com/v1/pages';
+            
+            const payload = {
+                parent: { database_id: databaseId },
+                properties: {
+                    'Task Name': {
+                        title: [{ text: { content: task.taskName } }]
+                    },
+                    'Date': {
+                        date: task.date ? { start: task.date } : null
+                    },
+                    'Subject': {
+                        select: { name: task.subject }
+                    },
+                    'Morning': {
+                        rich_text: [{ text: { content: task.morning } }]
+                    },
+                    'Evening': {
+                        rich_text: [{ text: { content: task.evening } }]
+                    },
+                    'Hours': {
+                        number: task.hours
+                    },
+                    'Completed': {
+                        checkbox: task.completed
+                    },
+                    'Status': {
+                        select: { name: task.status }
+                    }
+                }
+            };
+
+            const response = await fetch(notionApiUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json',
+                    'Notion-Version': '2022-06-28'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `HTTP ${response.status}`);
+            }
+
+            return await response.json();
+        }
+
+        // Auto-sync on task completion if enabled
+        const originalToggleTask = toggleTask;
+        window.toggleTask = function(taskId) {
+            originalToggleTask(taskId);
+            
+            // Check if auto-sync is enabled
+            const savedCreds = localStorage.getItem('wbcs_notion_creds');
+            if (savedCreds) {
+                try {
+                    const creds = JSON.parse(savedCreds);
+                    if (creds.autoSync) {
+                        // Debounced sync (don't sync every single click immediately)
+                        clearTimeout(window._notionSyncTimeout);
+                        window._notionSyncTimeout = setTimeout(() => {
+                            syncToNotion();
+                        }, 2000);
+                    }
+                } catch (e) {
+                    // Ignore
+                }
+            }
+        };
 
         function startTimer() {
             if (timerInterval) return;
