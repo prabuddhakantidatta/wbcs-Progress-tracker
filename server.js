@@ -41,6 +41,39 @@ app.use((req, res, next) => {
 });
 
 // =============================================
+// NOTION PROXY (to bypass CORS in browser)
+// =============================================
+app.post('/api/notion-proxy', async (req, res) => {
+    try {
+        const path = String(req.query.path || '').replace(/^\//, '');
+        if (!path) return res.status(400).json({ message: 'Missing Notion API path' });
+
+        const allowed = ['databases', 'pages', 'databases/query'];
+        if (!allowed.some(p => path.startsWith(p))) {
+            return res.status(400).json({ message: 'Path not allowed' });
+        }
+
+        const notionUrl = `https://api.notion.com/v1/${path}`;
+        const notionRes = await fetch(notionUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': req.headers.authorization || '',
+                'Notion-Version': req.headers['notion-version'] || '2022-06-28',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(req.body || {})
+        });
+
+        const text = await notionRes.text();
+        res.status(notionRes.status);
+        res.setHeader('Content-Type', notionRes.headers.get('content-type') || 'application/json');
+        res.send(text);
+    } catch (e) {
+        res.status(500).json({ message: 'Notion proxy failed' });
+    }
+});
+
+// =============================================
 // MONGODB SCHEMAS
 // =============================================
 
