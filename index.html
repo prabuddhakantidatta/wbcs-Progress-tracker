@@ -265,6 +265,24 @@
         .overlay { display: none; }
         .overlay.active { display: block; }
 
+        .sidebar-toggle {
+            position: fixed;
+            left: 18px;
+            top: 18px;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
+            color: #fff;
+            font-weight: 900;
+            font-size: 18px;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 12px 26px rgba(2, 6, 23, 0.22);
+            z-index: 2100;
+        }
+
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.25s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
@@ -522,105 +540,18 @@
         /* =========================================================
            RIGHT ACTION DOCK (Icons + Tooltips)
         ========================================================= */
-        .action-dock {
-            position: fixed;
-            right: 16px;
-            left: auto;
-            top: 78px;
-            z-index: 1600;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding: 10px;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.95);
-            border: 1px solid rgba(15, 23, 42, 0.10);
-            box-shadow: 0 12px 30px rgba(2, 6, 23, 0.10);
-        }
-        .dark-mode .action-dock {
-            background: rgba(22, 33, 62, 0.96);
-            border-color: rgba(255,255,255,0.10);
-            box-shadow: 0 18px 45px rgba(0,0,0,0.35);
-        }
-
-        .dock-btn {
-            position: relative;
-            width: 46px;
-            height: 46px;
-            border-radius: 14px;
-            display: grid;
-            place-items: center;
-            color: white;
-            font-size: 18px;
-            font-weight: 800;
-            border: 1px solid rgba(255,255,255,0.18);
-            box-shadow: 0 10px 22px rgba(2, 6, 23, 0.14);
-            transition: transform 140ms ease, filter 140ms ease;
-            cursor: pointer;
-            user-select: none;
-        }
-        .dock-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
-
-        /* Tooltip (shows purpose on hover) */
-        .dock-btn::after {
-            content: attr(data-tip);
-            position: absolute;
-            right: calc(100% + 12px);
-            left: auto;
-            top: 50%;
-            transform: translateY(-50%) translateX(4px);
-            opacity: 0;
-            pointer-events: none;
-            white-space: nowrap;
-            font-size: 12px;
-            font-weight: 800;
-            padding: 8px 10px;
-            border-radius: 12px;
-            color: rgba(255,255,255,0.96);
-            background: rgba(15, 23, 42, 0.92);
-            border: 1px solid rgba(255,255,255,0.10);
-            box-shadow: 0 18px 40px rgba(2, 6, 23, 0.28);
-            transition: opacity 120ms ease, transform 120ms ease;
-        }
-        .dock-btn::before {
-            content: '';
-            position: absolute;
-            right: calc(100% + 6px);
-            left: auto;
-            top: 50%;
-            transform: translateY(-50%) translateX(4px);
-            opacity: 0;
-            width: 10px;
-            height: 10px;
-            background: rgba(15, 23, 42, 0.92);
-            border-right: 1px solid rgba(255,255,255,0.10);
-            border-top: 1px solid rgba(255,255,255,0.10);
-            rotate: 45deg;
-            transition: opacity 120ms ease, transform 120ms ease;
-        }
-        .dock-btn:hover::after, .dock-btn:hover::before {
-            opacity: 1;
-            transform: translateY(-50%) translateX(0);
-        }
-
+        .action-dock,
+        .dock-btn,
         .dock-divider {
-            height: 1px;
-            margin: 2px 4px;
-            background: rgba(15, 23, 42, 0.12);
+            display: none !important;
         }
-        .dark-mode .dock-divider { background: rgba(255,255,255,0.12); }
 
         @media (max-width: 768px) {
-            .action-dock {
-                top: auto;
-                bottom: 14px;
-                right: auto;
-                left: 50%;
-                transform: translateX(-50%);
-                flex-direction: row;
-                border-radius: 18px;
+            .action-dock,
+            .dock-btn,
+            .dock-divider {
+                display: none !important;
             }
-            .dock-btn::after, .dock-btn::before { display: none; }
         }
 
         /* =========================================================
@@ -1229,22 +1160,7 @@
 
     <!-- Main App (Hidden until login) -->
     <div id="mainApp" class="hidden">
-        <!-- Sidebar Toggle -->
-        <button onclick="toggleSidebar()" class="fixed left-4 top-4 z-50 text-white w-12 h-12 rounded-2xl shadow-lg flex items-center justify-center text-xl no-print transition btn-glow"
-                style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">
-            ☰
-        </button>
-
-        <!-- Right Action Dock (like screenshot) -->
-        <div class="action-dock no-print" id="actionDock" aria-label="Quick actions">
-            <button class="dock-btn btn-glow" data-tip="Theme" onclick="toggleDarkMode()" style="background: linear-gradient(135deg, #334155, #475569);">🌙</button>
-            <button class="dock-btn btn-glow" data-tip="Save (Backup)" onclick="exportData()" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">💾</button>
-            <button class="dock-btn btn-glow" data-tip="Upload (Restore)" onclick="importData()" style="background: linear-gradient(135deg, #fde047, #f59e0b); color: #0f172a; border-color: rgba(15,23,42,0.10);">⬆️</button>
-            <button class="dock-btn btn-glow" data-tip="Print" onclick="window.print()" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">🖨️</button>
-            <button class="dock-btn btn-glow" data-tip="Settings" onclick="openSettingsModal()" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">⚙️</button>
-            <button class="dock-btn btn-glow" data-tip="Lock (Logout)" onclick="handleLogout()" style="background: linear-gradient(135deg, #ef4444, #f43f5e);">🔒</button>
-        </div>
-
+        <button class="sidebar-toggle no-print" onclick="toggleSidebar()">☰</button>
         <!-- Overlay -->
         <div class="overlay fixed inset-0 bg-black/50 z-40" onclick="toggleSidebar()"></div>
 
@@ -1310,6 +1226,9 @@
                 <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" data-tip="Session Timer" onclick="openTimerModal()">
                     <span>⏱️</span> <span class="item-label">Session Timer</span>
                 </div>
+                <div class="menu-item px-6 py-3 cursor-pointer hover:bg-white/10 border-l-4 border-transparent hover:border-indigo-400 transition flex items-center gap-3" data-tip="Settings & Tools" onclick="openSettingsModal()">
+                    <span>⚙️</span> <span class="item-label">Settings & Tools</span>
+                </div>
 
                 <!-- Admin Menu (visible for admins) -->
                 <div id="adminMenuSection" class="hidden border-t mt-4 pt-4" style="border-color: rgba(255,255,255,0.10);">
@@ -1331,8 +1250,8 @@
                 <div class="relative p-7 text-white">
                     <div class="flex flex-wrap items-start justify-between gap-3">
                         <div>
-                            <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">🎯 WBCS Exam Preparation 2026</h1>
-                            <p class="text-white/90 mt-1">Plan with clarity • Track with confidence • Finish strong for WBCS 2026</p>
+                            <h1 id="editableHeadline" class="text-2xl md:text-3xl font-extrabold tracking-tight" contenteditable="true" spellcheck="false">🎯 WBCS Exam Preparation 2026</h1>
+                            <p id="editableSubheadline" class="text-white/90 mt-1" contenteditable="true" spellcheck="false">Plan with clarity • Track with confidence • Finish strong for WBCS 2026</p>
                         </div>
                         <div class="text-right">
                             <div class="text-xs text-white/80 font-bold">Signed in</div>
@@ -1721,63 +1640,47 @@
                 <button onclick="importData();" class="w-full px-4 py-3 rounded-2xl font-extrabold btn-glow" style="background: linear-gradient(135deg, #fde047, #f59e0b); color: #0f172a; border-color: rgba(15,23,42,0.10);">⬆️ Restore from Backup</button>
                 <button onclick="window.print();" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">🖨️ Print</button>
                 <button onclick="toggleDarkMode();" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #334155, #475569);">🌙 Toggle Theme</button>
-                <button onclick="openNotionModal();" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #0f766e, #14b8a6);">🧠 Notion Sync</button>
+                <button onclick="openSheetsModal();" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #16a34a, #22c55e);">📗 Google Sheets Export</button>
                 <div class="text-xs text-slate-500 font-bold pt-2">Tip: Your progress is saved per-user in Firestore.</div>
             </div>
         </div>
     </div>
 
-    <!-- Notion Sync Modal -->
-    <div id="notionModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <!-- Google Sheets Export Modal -->
+    <div id="sheetsModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
         <div class="glass-strong rounded-3xl shadow-2xl w-full max-w-xl">
             <div class="p-6 border-b border-white/50 flex justify-between items-center">
-                <h3 class="text-xl font-extrabold text-slate-800">🧠 Notion Sync</h3>
-                <button onclick="closeNotionModal()" class="text-slate-500 hover:text-slate-800 text-2xl">&times;</button>
+                <h3 class="text-xl font-extrabold text-slate-800">📗 Google Sheets Export</h3>
+                <button onclick="closeSheetsModal()" class="text-slate-500 hover:text-slate-800 text-2xl">&times;</button>
             </div>
             <div class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-extrabold text-slate-700 mb-2">Integration Token</label>
-                    <input id="notionToken" type="password" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="secret_...">
+                <div class="text-sm text-slate-600 font-bold">
+                    Export your schedules as a CSV or copy-paste table data into Google Sheets. You can automate syncing with Make.com or Apps Script using this export.
                 </div>
+
                 <div>
-                    <label class="block text-sm font-extrabold text-slate-700 mb-2">Notion Database ID</label>
-                    <input id="notionDbId" type="text" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="wbcs_preparation_tracker">
-                    <div class="text-xs text-slate-500 mt-1">If you don't have a DB yet, create it below.</div>
-                </div>
-                <div>
-                    <label class="block text-sm font-extrabold text-slate-700 mb-2">Parent Page ID (to create DB)</label>
-                    <input id="notionParentPage" type="text" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="Paste a Notion page ID">
-                    <div class="text-xs text-slate-500 mt-1">The integration must be shared with this page. We'll create a database named <strong>wbcs_preparation_tracker</strong>.</div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <button onclick="createNotionDatabase()" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">➕ Create Database</button>
-                    <button onclick="syncToNotion(false)" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">⬆️ Sync Now</button>
-                </div>
-                <div>
-                    <label class="block text-sm font-extrabold text-slate-700 mb-2">Sync Scope</label>
-                    <select id="notionScope" class="w-full px-4 py-3 border rounded-2xl bg-white/70">
+                    <label class="block text-sm font-extrabold text-slate-700 mb-2">Export Scope</label>
+                    <select id="sheetsScope" class="w-full px-4 py-3 border rounded-2xl bg-white/70">
                         <option value="all">All schedules (tasks + tests)</option>
                         <option value="tasks">Only tasks</option>
                         <option value="tests">Only tests</option>
                     </select>
                 </div>
+
                 <div>
-                    <label class="block text-sm font-extrabold text-slate-700 mb-2">CORS Proxy</label>
-                    <select id="notionProxy" class="w-full px-4 py-3 border rounded-2xl bg-white/70">
-                        <option value="server" selected>Use server proxy (recommended)</option>
-                        <option value="isomorphic">isomorphic-git proxy</option>
-                        <option value="corsproxy">corsproxy.io</option>
-                        <option value="none">No proxy (only if backend exists)</option>
-                    </select>
-                    <div class="text-xs text-slate-500 mt-2">If sync or DB creation fails, switch the proxy and try again. Make sure your Notion integration is shared with the parent page/database.</div>
+                    <label class="block text-sm font-extrabold text-slate-700 mb-2">CSV Preview</label>
+                    <textarea id="sheetsCsvPreview" class="w-full h-48 p-4 border rounded-2xl bg-white/70" readonly></textarea>
+                    <div class="text-xs text-slate-500 mt-2">Click “Generate CSV” to preview. Use “Copy CSV” to paste into Google Sheets.</div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <button onclick="syncToNotion(true)" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">🔁 Upsert (create/update)</button>
-                    <button onclick="openNotionHelp()" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #334155, #475569);">❓ How to find IDs</button>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <button onclick="generateSheetsCSV()" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #2563eb, #3b82f6);">🧾 Generate CSV</button>
+                    <button onclick="copySheetsCSV()" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #22c55e, #10b981);">📋 Copy CSV</button>
+                    <button onclick="downloadSheetsCSV()" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #1f2937;">⬇️ Download CSV</button>
                 </div>
-                <div id="notionStatus" class="text-sm text-slate-600 font-bold"></div>
+
                 <div class="text-xs text-slate-500">
-                    Required Notion DB properties: <strong>Name</strong> (title), <strong>Date</strong> (date), <strong>Type</strong> (select), <strong>Subject</strong> (select), <strong>Status</strong> (select), <strong>Notes</strong> (rich text), <strong>Hours</strong> (number). If the sync fails in browser, keep the proxy enabled.
+                    Suggested Google Sheet columns: <strong>Title</strong>, <strong>Date</strong>, <strong>Type</strong>, <strong>Subject</strong>, <strong>Status</strong>, <strong>Hours</strong>, <strong>Marks</strong>, <strong>Target</strong>, <strong>Notes</strong>.
                 </div>
             </div>
         </div>
@@ -2597,6 +2500,18 @@
             const sidebarUserEmail = document.getElementById('sidebarUserEmail');
             if (userEmailDisplay) userEmailDisplay.textContent = '👤 ' + (currentUser.email || 'local@wbcs.app');
             if (sidebarUserEmail) sidebarUserEmail.textContent = (currentUser.email || 'local@wbcs.app');
+
+            // Load editable headline/subheadline
+            const storedHeadline = appData.userProgress?.headlineText;
+            const storedSubheadline = appData.userProgress?.subheadlineText;
+            if (storedHeadline) {
+                const h = document.getElementById('editableHeadline');
+                if (h) h.textContent = storedHeadline;
+            }
+            if (storedSubheadline) {
+                const sh = document.getElementById('editableSubheadline');
+                if (sh) sh.textContent = storedSubheadline;
+            }
 
             if (currentUser.isAdmin) {
                 document.getElementById('adminMenuSection')?.classList.remove('hidden');
@@ -3483,6 +3398,15 @@
             showToast('Target date updated', 'success');
         }
 
+        function saveEditableHeadline() {
+            const h = document.getElementById('editableHeadline');
+            const sh = document.getElementById('editableSubheadline');
+            if (!appData.userProgress) return;
+            appData.userProgress.headlineText = h ? h.textContent.trim() : '';
+            appData.userProgress.subheadlineText = sh ? sh.textContent.trim() : '';
+            saveProgress();
+        }
+
         // =============================================
         // PERSONAL TESTS (per-user)
         // =============================================
@@ -4033,210 +3957,98 @@
             document.getElementById('settingsModal').classList.add('hidden');
         }
 
-        function openNotionModal() {
-            document.getElementById('notionModal').classList.remove('hidden');
-            document.getElementById('notionStatus').textContent = '';
-            const savedToken = localStorage.getItem('wbcs_notion_token');
-            const savedDb = localStorage.getItem('wbcs_notion_db');
-            const savedParent = localStorage.getItem('wbcs_notion_parent');
-            if (savedToken) document.getElementById('notionToken').value = savedToken;
-            if (savedDb) document.getElementById('notionDbId').value = savedDb;
-            if (savedParent) document.getElementById('notionParentPage').value = savedParent;
+        function openSheetsModal() {
+            document.getElementById('sheetsModal').classList.remove('hidden');
+            const preview = document.getElementById('sheetsCsvPreview');
+            if (preview) preview.value = '';
         }
 
-        function closeNotionModal() {
-            document.getElementById('notionModal').classList.add('hidden');
+        function closeSheetsModal() {
+            document.getElementById('sheetsModal').classList.add('hidden');
         }
 
-        function openNotionHelp() {
-            const msg = `To get IDs:\n\n1) Open the Notion page you want to use as the parent.\n2) Copy the page URL and extract the 32‑char ID after the last slash.\n3) For a database ID, open the DB and copy the URL (same 32‑char ID).\n\nMake sure the page/database is shared with your integration.`;
-            alert(msg);
-        }
-
-        function normalizeNotionId(raw) {
-            if (!raw) return '';
-            const clean = raw.trim().replace(/[-]/g, '');
-            const match = clean.match(/([a-f0-9]{32})/i);
-            return match ? match[1] : clean;
-        }
-
-        function getNotionEndpoint(path) {
-            const mode = document.getElementById('notionProxy')?.value || 'isomorphic';
-            if (mode === 'server') {
-                return `/api/notion-proxy?path=${encodeURIComponent(path)}`;
-            }
-            const base = `https://api.notion.com/v1/${path}`;
-            if (mode === 'none') return base;
-            if (mode === 'corsproxy') return `https://corsproxy.io/?${base}`;
-            return `https://cors.isomorphic-git.org/${base}`;
-        }
-
-        function buildNotionDatabaseSchema() {
-            return {
-                Name: { title: {} },
-                Date: { date: {} },
-                Type: { select: { options: [
-                    { name: 'Task' },
-                    { name: 'Test' }
-                ]}},
-                Subject: { select: {} },
-                Status: { select: { options: [
-                    { name: 'Pending' },
-                    { name: 'Completed' }
-                ]}},
-                Notes: { rich_text: {} },
-                Hours: { number: { format: 'number' } },
-                Marks: { number: { format: 'number' } },
-                Target: { number: { format: 'number' } }
-            };
-        }
-
-        async function createNotionDatabase() {
-            const token = document.getElementById('notionToken').value.trim();
-            const parentRaw = document.getElementById('notionParentPage').value.trim();
-            const statusEl = document.getElementById('notionStatus');
-
-            if (!token || !parentRaw) {
-                statusEl.textContent = 'Please provide Integration Token and Parent Page ID.';
-                return;
-            }
-
-            const parentId = normalizeNotionId(parentRaw);
-            const endpoint = getNotionEndpoint('databases');
-            const usingServer = (document.getElementById('notionProxy')?.value || 'server') === 'server';
-
-            statusEl.textContent = 'Creating Notion database...';
-            localStorage.setItem('wbcs_notion_token', token);
-            localStorage.setItem('wbcs_notion_parent', parentId);
-
-            try {
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': usingServer ? `Bearer ${token}` : `Bearer ${token}`,
-                        'Notion-Version': '2022-06-28',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        parent: { type: 'page_id', page_id: parentId },
-                        title: [{ type: 'text', text: { content: 'wbcs_preparation_tracker' } }],
-                        properties: buildNotionDatabaseSchema()
-                    })
-                });
-
-                if (!res.ok) {
-                    const text = await res.text();
-                    statusEl.textContent = `Create failed: ${text || res.status}`;
-                    return;
-                }
-
-                const data = await res.json();
-                const dbId = data?.id || '';
-                if (dbId) {
-                    const normalized = normalizeNotionId(dbId);
-                    document.getElementById('notionDbId').value = normalized;
-                    localStorage.setItem('wbcs_notion_db', normalized);
-                    statusEl.textContent = 'Database created! ID auto-filled above.';
-                    showToast('Notion DB created', 'success');
-                } else {
-                    statusEl.textContent = 'Database created but no ID returned. Check Notion.';
-                }
-            } catch (e) {
-                statusEl.textContent = 'Create failed. Try switching the proxy or use a backend proxy.';
-            }
-        }
-
-        function buildNotionPayload(item, type = 'Task') {
-            const title = item.title || item.morning || item.name || `Test ${item.number || ''}`.trim();
-            const date = item.date || item.effDate || item.scheduledDate || '';
-            const subject = item.subject || item.topics || 'General';
-            const status = item.status || (item.completed ? 'Completed' : 'Pending');
-            const notes = item.notes || item.evening || item.focus || item.test || '';
-            const hours = Number(item.hours || 0);
-            const marks = Number(item.mcqs || item.marks || 0);
-            const target = Number(item.target || 0);
-
-            return {
-                Name: { title: [{ text: { content: title || 'Untitled' } }] },
-                Date: date ? { date: { start: date } } : undefined,
-                Type: { select: { name: type } },
-                Subject: { select: { name: subject || 'General' } },
-                Status: { select: { name: status } },
-                Notes: { rich_text: notes ? [{ text: { content: notes } }] : [] },
-                Hours: hours ? { number: hours } : undefined,
-                Marks: marks ? { number: marks } : undefined,
-                Target: target ? { number: target } : undefined
-            };
-        }
-
-        async function syncToNotion(upsert = false) {
-            const token = document.getElementById('notionToken').value.trim();
-            const dbIdRaw = document.getElementById('notionDbId').value.trim();
-            const scope = document.getElementById('notionScope').value;
-            const statusEl = document.getElementById('notionStatus');
-
-            const dbId = normalizeNotionId(dbIdRaw);
-            if (!token || !dbId) {
-                statusEl.textContent = 'Please provide both Integration Token and Database ID.';
-                return;
-            }
-
-            localStorage.setItem('wbcs_notion_token', token);
-            localStorage.setItem('wbcs_notion_db', dbId);
-
-            statusEl.textContent = 'Syncing with Notion...';
-
-            const tasks = (scope === 'tests') ? [] : appData.tasks.map(t => ({
-                ...t,
+        function getSheetsExportRows(scope) {
+            const rows = [];
+            const tasks = (scope === 'tests') ? [] : (appData.tasks || []).map(t => ({
+                type: 'Task',
+                title: t.morning || '-',
                 date: getEffectiveTaskDate(t),
-                completed: !!appData.userProgress?.completedTasks?.[t.id]
+                subject: t.subject || 'General',
+                status: appData.userProgress?.completedTasks?.[t.id] ? 'Completed' : 'Pending',
+                hours: t.hours || 0,
+                marks: '',
+                target: '',
+                notes: t.evening || ''
             }));
 
             const tests = (scope === 'tasks') ? [] : getAllTestsMerged().map(t => ({
-                ...t,
+                type: 'Test',
+                title: `Test ${t.number || ''}`.trim(),
                 date: getEffectiveTestDate(t),
-                completed: Number.isFinite(Number(appData.userProgress?.testScores?.[t.id]))
+                subject: t.subject || 'General',
+                status: Number.isFinite(Number(appData.userProgress?.testScores?.[t.id])) ? 'Completed' : 'Pending',
+                hours: '',
+                marks: t.mcqs || '',
+                target: t.target || '',
+                notes: t.focus || ''
             }));
 
-            const items = [
-                ...tasks.map(t => ({ type: 'Task', props: buildNotionPayload(t, 'Task') })),
-                ...tests.map(t => ({ type: 'Test', props: buildNotionPayload(t, 'Test') }))
-            ];
+            return [...tasks, ...tests];
+        }
 
-            const endpoint = getNotionEndpoint('pages');
-            const usingServer = (document.getElementById('notionProxy')?.value || 'server') === 'server';
+        function toCSV(rows) {
+            const header = ['Title', 'Date', 'Type', 'Subject', 'Status', 'Hours', 'Marks', 'Target', 'Notes'];
+            const data = rows.map(r => [
+                r.title,
+                r.date,
+                r.type,
+                r.subject,
+                r.status,
+                r.hours,
+                r.marks,
+                r.target,
+                r.notes
+            ]);
+            const all = [header, ...data];
+            return all.map(row => row.map(v => {
+                const val = String(v ?? '').replace(/"/g, '""');
+                return `"${val}"`;
+            }).join(',')).join('\n');
+        }
 
-            let success = 0;
-            let fail = 0;
+        function generateSheetsCSV() {
+            const scope = document.getElementById('sheetsScope')?.value || 'all';
+            const rows = getSheetsExportRows(scope);
+            const csv = toCSV(rows);
+            const preview = document.getElementById('sheetsCsvPreview');
+            if (preview) preview.value = csv;
+            showToast('CSV generated', 'success');
+        }
 
-            try {
-                for (const item of items) {
-                    const res = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Notion-Version': '2022-06-28',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            parent: { database_id: dbId },
-                            properties: item.props
-                        })
-                    });
-
-                    if (res.ok) {
-                        success++;
-                    } else {
-                        fail++;
-                    }
-                }
-            } catch (e) {
-                statusEl.textContent = 'Sync failed. Try switching the proxy or use a backend proxy.';
-                return;
+        function copySheetsCSV() {
+            const preview = document.getElementById('sheetsCsvPreview');
+            if (!preview || !preview.value) {
+                generateSheetsCSV();
             }
+            navigator.clipboard.writeText(preview.value || '').then(() => {
+                showToast('CSV copied to clipboard', 'success');
+            }).catch(() => {
+                showToast('Copy failed. Please select and copy manually.', 'error');
+            });
+        }
 
-            statusEl.textContent = `Sync complete. Success: ${success}, Failed: ${fail}`;
-            showToast('Notion sync completed', 'success');
+        function downloadSheetsCSV() {
+            const scope = document.getElementById('sheetsScope')?.value || 'all';
+            const rows = getSheetsExportRows(scope);
+            const csv = toCSV(rows);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `wbcs-schedule-${scope}-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('CSV downloaded', 'success');
         }
 
         function startTimer() {
@@ -4363,6 +4175,12 @@
             target.style.setProperty('--x', `${x}%`);
             target.style.setProperty('--y', `${y}%`);
         });
+
+        document.addEventListener('blur', (e) => {
+            if (e.target && (e.target.id === 'editableHeadline' || e.target.id === 'editableSubheadline')) {
+                saveEditableHeadline();
+            }
+        }, true);
 
         // =============================================
         // INITIALIZATION
