@@ -1114,7 +1114,7 @@
             <div class="text-center mb-8">
                 <div class="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white flex items-center justify-center text-2xl shadow-lg">🎯</div>
                 <h1 class="text-3xl font-extrabold mt-4 tracking-tight"><span class="gradient-text">WBCS 2026</span></h1>
-                <p class="text-slate-600 dark:text-slate-300 mt-2">Interactive Study Portal • Firestore Powered</p>
+                <p class="text-slate-600 dark:text-slate-300 mt-2">Interactive Study Portal • Realtime DB Powered</p>
             </div>
 
             <div id="authTabs" class="grid grid-cols-2 bg-white/50 rounded-2xl p-1 border border-white/60 shadow-sm">
@@ -1133,7 +1133,7 @@
                     <input type="password" id="loginPassword" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/70" placeholder="••••••••" autocomplete="current-password">
                 </div>
                 <button onclick="handleLogin()" class="w-full py-3 rounded-2xl font-extrabold text-white bg-gradient-to-r from-indigo-500 to-fuchsia-500 hover:brightness-110 transition shadow-lg btn-glow">Sign In</button>
-                <p class="text-xs text-slate-500 mt-4 text-center">Tip: Admin panel is available when your user is marked as <span class="font-semibold">isAdmin</span> in Firestore (optional).</p>
+                <p class="text-xs text-slate-500 mt-4 text-center">Tip: Admin panel is available when your user is marked as <span class="font-semibold">isAdmin</span> in Realtime DB (optional).</p>
             </div>
 
             <!-- Register Form -->
@@ -1419,7 +1419,7 @@
                 <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
                     <div>
                         <h2 class="text-2xl font-extrabold text-slate-800">✅ Test Tracker</h2>
-                        <p class="text-slate-600 mt-1">Reschedule blueprint tests per-user, or add your own subject/mixed/full mock tests (stored in your Firestore profile).</p>
+                        <p class="text-slate-600 mt-1">Reschedule blueprint tests per-user, or add your own subject/mixed/full mock tests (stored in your Realtime DB profile).</p>
                     </div>
                     <div class="flex flex-wrap gap-2">
                         <button onclick="openAddPersonalTestModal()" class="px-4 py-2 rounded-2xl text-sm font-extrabold text-white btn-glow" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">➕ Add Personal Test</button>
@@ -1495,7 +1495,7 @@
                                 <input id="cutoffFullMock" type="number" min="0" max="200" class="w-full px-4 py-3 border rounded-2xl bg-white/70" placeholder="e.g., 150">
                             </div>
                         </div>
-                        <div class="text-xs text-slate-500 mt-3">Saved per-user in Firestore.</div>
+                        <div class="text-xs text-slate-500 mt-3">Saved per-user in Realtime Database.</div>
                     </div>
 
                     <div class="glass rounded-3xl p-6 lg:col-span-2">
@@ -1644,7 +1644,7 @@
                 <button onclick="window.print();" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, var(--primary), var(--primary-2));">🖨️ Print</button>
                 <button onclick="toggleDarkMode();" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #334155, #475569);">🌙 Toggle Theme</button>
                 <button onclick="openSheetsModal();" class="w-full px-4 py-3 rounded-2xl text-white font-extrabold btn-glow" style="background: linear-gradient(135deg, #16a34a, #22c55e);">📗 Google Sheets Export</button>
-                <div class="text-xs text-slate-500 font-bold pt-2">Tip: Your progress is saved per-user in Firestore.</div>
+                <div class="text-xs text-slate-500 font-bold pt-2">Tip: Your progress is saved per-user in Realtime Database.</div>
             </div>
         </div>
     </div>
@@ -1695,7 +1695,7 @@
     <!-- Firebase (compat SDKs) -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <script>
         // =============================================
@@ -1712,40 +1712,48 @@
 
         let firebaseApp = null;
         let firebaseAuth = null;
-        let firestoreDb = null;
+        let realtimeDb = null;
         let firebaseReady = false;
 
         try {
             firebaseApp = firebase.initializeApp(firebaseConfig);
             firebaseAuth = firebase.auth();
-            firestoreDb = firebase.firestore();
+            realtimeDb = firebase.database();
             firebaseReady = true;
         } catch (e) {
-            console.warn('Firebase init failed. Auth + Firestore will be disabled.', e);
+            console.warn('Firebase init failed. Auth + Realtime DB will be disabled.', e);
         }
 
         // =============================================
-        // FIRESTORE STORAGE (No backend required)
+        // REALTIME DATABASE STORAGE (No backend required)
         // =============================================
-        // All app data is stored in Firestore:
-        // - Shared blueprint (optional): wbcsApp/shared
-        // - Per-user progress: wbcsUsers/{uid}
+        // All app data is stored in Firebase Realtime Database:
+        // - Shared blueprint (optional): /wbcsApp/shared
+        // - Per-user data: /wbcsUsers/{uid}
         //
         // This removes the localhost /api dependency entirely.
 
-        function requireFirestore() {
-            if (!firebaseReady || !firestoreDb) {
-                throw new Error('Firestore not initialized. Check Firebase config and network.');
+        function requireRealtimeDb() {
+            if (!firebaseReady || !realtimeDb) {
+                throw new Error('Realtime DB not initialized. Check Firebase config and network.');
             }
         }
 
-        async function fsGetDoc(ref) {
-            const snap = await ref.get();
-            return snap.exists ? snap.data() : null;
+        function rtdbRef(path) {
+            return realtimeDb.ref(path);
         }
 
-        async function fsSetDoc(ref, data, merge = true) {
-            await ref.set(data, { merge });
+        async function rtdbGet(path) {
+            const snap = await rtdbRef(path).once('value');
+            return snap.exists() ? snap.val() : null;
+        }
+
+        async function rtdbSet(path, data) {
+            await rtdbRef(path).set(data);
+        }
+
+        async function rtdbUpdate(path, data) {
+            await rtdbRef(path).update(data);
         }
 
         // =============================================
@@ -2141,7 +2149,7 @@
             }
 
             if (userUnsubscribe) {
-                userUnsubscribe();
+                rtdbRef(`wbcsUsers/${currentUser?.uid || ''}`).off('value', userUnsubscribe);
                 userUnsubscribe = null;
             }
 
@@ -2192,12 +2200,10 @@
             try {
                 if (firebaseReady && firestoreDb && currentUser?.uid) {
                     // Shared blueprint (optional). If it doesn't exist, we use defaults.
-                    const sharedRef = firestoreDb.collection('wbcsApp').doc('shared');
-                    const shared = await fsGetDoc(sharedRef);
+                    const shared = await rtdbGet('wbcsApp/shared');
 
                     // Per-user
-                    const userRef = firestoreDb.collection('wbcsUsers').doc(currentUser.uid);
-                    const userDoc = await fsGetDoc(userRef);
+                    const userDoc = await rtdbGet(`wbcsUsers/${currentUser.uid}`);
 
                     // 1) Pick a base blueprint (shared → default)
                     let base = null;
@@ -2208,14 +2214,14 @@
                     }
 
                     // 2) If the user has their own editable copy of the blueprint, use it
-                    //    (This makes the demo/default data editable per-user in Firestore.)
+                    //    (This makes the demo/default data editable per-user.)
                     if (userDoc && userDoc.userAppData) {
                         appData = { ...appData, ...base, ...userDoc.userAppData };
                     } else {
                         appData = { ...appData, ...base };
                     }
 
-                    // 3) Merge per-user progress (Firestore only to keep devices in sync)
+                    // 3) Merge per-user progress
                     if (userDoc && userDoc.userProgress) {
                         appData.userProgress = { ...appData.userProgress, ...userDoc.userProgress };
                     }
@@ -2227,10 +2233,10 @@
 
                     // Start realtime sync so all devices stay consistent
                     if (userUnsubscribe) userUnsubscribe();
-                    userUnsubscribe = firestoreDb.collection('wbcsUsers').doc(currentUser.uid)
-                        .onSnapshot((snap) => {
-                            if (!snap.exists) return;
-                            const live = snap.data() || {};
+                    userUnsubscribe = rtdbRef(`wbcsUsers/${currentUser.uid}`)
+                        .on('value', (snap) => {
+                            if (!snap.exists()) return;
+                            const live = snap.val() || {};
                             if (live.userAppData) {
                                 appData = { ...appData, ...live.userAppData };
                             }
@@ -2265,27 +2271,26 @@
         async function saveProgress() {
             normalizeUserProgress();
 
-            const isFirestore = firebaseReady && firestoreDb && currentUser?.uid;
+            const isRealtime = firebaseReady && realtimeDb && currentUser?.uid;
 
             // Local cache only when offline/not signed in
-            if (!isFirestore) {
+            if (!isRealtime) {
                 localStorage.setItem('wbcs_progress_' + (currentUser?.email || currentUser?.uid || 'local'), JSON.stringify(appData.userProgress));
                 localStorage.setItem('wbcs_appData', JSON.stringify(appData));
             }
 
-            // Firestore if available
+            // Realtime DB if available
             try {
-                if (isFirestore) {
-                    const userRef = firestoreDb.collection('wbcsUsers').doc(currentUser.uid);
-                    await fsSetDoc(userRef, {
+                if (isRealtime) {
+                    await rtdbUpdate(`wbcsUsers/${currentUser.uid}`, {
                         email: currentUser.email || null,
                         name: currentUser.name || null,
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: new Date().toISOString(),
                         userProgress: appData.userProgress
-                    }, true);
+                    });
                 }
             } catch (e) {
-                console.warn('Firestore save failed (progress):', e?.message || e);
+                console.warn('Realtime DB save failed (progress):', e?.message || e);
                 // fallback to local cache
                 localStorage.setItem('wbcs_progress_' + (currentUser?.email || currentUser?.uid || 'local'), JSON.stringify(appData.userProgress));
                 localStorage.setItem('wbcs_appData', JSON.stringify(appData));
@@ -2296,46 +2301,44 @@
             // Save an editable copy of the blueprint per-user.
             // This lets "demo/default" tasks/tests/subjects be edited without admin rights.
             try {
-                if (firebaseReady && firestoreDb && currentUser?.uid) {
-                    const userRef = firestoreDb.collection('wbcsUsers').doc(currentUser.uid);
-                    await fsSetDoc(userRef, {
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                if (firebaseReady && realtimeDb && currentUser?.uid) {
+                    await rtdbUpdate(`wbcsUsers/${currentUser.uid}`, {
+                        updatedAt: new Date().toISOString(),
                         userAppData: {
                             subjects: appData.subjects,
                             tasks: appData.tasks,
                             tests: appData.tests,
                             routines: appData.routines
                         }
-                    }, true);
+                    });
                 }
             } catch (e) {
-                console.warn('Firestore save failed (user app data):', e?.message || e);
+                console.warn('Realtime DB save failed (user app data):', e?.message || e);
             }
         }
 
         async function saveAppData() {
-            const isFirestore = firebaseReady && firestoreDb && currentUser?.uid;
+            const isRealtime = firebaseReady && realtimeDb && currentUser?.uid;
 
             // Only store locally if offline
-            if (!isFirestore) {
+            if (!isRealtime) {
                 localStorage.setItem('wbcs_appData', JSON.stringify(appData));
             }
 
             // If admin, also update shared blueprint
             if (currentUser?.isAdmin) {
                 try {
-                    if (firebaseReady && firestoreDb) {
-                        const sharedRef = firestoreDb.collection('wbcsApp').doc('shared');
-                        await fsSetDoc(sharedRef, {
+                    if (firebaseReady && realtimeDb) {
+                        await rtdbUpdate('wbcsApp/shared', {
                             subjects: appData.subjects,
                             tasks: appData.tasks,
                             tests: appData.tests,
                             routines: appData.routines,
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        }, true);
+                            updatedAt: new Date().toISOString()
+                        });
                     }
                 } catch (e) {
-                    console.warn('Firestore save failed (shared app data):', e?.message || e);
+                    console.warn('Realtime DB save failed (shared app data):', e?.message || e);
                     localStorage.setItem('wbcs_appData', JSON.stringify(appData));
                 }
             } else {
@@ -3568,7 +3571,7 @@
                     </div>
 
                     <div class="text-xs text-slate-500">
-                        Personal tests are saved only for your account and synced to Firestore under <code>wbcsUsers/{uid}.userProgress.customTests</code>.
+                        Personal tests are saved only for your account and synced to Realtime Database under <code>wbcsUsers/{uid}/userProgress/customTests</code>.
                     </div>
                 </div>
             `, () => {
