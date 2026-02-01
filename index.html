@@ -1773,6 +1773,7 @@
         let activeSubject = null;
         let timerInterval = null;
         let timerSeconds = 0;
+        let userUnsubscribe = null;
 
         // =============================================
         // SMALL UTILITIES
@@ -2139,6 +2140,11 @@
                 // ignore
             }
 
+            if (userUnsubscribe) {
+                userUnsubscribe();
+                userUnsubscribe = null;
+            }
+
             localStorage.removeItem('wbcs_token');
             localStorage.removeItem('wbcs_user');
 
@@ -2218,6 +2224,26 @@
 
                     // Save local cache for offline use
                     localStorage.setItem('wbcs_appData', JSON.stringify(appData));
+
+                    // Start realtime sync so all devices stay consistent
+                    if (userUnsubscribe) userUnsubscribe();
+                    userUnsubscribe = firestoreDb.collection('wbcsUsers').doc(currentUser.uid)
+                        .onSnapshot((snap) => {
+                            if (!snap.exists) return;
+                            const live = snap.data() || {};
+                            if (live.userAppData) {
+                                appData = { ...appData, ...live.userAppData };
+                            }
+                            if (live.userProgress) {
+                                appData.userProgress = { ...appData.userProgress, ...live.userProgress };
+                            }
+                            normalizeUserProgress();
+                            localStorage.setItem('wbcs_appData', JSON.stringify(appData));
+                            renderAll();
+                        }, (err) => {
+                            console.warn('Realtime sync failed:', err?.message || err);
+                        });
+
                     return;
                 }
             } catch (e) {
@@ -2239,13 +2265,17 @@
         async function saveProgress() {
             normalizeUserProgress();
 
-            // Local always
-            localStorage.setItem('wbcs_progress_' + (currentUser?.email || currentUser?.uid || 'local'), JSON.stringify(appData.userProgress));
-            localStorage.setItem('wbcs_appData', JSON.stringify(appData));
+            const isFirestore = firebaseReady && firestoreDb && currentUser?.uid;
+
+            // Local cache only when offline/not signed in
+            if (!isFirestore) {
+                localStorage.setItem('wbcs_progress_' + (currentUser?.email || currentUser?.uid || 'local'), JSON.stringify(appData.userProgress));
+                localStorage.setItem('wbcs_appData', JSON.stringify(appData));
+            }
 
             // Firestore if available
             try {
-                if (firebaseReady && firestoreDb && currentUser?.uid) {
+                if (isFirestore) {
                     const userRef = firestoreDb.collection('wbcsUsers').doc(currentUser.uid);
                     await fsSetDoc(userRef, {
                         email: currentUser.email || null,
@@ -2256,6 +2286,9 @@
                 }
             } catch (e) {
                 console.warn('Firestore save failed (progress):', e?.message || e);
+                // fallback to local cache
+                localStorage.setItem('wbcs_progress_' + (currentUser?.email || currentUser?.uid || 'local'), JSON.stringify(appData.userProgress));
+                localStorage.setItem('wbcs_appData', JSON.stringify(appData));
             }
         }
 
@@ -2281,8 +2314,12 @@
         }
 
         async function saveAppData() {
-            // Always store locally
-            localStorage.setItem('wbcs_appData', JSON.stringify(appData));
+            const isFirestore = firebaseReady && firestoreDb && currentUser?.uid;
+
+            // Only store locally if offline
+            if (!isFirestore) {
+                localStorage.setItem('wbcs_appData', JSON.stringify(appData));
+            }
 
             // If admin, also update shared blueprint
             if (currentUser?.isAdmin) {
@@ -2299,6 +2336,7 @@
                     }
                 } catch (e) {
                     console.warn('Firestore save failed (shared app data):', e?.message || e);
+                    localStorage.setItem('wbcs_appData', JSON.stringify(appData));
                 }
             } else {
                 // Non-admin users keep an editable copy in their own profile
