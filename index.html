@@ -3461,6 +3461,12 @@
             saveProgress();
         }
 
+        let saveTextTimer = null;
+        function scheduleEditableSave() {
+            clearTimeout(saveTextTimer);
+            saveTextTimer = setTimeout(saveEditableHeadline, 400);
+        }
+
         // =============================================
         // PERSONAL TESTS (per-user)
         // =============================================
@@ -4231,8 +4237,14 @@
         });
 
         document.addEventListener('blur', (e) => {
-            if (e.target && (e.target.id === 'editableHeadline' || e.target.id === 'editableSubheadline')) {
+            if (e.target && (e.target.id === 'editableHeadline' || e.target.id === 'editableSubheadline' || e.target.id === 'editableSidebarTitle' || e.target.id === 'editablePrepSummary')) {
                 saveEditableHeadline();
+            }
+        }, true);
+
+        document.addEventListener('input', (e) => {
+            if (e.target && (e.target.id === 'editableHeadline' || e.target.id === 'editableSubheadline' || e.target.id === 'editableSidebarTitle' || e.target.id === 'editablePrepSummary')) {
+                scheduleEditableSave();
             }
         }, true);
 
