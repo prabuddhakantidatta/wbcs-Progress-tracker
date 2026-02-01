@@ -2190,13 +2190,12 @@
                     const userRef = firestoreDb.collection('wbcsUsers').doc(currentUser.uid);
                     const userDoc = await fsGetDoc(userRef);
 
-                    // 1) Pick a base blueprint (shared → local → default)
+                    // 1) Pick a base blueprint (shared → default)
                     let base = null;
                     if (shared && (shared.subjects || shared.tasks || shared.tests || shared.routines)) {
                         base = shared;
                     } else {
-                        const localData = localStorage.getItem('wbcs_appData');
-                        base = localData ? JSON.parse(localData) : getDefaultAppData();
+                        base = getDefaultAppData();
                     }
 
                     // 2) If the user has their own editable copy of the blueprint, use it
@@ -2207,14 +2206,9 @@
                         appData = { ...appData, ...base };
                     }
 
-                    // 3) Merge per-user progress
+                    // 3) Merge per-user progress (Firestore only to keep devices in sync)
                     if (userDoc && userDoc.userProgress) {
                         appData.userProgress = { ...appData.userProgress, ...userDoc.userProgress };
-                    } else {
-                        const localProgress = localStorage.getItem('wbcs_progress_' + (currentUser.email || currentUser.uid));
-                        if (localProgress) {
-                            appData.userProgress = { ...appData.userProgress, ...JSON.parse(localProgress) };
-                        }
                     }
 
                     normalizeUserProgress();
@@ -2227,7 +2221,7 @@
                 console.warn('Firestore load failed, using local fallback:', e?.message || e);
             }
 
-            // Local fallback
+            // Local fallback (offline mode)
             const localData = localStorage.getItem('wbcs_appData');
             appData = localData ? JSON.parse(localData) : getDefaultAppData();
 
