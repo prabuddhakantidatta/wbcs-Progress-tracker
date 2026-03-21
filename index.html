@@ -1315,6 +1315,15 @@
                     <div id="todaySchedule" class="divide-y divide-black/5"></div>
                 </div>
 
+                <!-- Weakness Tracker Section -->
+                <div class="glass bouncy-card rounded-3xl p-8 mb-7 border-l-4 border-rose-500">
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <h3 class="text-xl font-extrabold text-rose-600">⚠️ Weakness Tracker (Missed Deadlines)</h3>
+                        <span id="weaknessCount" class="text-sm font-extrabold text-rose-500">0 tasks</span>
+                    </div>
+                    <div id="weaknessList" class="divide-y divide-black/5"></div>
+                </div>
+
                 <h2 class="text-xl font-extrabold text-slate-800 mb-4">📚 Quick Subject Access</h2>
                 <div id="subjectCards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
             </div>
@@ -2731,6 +2740,62 @@
                     ` : '';
 
                     todayList.innerHTML = tasksHtml + testsHtml;
+                }
+            }
+
+            // -----------------------------
+            // Weakness Tracker (Missed Deadlines)
+            // -----------------------------
+            const missedTasks = (appData.tasks || [])
+                .filter(t => {
+                    const effDate = getEffectiveTaskDate(t);
+                    if (!effDate) return false;
+                    const isCompleted = !!appData.userProgress.completedTasks[t.id];
+                    const todayISO = toLocalISODate(new Date());
+                    return effDate < todayISO && !isCompleted;
+                })
+                .slice()
+                .sort((a, b) => getEffectiveTaskDate(a).localeCompare(getEffectiveTaskDate(b)));
+
+            const weaknessList = document.getElementById('weaknessList');
+            const weaknessCount = document.getElementById('weaknessCount');
+            if (weaknessList && weaknessCount) {
+                weaknessCount.textContent = `${missedTasks.length} task${missedTasks.length !== 1 ? 's' : ''}`;
+                
+                if (missedTasks.length === 0) {
+                    weaknessList.innerHTML = `<div class="text-slate-500 font-bold py-3">🎉 No missed deadlines! You're on track.</div>`;
+                } else {
+                    weaknessList.innerHTML = missedTasks.map(t => {
+                        const effDate = getEffectiveTaskDate(t);
+                        const pal = getSubjectProgressPalette(t.subject || 'General');
+                        const subjColor = getRandomReadableFontColor('weakness-subj-' + (t.subject || 'General'));
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const effDateObj = new Date(effDate + 'T00:00:00');
+                        const daysOverdue = Math.floor((today.getTime() - effDateObj.getTime()) / (1000 * 60 * 60 * 24));
+                        
+                        return `
+                            <div class="py-3 flex flex-wrap items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: ${pal.pillBg}; border: 1px solid ${pal.pillBorder}; color: ${subjColor};">
+                                            ${t.subject || 'General'}
+                                        </span>
+                                        <span class="font-extrabold text-slate-800">${t.morning || '-'}</span>
+                                        <span class="px-2 py-1 rounded-xl text-[11px] font-extrabold" style="background: rgba(239,68,68,0.14); border: 1px solid rgba(239,68,68,0.18); color: rgb(185,28,28);">
+                                            ${daysOverdue === 1 ? '1 day overdue' : `${daysOverdue} days overdue`}
+                                        </span>
+                                    </div>
+                                    <div class="text-sm text-slate-600 mt-1">${t.evening || ''}</div>
+                                    <div class="text-xs text-slate-500 font-bold mt-1">Due: ${formatDate(effDate)} • ${t.hours || 0}h</div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox" onchange="toggleTask('${t.id}')" class="w-5 h-5 accent-indigo-500 cursor-pointer">
+                                    <button onclick="editTask('${t.id}')" class="px-3 py-2 rounded-2xl text-xs font-extrabold text-white btn-glow" style="background: linear-gradient(135deg, #f59e0b, #d97706);">Reschedule</button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
                 }
             }
 
